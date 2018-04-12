@@ -1,0 +1,26 @@
+[package]
+name = "webrender-text-view"
+version = "0.1.0"
+authors = ["Patrick Walton <pcwalton@mimiga.net>"]
+build = "build.rs"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+app_units = "0.6"
+gleam = "0.4"
+libc = "0.2"
+
+[dependencies.pilcrow]
+path = "../../pilcrow"
+
+[dependencies.webrender]
+git = "https://github.com/servo/webrender"
+features = ["pathfinder"]
+
+[dependencies.webrender_api]
+git = "https://github.com/servo/webrender"
+
+[build-dependencies]
+cbindgen = "0.5"

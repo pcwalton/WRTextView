@@ -1,0 +1,9 @@
+language = "C"
+include_guard = "WR_TEXT_VIEW_H"
+header = "/* wr-text-view.h */"
+autogen_warning = "/* Automatically generated. Do not edit! */"
+
+[export.rename]
+"GetProcAddressFn" = "wrtv_get_proc_address_fn_t"
+"TextBuf" = "pilcrow_text_buf_t"
+"View" = "wrtv_view_t"
