@@ -13,7 +13,7 @@
 
 @interface WRTextView : NSView {
     IBOutlet Document *document;
-    wrtv_view_t *wrView;
+    wrtv_view_t *_wrView;
 }
 
 @property(nonatomic, strong) NSOpenGLContext *openGLContext;

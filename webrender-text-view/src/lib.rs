@@ -9,6 +9,7 @@
 // except according to those terms.
 
 extern crate app_units;
+extern crate euclid;
 extern crate gleam;
 extern crate libc;
 extern crate pilcrow;
@@ -16,19 +17,22 @@ extern crate webrender;
 extern crate webrender_api;
 
 use app_units::Au;
+use euclid::{Transform2D, Vector2D};
 use gleam::gl::{self, Gl};
 use libc::c_char;
-use pilcrow::TextBuf;
+use pilcrow::{Framesetter, ParagraphBuf, TextBuf};
 use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
 use std::os::raw::c_void;
 use std::rc::Rc;
 use webrender::{Renderer, RendererOptions};
-use webrender_api::{BuiltDisplayList, ColorF, DeviceSize, DeviceUintSize, DisplayListBuilder, DocumentId, Epoch};
-use webrender_api::{FontInstanceKey, FontKey, GlyphInstance, IdNamespace, LayoutPoint, LayoutPrimitiveInfo, LayoutRect, LayoutSize};
-use webrender_api::{MixBlendMode, PipelineId, RenderApi, RenderApiSender, RenderNotifier};
-use webrender_api::{ResourceUpdates, ScrollPolicy, Transaction, TransformStyle};
+use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DeviceIntSize, DeviceUintPoint};
+use webrender_api::{DeviceUintRect, DeviceUintSize, DisplayListBuilder};
+use webrender_api::{DocumentId, Epoch, FontInstanceKey, FontKey, GlyphInstance, IdNamespace};
+use webrender_api::{LayoutPoint, LayoutPrimitiveInfo, LayoutRect, LayoutSize, MixBlendMode};
+use webrender_api::{PipelineId, RenderApi, RenderApiSender, RenderNotifier, ResourceUpdates};
+use webrender_api::{ScrollPolicy, Transaction, TransformStyle, ZoomFactor};
 
 pub mod ffi;
 
@@ -48,6 +52,8 @@ type WrDisplayList = (PipelineId, LayoutSize, BuiltDisplayList);
 pub struct View {
     text: TextBuf,
     gl: Rc<Gl>,
+    size: DeviceUintSize,
+    transform: Transform2D<f32>,
 
     wr_renderer: Renderer,
     wr_sender: RenderApiSender,
@@ -59,7 +65,8 @@ pub struct View {
 }
 
 impl View {
-    pub fn new(text: TextBuf, get_proc_address: GetProcAddressFn) -> View {
+    pub fn new(text: TextBuf, size: &DeviceUintSize, get_proc_address: GetProcAddressFn)
+               -> View {
         let gl = unsafe {
             gl::GlFns::load_with(|symbol| {
                 let symbol = CString::new(symbol).unwrap();
@@ -67,13 +74,14 @@ impl View {
             })
         };
 
+        let transform = Transform2D::identity();
+
         let wr_options = RendererOptions::default();
         let notifier = Box::new(Notifier::new());
-        let (mut renderer, sender) = Renderer::new(gl.clone(), notifier, wr_options).unwrap();
+        let (renderer, sender) = Renderer::new(gl.clone(), notifier, wr_options).unwrap();
         let sender_api = sender.create_api();
 
-        let framebuffer_size = DeviceUintSize::new(320, 240);
-        let document_id = sender_api.add_document(framebuffer_size, 0);
+        let document_id = sender_api.add_document(*size, 0);
 
         let font_key = sender_api.generate_font_key();
         let font_instance_key = sender_api.generate_font_instance_key();
@@ -83,7 +91,7 @@ impl View {
         resource_updates.add_raw_font(font_key, font_bytes, 0);
         resource_updates.add_font_instance(font_instance_key,
                                            font_key,
-                                           Au::from_px(32),
+                                           Au::from_px(10),
                                            None,
                                            None,
                                            vec![]);
@@ -92,11 +100,16 @@ impl View {
         transaction.update_resources(resource_updates);
         sender_api.send_transaction(document_id, transaction);
 
-        let display_list = build_display_list(&text, &font_instance_key);
+        let layout_size = LayoutSize::new(size.width as f32, size.height as f32);
+        let mut display_list_builder = init_display_list_builder(&layout_size);
+        layout_text(&mut display_list_builder, &text, &layout_size, &font_instance_key);
+        let display_list = finalize_display_list(display_list_builder);
 
         View {
-            text: text,
-            gl: gl,
+            text,
+            gl,
+            size: *size,
+            transform,
 
             wr_renderer: renderer,
             wr_sender: sender,
@@ -108,61 +121,63 @@ impl View {
         }
     }
 
-    pub fn repaint(&mut self) {
-        // TODO(pcwalton)
-        let layout_size = LayoutSize::new(320.0, 240.0);
-        let framebuffer_size = DeviceUintSize::new(320, 240);
+    fn layout_size(&self) -> LayoutSize {
+        LayoutSize::new(self.size.width as f32, self.size.height as f32)
+    }
 
+    pub fn repaint(&mut self) {
         let mut transaction = Transaction::new();
         transaction.set_display_list(Epoch(0),
                                      None,
-                                     layout_size,
+                                     self.layout_size(),
                                      self.wr_display_list.clone(),
                                      true);
         transaction.set_root_pipeline(PIPELINE_ID);
+        transaction.set_pan(DeviceIntPoint::new(self.transform.m31 as i32,
+                                                self.transform.m32 as i32));
+        transaction.set_pinch_zoom(ZoomFactor::new(self.transform.m11));
         transaction.generate_frame();
         self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
 
         self.wr_renderer.update();
-        self.wr_renderer.render(framebuffer_size).unwrap();
+        self.wr_renderer.render(self.size).unwrap();
+    }
+
+    pub fn resize(&mut self, new_size: &DeviceUintSize) {
+        self.size = *new_size;
+
+        let mut transaction = Transaction::new();
+        let inner_rect = DeviceUintRect::new(DeviceUintPoint::zero(), *new_size);
+        transaction.set_window_parameters(*new_size, inner_rect, 1.0);
+        self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
+    }
+
+    pub fn pan(&mut self, vector: &LayoutPoint) {
+        self.transform = self.transform.post_translate(Vector2D::new(vector.x, vector.y));
+    }
+
+    pub fn zoom(&mut self, factor: f32) {
+        self.transform.m11 += factor;
+        self.transform.m22 += factor;
     }
 }
 
-fn build_display_list(text: &TextBuf, font_instance_key: &FontInstanceKey) -> WrDisplayList {
-    let layout_size = LayoutSize::new(320.0, 240.0);
-    let mut display_list_builder = DisplayListBuilder::new(PIPELINE_ID, layout_size);
-    let root_stacking_context_bounds = LayoutRect::new(LayoutPoint::zero(), layout_size);
+fn init_display_list_builder(layout_size: &LayoutSize) -> DisplayListBuilder {
+    let mut display_list_builder = DisplayListBuilder::new(PIPELINE_ID, *layout_size);
+    let root_stacking_context_bounds = LayoutRect::new(LayoutPoint::zero(), *layout_size);
     let root_layout_primitive_info = LayoutPrimitiveInfo::new(root_stacking_context_bounds);
     display_list_builder.push_stacking_context(&root_layout_primitive_info,
-                                                None,
-                                                ScrollPolicy::Scrollable,
-                                                None,
-                                                TransformStyle::Flat,
-                                                None,
-                                                MixBlendMode::Normal,
-                                                vec![]);
+                                               None,
+                                               ScrollPolicy::Scrollable,
+                                               None,
+                                               TransformStyle::Flat,
+                                               None,
+                                               MixBlendMode::Normal,
+                                               vec![]);
+    display_list_builder
+}
 
-    let glyphs = vec![
-        GlyphInstance { index: 48, point: LayoutPoint::new(100.0, 100.0), },
-        GlyphInstance { index: 68, point: LayoutPoint::new(150.0, 100.0), },
-        GlyphInstance { index: 80, point: LayoutPoint::new(200.0, 100.0), },
-        GlyphInstance { index: 82, point: LayoutPoint::new(250.0, 100.0), },
-        GlyphInstance { index: 81, point: LayoutPoint::new(300.0, 100.0), },
-        GlyphInstance { index: 3,  point: LayoutPoint::new(350.0, 100.0), },
-        GlyphInstance { index: 86, point: LayoutPoint::new(400.0, 100.0), },
-        GlyphInstance { index: 79, point: LayoutPoint::new(450.0, 100.0), },
-        GlyphInstance { index: 72, point: LayoutPoint::new(500.0, 100.0), },
-        GlyphInstance { index: 83, point: LayoutPoint::new(550.0, 100.0), },
-        GlyphInstance { index: 87, point: LayoutPoint::new(600.0, 100.0), },
-        GlyphInstance { index: 17, point: LayoutPoint::new(650.0, 100.0), },
-    ];
-
-    display_list_builder.push_text(&root_layout_primitive_info,
-                                   &glyphs,
-                                   *font_instance_key,
-                                   BLACK_COLOR,
-                                   None);
-
+fn finalize_display_list(mut display_list_builder: DisplayListBuilder) -> WrDisplayList {
     display_list_builder.pop_stacking_context();
     display_list_builder.finalize()
 }
@@ -172,6 +187,48 @@ fn load_file(name: &str) -> Vec<u8> {
     let mut buffer = vec![];
     file.read_to_end(&mut buffer).unwrap();
     buffer
+}
+
+fn layout_text(display_list_builder: &mut DisplayListBuilder,
+               text: &TextBuf,
+               layout_size: &LayoutSize,
+               font_instance_key: &FontInstanceKey) {
+    let framesetter = Framesetter::new(text);
+    let layout_rect = LayoutRect::new(LayoutPoint::zero(), *layout_size);
+    let frames = framesetter.layout_in_rect(&layout_rect.to_untyped());
+
+    for frame in frames {
+        for line in frame.lines() {
+            let typo_bounds = line.typographic_bounds();
+            let line_origin = LayoutPoint::from_untyped(&line.origin);
+            let line_size = LayoutSize::new(typo_bounds.width,
+                                            typo_bounds.ascent + typo_bounds.descent);
+            let line_bounds = LayoutRect::new(LayoutPoint::new(line_origin.x,
+                                                               line_origin.y - typo_bounds.ascent),
+                                              line_size);
+            let layout_primitive_info = LayoutPrimitiveInfo::new(line_bounds);
+            eprintln!("line bounds={:?}", line_bounds);
+
+            for run in line.runs() {
+                let mut glyphs = vec![];
+                for (index, position) in run.glyphs()
+                                            .into_iter()
+                                            .zip(run.positions().into_iter()) {
+                    glyphs.push(GlyphInstance {
+                        index: index as u32,
+                        point: LayoutPoint::from_untyped(&position) + line_origin.to_vector(),
+                    })
+                }
+                eprintln!("{:?}", glyphs);
+
+                display_list_builder.push_text(&layout_primitive_info,
+                                               &glyphs,
+                                               *font_instance_key,
+                                               BLACK_COLOR,
+                                               None);
+            }
+        }
+    }
 }
 
 struct Notifier;

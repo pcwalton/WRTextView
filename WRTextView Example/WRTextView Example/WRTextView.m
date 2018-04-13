@@ -6,6 +6,7 @@
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
+#include <pthread.h>
 #import <OpenGL/gl.h>
 #import "WRTextView.h"
 
@@ -19,6 +20,7 @@ static const void *getGLProcAddress(const char *symbolName) {
 @implementation WRTextView
 
 - (void)_initGLWithPixelFormat:(NSOpenGLPixelFormat *)format {
+    [self setWantsBestResolutionOpenGLSurface:YES];
     self->_pixelFormat = format;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                             selector:@selector(_surfaceNeedsUpdate:)
@@ -39,9 +41,19 @@ static const void *getGLProcAddress(const char *symbolName) {
                                                       shareContext:nil];
     
     pilcrow_text_buf_t *textBuffer = [self->document textBuffer];
+
     [self->_openGLContext makeCurrentContext];
-    if (textBuffer != nil)
-        self->wrView = wrtv_view_new(textBuffer, getGLProcAddress);
+    GLint one = 1;
+    CGLSetParameter([self->_openGLContext CGLContextObj], kCGLCPSwapInterval, &one);
+
+    if (textBuffer == nil)
+        return;
+
+    NSRect backingFrame = [self convertRectToBacking:[self frame]];
+    self->_wrView = wrtv_view_new(textBuffer,
+                                  (uint32_t)ceil(backingFrame.size.width),
+                                  (uint32_t)ceil(backingFrame.size.height),
+                                  getGLProcAddress);
 }
 
 - (void)_surfaceNeedsUpdate:(NSNotification *)notification {
@@ -49,7 +61,16 @@ static const void *getGLProcAddress(const char *symbolName) {
 }
 
 - (void)update {
+    if (self->_wrView != NULL) {
+        NSRect backingFrame = [self convertRectToBacking:[self frame]];
+        wrtv_view_resize(self->_wrView,
+                         (uint32_t)ceil(backingFrame.size.width),
+                         (uint32_t)ceil(backingFrame.size.height));
+        NSLog(@"resized to: %f,%f", backingFrame.size.width, backingFrame.size.height);
+    }
+
     [self->_openGLContext update];
+    [self->_openGLContext setView:self];
 }
 
 - (void)clearGLContext {
@@ -61,9 +82,11 @@ static const void *getGLProcAddress(const char *symbolName) {
     NSOpenGLPixelFormatAttribute attributes[] = {
         NSOpenGLPFADepthSize, 24,
         NSOpenGLPFAStencilSize, 8,
+        NSOpenGLPFAColorSize, 32,
         NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core,
         NSOpenGLPFADoubleBuffer,
         NSOpenGLPFAAccelerated,
+        NSOpenGLPFANoRecovery,
         0, 0
     };
     NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:attributes];
@@ -72,33 +95,34 @@ static const void *getGLProcAddress(const char *symbolName) {
     return pixelFormat;
 }
 
-- (void)lockFocus {
-    [super lockFocus];
-    if ([self->_openGLContext view] != self) {
-        NSLog(@"setting view!");
-        [self->_openGLContext setView:self];
-    }
-}
-
 - (BOOL)isOpaque {
     return YES;
 }
 
-- (void)drawFrame:(id)unused {
-    [self->_openGLContext makeCurrentContext];
-    CGLLockContext([self->_openGLContext CGLContextObj]);
-    /*glClearColor(0.0, 0.0, 1.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);*/
-    if (self->wrView != NULL)
-        wrtv_view_repaint(self->wrView);
-    CGLUnlockContext([self->_openGLContext CGLContextObj]);
-    [self->_openGLContext flushBuffer];
-}
-
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-    [self lockFocus];
-    [self performSelectorInBackground:@selector(drawFrame:) withObject:nil];
+
+    if ([self->_openGLContext view] != self)
+        [self->_openGLContext setView:self];
+    
+    NSRect backingFrame = [self convertRectToBacking:[self frame]];
+
+    CGLContextObj glContext = [self->_openGLContext CGLContextObj];
+    CGLSetCurrentContext(glContext);
+    CGLLockContext(glContext);
+    wrtv_view_repaint(self->_wrView);
+    CGLFlushDrawable(glContext);
+    CGLUnlockContext(glContext);
+}
+
+- (void)scrollWheel:(NSEvent *)event {
+    wrtv_view_pan(self->_wrView, (float)[event scrollingDeltaX], (float)[event scrollingDeltaY]);
+    [self setNeedsDisplay:YES];
+}
+
+- (void)magnifyWithEvent:(NSEvent *)event {
+    wrtv_view_zoom(self->_wrView, (float)[event magnification]);
+    [self setNeedsDisplay:YES];
 }
 
 @end

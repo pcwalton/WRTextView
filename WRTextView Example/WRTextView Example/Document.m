@@ -46,16 +46,19 @@
     // Insert code here to read your document from the given data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning NO.
     // You can also choose to override -readFromFileWrapper:ofType:error: or -readFromURL:ofType:error: instead.
     // If you override either of these, you should also override -isEntireFileLoaded to return NO if the contents are lazily loaded.
-    NSAttributedString *attributedString =
-        [[NSAttributedString alloc] initWithURL:absoluteURL
-                                        options:[NSDictionary dictionary]
-                             documentAttributes:nil
-                                          error:outError];
-    NSString *string = [attributedString string];
+    NSString *string = [[NSString alloc] initWithContentsOfURL:absoluteURL
+                                                      encoding:NSUTF8StringEncoding
+                                                         error:outError];
     const char *bytes = [string UTF8String];
     if (bytes == NULL)
         return NO;
-    self->_textBuffer = pilcrow_text_buf_new_from_string((const uint8_t *)bytes, strlen(bytes));
+
+    pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
+    self->_textBuffer = pilcrow_text_buf_new();
+    pilcrow_markdown_parser_add_to_text_buf(markdownParser,
+                                            (const uint8_t *)bytes,
+                                            strlen(bytes),
+                                            self->_textBuffer);
     return YES;
 }
 

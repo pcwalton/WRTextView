@@ -16,7 +16,6 @@
 		6A0E3CCB207ED10600887721 /* WRTextView_ExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CCA207ED10600887721 /* WRTextView_ExampleTests.m */; };
 		6A0E3CD6207ED10600887721 /* WRTextView_ExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CD5207ED10600887721 /* WRTextView_ExampleUITests.m */; };
 		6A0E3CE5207ED14800887721 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextView.m */; };
-		6A0E3CE8207EF98A00887721 /* libpilcrow.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0E3CE7207EF98A00887721 /* libpilcrow.dylib */; };
 		6A0E3CEA207FEE6800887721 /* libwebrender_text_view.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */; };
 /* End PBXBuildFile section */
 
@@ -59,6 +58,7 @@
 		6A0E3CE4207ED14800887721 /* WRTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView.m; sourceTree = "<group>"; };
 		6A0E3CE7207EF98A00887721 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = ../../pilcrow/target/debug/libpilcrow.dylib; sourceTree = "<group>"; };
 		6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libwebrender_text_view.dylib; path = "../webrender-text-view/target/debug/libwebrender_text_view.dylib"; sourceTree = "<group>"; };
+		6A5B5FFF208156CB00C10F79 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = "../webrender-text-view/target/debug/deps/libpilcrow.dylib"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +66,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A0E3CE8207EF98A00887721 /* libpilcrow.dylib in Frameworks */,
 				6A0E3CEA207FEE6800887721 /* libwebrender_text_view.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,6 +148,7 @@
 		6A0E3CE6207EF98A00887721 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6A5B5FFF208156CB00C10F79 /* libpilcrow.dylib */,
 				6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */,
 				6A0E3CE7207EF98A00887721 /* libpilcrow.dylib */,
 			);
@@ -474,10 +474,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					../../pilcrow/target/debug,
-					"../webrender-text-view/target/debug",
-				);
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/debug";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -501,10 +498,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					../../pilcrow/target/debug,
-					"../webrender-text-view/target/debug",
-				);
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/debug";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
