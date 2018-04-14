@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "pilcrow::ParagraphBuf::edit_at::h7617ef918d123601:lib.rs">
+      </ContextState>
+      <ContextState
+         contextName = "pilcrow::markdown::MarkdownParser::add_to_text_buf::hb179e7be9255ca00:markdown.rs">
+      </ContextState>
+      <ContextState
+         contextName = "core_foundation::attributedstring::CFMutableAttributedString::attributes_at::h2c606e746ca07001:attributedstring.rs">
+      </ContextState>
+      <ContextState
+         contextName = "_$LT$core_foundation..dictionary..CFDictionary$LT$K$C$$u20$V$GT$$GT$::len::h18404ee9cf54997c:dictionary.rs">
+      </ContextState>
+      <ContextState
+         contextName = "_$LT$core_foundation..dictionary..CFDictionary$LT$K$C$$u20$V$GT$$GT$::get_keys_and_values::h879b4e788d212635:dictionary.rs">
+      </ContextState>
+      <ContextState
+         contextName = "-[Document readFromURL:ofType:error:]:Document.m">
+         <PersistentStrings>
+            <PersistentString
+               value = "(TextBuf *)_textBuffer">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

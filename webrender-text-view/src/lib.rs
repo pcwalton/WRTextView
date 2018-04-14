@@ -21,9 +21,12 @@ use euclid::{Transform2D, Vector2D};
 use gleam::gl::{self, Gl};
 use libc::c_char;
 use pilcrow::{Framesetter, ParagraphBuf, TextBuf};
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
 use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
+use std::mem;
 use std::os::raw::c_void;
 use std::rc::Rc;
 use webrender::{Renderer, RendererOptions};
@@ -31,7 +34,7 @@ use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DeviceIntSize, Dev
 use webrender_api::{DeviceUintRect, DeviceUintSize, DisplayListBuilder};
 use webrender_api::{DocumentId, Epoch, FontInstanceKey, FontKey, GlyphInstance, IdNamespace};
 use webrender_api::{LayoutPoint, LayoutPrimitiveInfo, LayoutRect, LayoutSize, MixBlendMode};
-use webrender_api::{PipelineId, RenderApi, RenderApiSender, RenderNotifier, ResourceUpdates};
+use webrender_api::{NativeFontHandle, PipelineId, RenderApi, RenderApiSender, RenderNotifier, ResourceUpdates};
 use webrender_api::{ScrollPolicy, Transaction, TransformStyle, ZoomFactor};
 
 pub mod ffi;
@@ -59,8 +62,6 @@ pub struct View {
     wr_sender: RenderApiSender,
     wr_sender_api: RenderApi,
     wr_document_id: DocumentId,
-    wr_font_key: FontKey,
-    wr_font_instance_key: FontInstanceKey,
     wr_display_list: WrDisplayList,
 }
 
@@ -82,28 +83,20 @@ impl View {
         let sender_api = sender.create_api();
 
         let document_id = sender_api.add_document(*size, 0);
+        let layout_size = LayoutSize::new(size.width as f32, size.height as f32);
 
-        let font_key = sender_api.generate_font_key();
-        let font_instance_key = sender_api.generate_font_instance_key();
-        let font_bytes =
-            load_file("/Users/pcwalton/Source/webrender/wrench/reftests/text/FreeSans.ttf");
+        let mut display_list_builder = init_display_list_builder(&layout_size);
         let mut resource_updates = ResourceUpdates::new();
-        resource_updates.add_raw_font(font_key, font_bytes, 0);
-        resource_updates.add_font_instance(font_instance_key,
-                                           font_key,
-                                           Au::from_px(10),
-                                           None,
-                                           None,
-                                           vec![]);
+        layout_text(&mut display_list_builder,
+                    &sender_api,
+                    &mut resource_updates,
+                    &text,
+                    &layout_size);
+        let display_list = finalize_display_list(display_list_builder);
 
         let mut transaction = Transaction::new();
         transaction.update_resources(resource_updates);
         sender_api.send_transaction(document_id, transaction);
-
-        let layout_size = LayoutSize::new(size.width as f32, size.height as f32);
-        let mut display_list_builder = init_display_list_builder(&layout_size);
-        layout_text(&mut display_list_builder, &text, &layout_size, &font_instance_key);
-        let display_list = finalize_display_list(display_list_builder);
 
         View {
             text,
@@ -115,8 +108,6 @@ impl View {
             wr_sender: sender,
             wr_sender_api: sender_api,
             wr_document_id: document_id,
-            wr_font_key: font_key,
-            wr_font_instance_key: font_instance_key,
             wr_display_list: display_list,
         }
     }
@@ -190,9 +181,12 @@ fn load_file(name: &str) -> Vec<u8> {
 }
 
 fn layout_text(display_list_builder: &mut DisplayListBuilder,
+               render_api: &RenderApi,
+               resource_updates: &mut ResourceUpdates,
                text: &TextBuf,
-               layout_size: &LayoutSize,
-               font_instance_key: &FontInstanceKey) {
+               layout_size: &LayoutSize) {
+    let mut font_keys = HashMap::new();
+
     let framesetter = Framesetter::new(text);
     let layout_rect = LayoutRect::new(LayoutPoint::zero(), *layout_size);
     let frames = framesetter.layout_in_rect(&layout_rect.to_untyped());
@@ -207,7 +201,6 @@ fn layout_text(display_list_builder: &mut DisplayListBuilder,
                                                                line_origin.y - typo_bounds.ascent),
                                               line_size);
             let layout_primitive_info = LayoutPrimitiveInfo::new(line_bounds);
-            eprintln!("line bounds={:?}", line_bounds);
 
             for run in line.runs() {
                 let mut glyphs = vec![];
@@ -219,13 +212,48 @@ fn layout_text(display_list_builder: &mut DisplayListBuilder,
                         point: LayoutPoint::from_untyped(&position) + line_origin.to_vector(),
                     })
                 }
-                eprintln!("{:?}", glyphs);
 
-                display_list_builder.push_text(&layout_primitive_info,
-                                               &glyphs,
-                                               *font_instance_key,
-                                               BLACK_COLOR,
-                                               None);
+                let formatting = run.formatting();
+                let mut font_instance_key = None;
+                for format in formatting.into_iter().rev() {
+                    if let Some(font) = format.font() {
+                        if font_instance_key.is_none() {
+                            let &mut (font_key,
+                                    ref mut font_instance_keys) = font_keys.entry(font.face_id())
+                                                                            .or_insert_with(|| {
+                                let font_key = render_api.generate_font_key();
+                                // FIXME(pcwalton): Workaround for version mismatch of
+                                // `core-graphics`!
+                                let native_font = unsafe {
+                                    NativeFontHandle(mem::transmute(font.native_font()
+                                                                        .copy_to_CGFont()))
+                                };
+                                resource_updates.add_native_font(font_key, native_font);
+                                (font_key, HashMap::new())
+                            });
+                            font_instance_key = Some(*font_instance_keys.entry(font.id())
+                                                                        .or_insert_with(|| {
+                                let font_instance_key = render_api.generate_font_instance_key();
+                                let font_size = Au::from_f32_px(font.size());
+                                resource_updates.add_font_instance(font_instance_key,
+                                                                   font_key,
+                                                                   font_size,
+                                                                   None,
+                                                                   None,
+                                                                   vec![]);
+                                font_instance_key
+                            }));
+                        }
+                    }
+                }
+
+                if let Some(font_instance_key) = font_instance_key {
+                    display_list_builder.push_text(&layout_primitive_info,
+                                                   &glyphs,
+                                                   font_instance_key,
+                                                   BLACK_COLOR,
+                                                   None);
+                }
             }
         }
     }

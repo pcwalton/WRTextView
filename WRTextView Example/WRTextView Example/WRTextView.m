@@ -66,7 +66,6 @@ static const void *getGLProcAddress(const char *symbolName) {
         wrtv_view_resize(self->_wrView,
                          (uint32_t)ceil(backingFrame.size.width),
                          (uint32_t)ceil(backingFrame.size.height));
-        NSLog(@"resized to: %f,%f", backingFrame.size.width, backingFrame.size.height);
     }
 
     [self->_openGLContext update];

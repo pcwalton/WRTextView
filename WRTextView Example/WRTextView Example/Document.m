@@ -52,8 +52,20 @@
     const char *bytes = [string UTF8String];
     if (bytes == NULL)
         return NO;
-
+    
     pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
+    NSFont *plainFont = [NSFont fontWithName:@"Times" size:16.0];
+    NSFont *emphasisFont = [[NSFontManager sharedFontManager] convertFont:plainFont
+                                                              toHaveTrait:NSFontItalicTrait];
+    NSFont *strongFont = [[NSFontManager sharedFontManager] convertFont:plainFont
+                                                            toHaveTrait:NSFontBoldTrait];
+    pilcrow_font_t *plainPFont = pilcrow_font_new_from_native((__bridge CTFontRef)plainFont);
+    pilcrow_font_t *emphasisPFont = pilcrow_font_new_from_native((__bridge CTFontRef)emphasisFont);
+    pilcrow_font_t *strongPFont = pilcrow_font_new_from_native((__bridge CTFontRef)strongFont);
+    pilcrow_markdown_parser_set_plain_font(markdownParser, plainPFont);
+    pilcrow_markdown_parser_set_emphasis_font(markdownParser, emphasisPFont);
+    pilcrow_markdown_parser_set_strong_font(markdownParser, strongPFont);
+    
     self->_textBuffer = pilcrow_text_buf_new();
     pilcrow_markdown_parser_add_to_text_buf(markdownParser,
                                             (const uint8_t *)bytes,
