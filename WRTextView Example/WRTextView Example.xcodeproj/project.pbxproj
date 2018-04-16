@@ -15,8 +15,9 @@
 		6A0E3CC0207ED10600887721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBF207ED10600887721 /* main.m */; };
 		6A0E3CCB207ED10600887721 /* WRTextView_ExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CCA207ED10600887721 /* WRTextView_ExampleTests.m */; };
 		6A0E3CD6207ED10600887721 /* WRTextView_ExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CD5207ED10600887721 /* WRTextView_ExampleUITests.m */; };
-		6A0E3CE5207ED14800887721 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextView.m */; };
+		6A0E3CE5207ED14800887721 /* WRTextRendererView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextRendererView.m */; };
 		6A0E3CEA207FEE6800887721 /* libwebrender_text_view.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */; };
+		6A5B60032084FD8200C10F79 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,11 +55,13 @@
 		6A0E3CD1207ED10600887721 /* WRTextView ExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WRTextView ExampleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0E3CD5207ED10600887721 /* WRTextView_ExampleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView_ExampleUITests.m; sourceTree = "<group>"; };
 		6A0E3CD7207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6A0E3CE3207ED14800887721 /* WRTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextView.h; sourceTree = "<group>"; };
-		6A0E3CE4207ED14800887721 /* WRTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView.m; sourceTree = "<group>"; };
+		6A0E3CE3207ED14800887721 /* WRTextRendererView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextRendererView.h; sourceTree = "<group>"; };
+		6A0E3CE4207ED14800887721 /* WRTextRendererView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextRendererView.m; sourceTree = "<group>"; };
 		6A0E3CE7207EF98A00887721 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = ../../pilcrow/target/debug/libpilcrow.dylib; sourceTree = "<group>"; };
 		6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libwebrender_text_view.dylib; path = "../webrender-text-view/target/debug/libwebrender_text_view.dylib"; sourceTree = "<group>"; };
 		6A5B5FFF208156CB00C10F79 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = "../webrender-text-view/target/debug/deps/libpilcrow.dylib"; sourceTree = "<group>"; };
+		6A5B60012084FD8200C10F79 /* WRTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextView.h; sourceTree = "<group>"; };
+		6A5B60022084FD8200C10F79 /* WRTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,8 +119,10 @@
 				6A0E3CB3207ED10400887721 /* Document.h */,
 				6A0E3CB4207ED10400887721 /* Document.m */,
 				6A0E3CB6207ED10400887721 /* Document.xib */,
-				6A0E3CE3207ED14800887721 /* WRTextView.h */,
-				6A0E3CE4207ED14800887721 /* WRTextView.m */,
+				6A0E3CE3207ED14800887721 /* WRTextRendererView.h */,
+				6A0E3CE4207ED14800887721 /* WRTextRendererView.m */,
+				6A5B60012084FD8200C10F79 /* WRTextView.h */,
+				6A5B60022084FD8200C10F79 /* WRTextView.m */,
 				6A0E3CB9207ED10600887721 /* Assets.xcassets */,
 				6A0E3CBB207ED10600887721 /* MainMenu.xib */,
 				6A0E3CBE207ED10600887721 /* Info.plist */,
@@ -290,7 +295,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A0E3CE5207ED14800887721 /* WRTextView.m in Sources */,
+				6A5B60032084FD8200C10F79 /* WRTextView.m in Sources */,
+				6A0E3CE5207ED14800887721 /* WRTextRendererView.m in Sources */,
 				6A0E3CB5207ED10400887721 /* Document.m in Sources */,
 				6A0E3CC0207ED10600887721 /* main.m in Sources */,
 				6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */,

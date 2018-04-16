@@ -8,18 +8,23 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+use euclid::Length;
 use pilcrow::TextBuf;
-use webrender_api::{DeviceUintSize, LayoutPoint};
+use webrender_api::{DevicePixel, DevicePoint, DeviceRect, DeviceSize, DeviceUintPoint, DeviceUintRect, DeviceUintSize};
+use webrender_api::{LayoutPoint, LayoutSize};
 use {GetProcAddressFn, View};
 
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_new(text: *mut TextBuf,
-                                       width: u32,
-                                       height: u32,
+                                       viewport_width: u32,
+                                       viewport_height: u32,
+                                       available_width: f32,
                                        get_proc_address: GetProcAddressFn)
                                        -> *mut View {
-    let size = DeviceUintSize::new(width, height);
-    Box::into_raw(Box::new(View::new(*Box::from_raw(text), &size, get_proc_address)))
+    let text = Box::from_raw(text);
+    let viewport = DeviceUintSize::new(viewport_width, viewport_height);
+    let available_width = Length::new(available_width);
+    Box::into_raw(Box::new(View::new(*text, &viewport, available_width, get_proc_address)))
 }
 
 #[no_mangle]
@@ -28,18 +33,31 @@ pub unsafe extern "C" fn wrtv_view_destroy(view: *mut View) {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn wrtv_view_get_layout_size(view: *mut View,
+                                                   width: *mut f32,
+                                                   height: *mut f32) {
+    let size = (*view).layout_size();
+    *width = size.width;
+    *height = size.height;
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn wrtv_view_repaint(view: *mut View) {
     (*view).repaint()
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_resize(view: *mut View, new_width: u32, new_height: u32) {
-    (*view).resize(&DeviceUintSize::new(new_width, new_height))
+pub unsafe extern "C" fn wrtv_view_resize(view: *mut View, new_available_width: f32) {
+    (*view).resize(Length::new(new_available_width))
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_pan(view: *mut View, x: f32, y: f32) {
-    (*view).pan(&LayoutPoint::new(x, y))
+pub unsafe extern "C" fn wrtv_view_set_viewport(view: *mut View,
+                                                x: f32,
+                                                y: f32,
+                                                width: f32,
+                                                height: f32) {
+    (*view).set_viewport(&DeviceRect::new(DevicePoint::new(x, y), DeviceSize::new(width, height)))
 }
 
 #[no_mangle]

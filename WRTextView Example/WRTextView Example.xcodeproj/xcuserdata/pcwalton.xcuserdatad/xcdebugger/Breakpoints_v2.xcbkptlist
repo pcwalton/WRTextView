@@ -20,7 +20,7 @@
                   moduleName = "libwebrender_text_view.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/travis/build/rust-lang/rust/src/libstd/panicking.rs"
-                  timestampString = "545421270.111455"
+                  timestampString = "545605841.983631"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "433"
@@ -89,7 +89,7 @@
                   moduleName = "libwebrender_text_view.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/travis/build/rust-lang/rust/src/libstd/sys_common/util.rs"
-                  timestampString = "545421270.115644"
+                  timestampString = "545605841.986683"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "26"
@@ -318,6 +318,24 @@
                   continueAfterRunningActions = "No"
                   symbolName = "TAOQueue::abort()"
                   moduleName = "DiskImages"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[SGTWindowEffect abort]"
+                  moduleName = "Suggestions"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[SGTAnimationWindowEffect abort]"
+                  moduleName = "Suggestions"
                   usesParentBreakpointCondition = "Yes"
                   offsetFromSymbolStart = "0">
                </Location>

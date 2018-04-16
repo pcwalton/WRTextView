@@ -54,7 +54,7 @@
         return NO;
     
     pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
-    NSFont *plainFont = [NSFont fontWithName:@"Times" size:16.0];
+    NSFont *plainFont = [NSFont fontWithName:@"Times" size:48.0];
     NSFont *emphasisFont = [[NSFontManager sharedFontManager] convertFont:plainFont
                                                               toHaveTrait:NSFontItalicTrait];
     NSFont *strongFont = [[NSFontManager sharedFontManager] convertFont:plainFont

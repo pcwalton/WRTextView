@@ -17,12 +17,13 @@ extern crate webrender;
 extern crate webrender_api;
 
 use app_units::Au;
-use euclid::{Transform2D, Vector2D};
+use euclid::{Length, Transform2D, Vector2D};
 use gleam::gl::{self, Gl};
 use libc::c_char;
-use pilcrow::{Framesetter, ParagraphBuf, TextBuf};
+use pilcrow::{Frame, Framesetter, ParagraphBuf, TextBuf};
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
+use std::f32;
 use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
@@ -30,10 +31,10 @@ use std::mem;
 use std::os::raw::c_void;
 use std::rc::Rc;
 use webrender::{Renderer, RendererOptions};
-use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DeviceIntSize, DeviceUintPoint};
-use webrender_api::{DeviceUintRect, DeviceUintSize, DisplayListBuilder};
+use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DeviceIntSize, DevicePixel, DeviceRect};
+use webrender_api::{DeviceUintPoint, DeviceUintRect, DeviceUintSize, DisplayListBuilder};
 use webrender_api::{DocumentId, Epoch, FontInstanceKey, FontKey, GlyphInstance, IdNamespace};
-use webrender_api::{LayoutPoint, LayoutPrimitiveInfo, LayoutRect, LayoutSize, MixBlendMode};
+use webrender_api::{LayoutPoint, LayoutPrimitiveInfo, LayoutPixel, LayoutRect, LayoutSize, MixBlendMode};
 use webrender_api::{NativeFontHandle, PipelineId, RenderApi, RenderApiSender, RenderNotifier, ResourceUpdates};
 use webrender_api::{ScrollPolicy, Transaction, TransformStyle, ZoomFactor};
 
@@ -55,8 +56,10 @@ type WrDisplayList = (PipelineId, LayoutSize, BuiltDisplayList);
 pub struct View {
     text: TextBuf,
     gl: Rc<Gl>,
-    size: DeviceUintSize,
+    available_width: Length<f32, LayoutPixel>,
+    viewport_size: DeviceUintSize,
     transform: Transform2D<f32>,
+    frames: Vec<Frame>,
 
     wr_renderer: Renderer,
     wr_sender: RenderApiSender,
@@ -66,7 +69,10 @@ pub struct View {
 }
 
 impl View {
-    pub fn new(text: TextBuf, size: &DeviceUintSize, get_proc_address: GetProcAddressFn)
+    pub fn new(text: TextBuf,
+               viewport_size: &DeviceUintSize,
+               available_width: Length<f32, LayoutPixel>,
+               get_proc_address: GetProcAddressFn)
                -> View {
         let gl = unsafe {
             gl::GlFns::load_with(|symbol| {
@@ -82,16 +88,14 @@ impl View {
         let (renderer, sender) = Renderer::new(gl.clone(), notifier, wr_options).unwrap();
         let sender_api = sender.create_api();
 
-        let document_id = sender_api.add_document(*size, 0);
-        let layout_size = LayoutSize::new(size.width as f32, size.height as f32);
+        let layout_size = LayoutSize::new(available_width.get(), 1000000.0);
+        let device_size = DeviceUintSize::new(layout_size.width as u32, layout_size.height as u32);
+        let document_id = sender_api.add_document(device_size, 0);
 
         let mut display_list_builder = init_display_list_builder(&layout_size);
         let mut resource_updates = ResourceUpdates::new();
-        layout_text(&mut display_list_builder,
-                    &sender_api,
-                    &mut resource_updates,
-                    &text,
-                    &layout_size);
+        let frames = layout_text(&text, available_width);
+        build_display_list(&mut display_list_builder, &sender_api, &mut resource_updates, &frames);
         let display_list = finalize_display_list(display_list_builder);
 
         let mut transaction = Transaction::new();
@@ -101,8 +105,10 @@ impl View {
         View {
             text,
             gl,
-            size: *size,
+            available_width,
+            viewport_size: *viewport_size,
             transform,
+            frames,
 
             wr_renderer: renderer,
             wr_sender: sender,
@@ -112,8 +118,16 @@ impl View {
         }
     }
 
-    fn layout_size(&self) -> LayoutSize {
-        LayoutSize::new(self.size.width as f32, self.size.height as f32)
+    pub fn layout_size(&self) -> LayoutSize {
+        LayoutSize::new(self.available_width.get(), match self.frames.last() {
+            None => 0.0,
+            Some(frame) => {
+                match frame.lines().last() {
+                    None => 0.0,
+                    Some(line) => line.origin.y + line.typographic_bounds().descent,
+                }
+            }
+        })
     }
 
     pub fn repaint(&mut self) {
@@ -124,6 +138,8 @@ impl View {
                                      self.wr_display_list.clone(),
                                      true);
         transaction.set_root_pipeline(PIPELINE_ID);
+        let inner_rect = DeviceUintRect::new(DeviceUintPoint::zero(), self.viewport_size);
+        transaction.set_window_parameters(self.viewport_size, inner_rect, 1.0);
         transaction.set_pan(DeviceIntPoint::new(self.transform.m31 as i32,
                                                 self.transform.m32 as i32));
         transaction.set_pinch_zoom(ZoomFactor::new(self.transform.m11));
@@ -131,25 +147,24 @@ impl View {
         self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
 
         self.wr_renderer.update();
-        self.wr_renderer.render(self.size).unwrap();
+        self.wr_renderer.render(self.viewport_size).unwrap();
     }
 
-    pub fn resize(&mut self, new_size: &DeviceUintSize) {
-        self.size = *new_size;
-
-        let mut transaction = Transaction::new();
-        let inner_rect = DeviceUintRect::new(DeviceUintPoint::zero(), *new_size);
-        transaction.set_window_parameters(*new_size, inner_rect, 1.0);
-        self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
+    pub fn resize(&mut self, available_width: Length<f32, LayoutPixel>) {
+        self.available_width = available_width
     }
 
-    pub fn pan(&mut self, vector: &LayoutPoint) {
-        self.transform = self.transform.post_translate(Vector2D::new(vector.x, vector.y));
+    pub fn set_viewport(&mut self, viewport: &DeviceRect) {
+        self.transform.m31 = -viewport.origin.x;
+        self.transform.m32 = -viewport.origin.y;
+        self.viewport_size = DeviceUintSize::new(viewport.size.width as u32,
+                                                 viewport.size.height as u32);
     }
 
     pub fn zoom(&mut self, factor: f32) {
-        self.transform.m11 += factor;
-        self.transform.m22 += factor;
+        let factor = f32::exp(factor);
+        self.transform.m11 *= factor;
+        self.transform.m22 *= factor;
     }
 }
 
@@ -180,16 +195,18 @@ fn load_file(name: &str) -> Vec<u8> {
     buffer
 }
 
-fn layout_text(display_list_builder: &mut DisplayListBuilder,
-               render_api: &RenderApi,
-               resource_updates: &mut ResourceUpdates,
-               text: &TextBuf,
-               layout_size: &LayoutSize) {
-    let mut font_keys = HashMap::new();
-
+fn layout_text(text: &TextBuf, available_width: Length<f32, LayoutPixel>) -> Vec<Frame> {
     let framesetter = Framesetter::new(text);
-    let layout_rect = LayoutRect::new(LayoutPoint::zero(), *layout_size);
-    let frames = framesetter.layout_in_rect(&layout_rect.to_untyped());
+    let layout_size = LayoutSize::new(available_width.get(), 1000000.0);
+    let layout_rect = LayoutRect::new(LayoutPoint::zero(), layout_size);
+    framesetter.layout_in_rect(&layout_rect.to_untyped())
+}
+
+fn build_display_list(display_list_builder: &mut DisplayListBuilder,
+                      render_api: &RenderApi,
+                      resource_updates: &mut ResourceUpdates,
+                      frames: &[Frame]) {
+    let mut font_keys = HashMap::new();
 
     for frame in frames {
         for line in frame.lines() {

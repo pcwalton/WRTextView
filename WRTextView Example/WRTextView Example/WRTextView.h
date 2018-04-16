@@ -2,23 +2,18 @@
 //  WRTextView.h
 //  WRTextView Example
 //
-//  Created by Patrick Walton on 4/11/18.
+//  Created by Patrick Walton on 4/16/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
 #import <Cocoa/Cocoa.h>
-#import "Document.h"
-#include <pilcrow.h>
-#include <wr-text-view.h>
 
-@interface WRTextView : NSView {
-    IBOutlet Document *document;
-    wrtv_view_t *_wrView;
-}
+@class Document;
+@class WRTextRendererView;
 
-@property(nonatomic, strong) NSOpenGLContext *openGLContext;
-@property(nonatomic, strong) NSOpenGLPixelFormat *pixelFormat;
+@interface WRTextView : NSView {}
 
-- (id)initWithFrame:(NSRect)frameRect pixelFormat:(nullable NSOpenGLPixelFormat *)format;
+@property(nonatomic, strong) WRTextRendererView *rendererView;
+@property(nonatomic, strong) IBOutlet Document *document;
 
 @end

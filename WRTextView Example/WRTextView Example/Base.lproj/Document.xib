@@ -18,17 +18,35 @@
             <rect key="contentRect" x="133" y="235" width="507" height="413"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1028"/>
             <value key="minSize" type="size" width="94" height="86"/>
-            <view key="contentView" id="gIp-Ho-8D9">
+            <view key="contentView" wantsLayer="YES" id="gIp-Ho-8D9">
                 <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <customView id="obl-Re-8WI" customClass="WRTextView">
-                        <rect key="frame" x="0.0" y="0.0" width="507" height="413"/>
+                    <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="yeI-5o-3r9">
+                        <rect key="frame" x="-1" y="-1" width="509" height="415"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <connections>
-                            <outlet property="document" destination="-2" id="CNO-OD-i0r"/>
-                        </connections>
-                    </customView>
+                        <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="6Qk-JA-bB2">
+                            <rect key="frame" x="0.0" y="0.0" width="509" height="415"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <view id="21t-pH-RHT" customClass="WRTextView">
+                                    <rect key="frame" x="0.0" y="0.0" width="494" height="400"/>
+                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                    <connections>
+                                        <outlet property="document" destination="-2" id="06d-RA-0eQ"/>
+                                    </connections>
+                                </view>
+                            </subviews>
+                        </clipView>
+                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="uHq-08-k8d">
+                            <rect key="frame" x="-100" y="-100" width="509" height="16"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                        <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Vby-IV-wPN">
+                            <rect key="frame" x="-100" y="-100" width="16" height="415"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </scroller>
+                    </scrollView>
                 </subviews>
             </view>
             <connections>
