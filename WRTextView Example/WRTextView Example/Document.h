@@ -9,9 +9,17 @@
 #import <Cocoa/Cocoa.h>
 #include <pilcrow.h>
 
-@interface Document : NSDocument {}
+@class WRTextView;
+
+@interface Document : NSDocument {
+    IBOutlet WRTextView *textView;
+    IBOutlet NSView *formatPane;
+}
 
 @property(nonatomic) pilcrow_text_buf_t *textBuffer;
+
+- (IBAction)toggleFormatPaneVisibility:(id)sender;
+- (IBAction)zoom:(id)sender;
 
 @end
 

@@ -14,6 +14,7 @@
 @class WRTextView;
 
 @interface WRTextRendererView : NSOpenGLView {
+    NSTrackingArea *_trackingArea;
     wrtv_view_t *_wrView;
 }
 

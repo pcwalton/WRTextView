@@ -15,5 +15,9 @@
 
 @property(nonatomic, strong) WRTextRendererView *rendererView;
 @property(nonatomic, strong) IBOutlet Document *document;
+@property(nonatomic) CGFloat scale;
+
+- (CGAffineTransform)transform;
+- (void)zoomBy:(CGFloat)scale atPoint:(NSPoint)point;
 
 @end

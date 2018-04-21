@@ -7,6 +7,7 @@
 //
 
 #import "Document.h"
+#import "WRTextView.h"
 
 @interface Document ()
 
@@ -55,16 +56,21 @@
     
     pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
     NSFont *plainFont = [NSFont fontWithName:@"Times" size:48.0];
-    NSFont *emphasisFont = [[NSFontManager sharedFontManager] convertFont:plainFont
-                                                              toHaveTrait:NSFontItalicTrait];
-    NSFont *strongFont = [[NSFontManager sharedFontManager] convertFont:plainFont
-                                                            toHaveTrait:NSFontBoldTrait];
+    NSFont *codeFont = [NSFont fontWithName:@"Menlo" size:42.0];
+    NSFont *heading1Font = [NSFont systemFontOfSize:72.0 weight:NSFontWeightBold];
+    NSFont *heading2Font = [NSFont systemFontOfSize:64.0 weight:NSFontWeightBold];
     pilcrow_font_t *plainPFont = pilcrow_font_new_from_native((__bridge CTFontRef)plainFont);
-    pilcrow_font_t *emphasisPFont = pilcrow_font_new_from_native((__bridge CTFontRef)emphasisFont);
-    pilcrow_font_t *strongPFont = pilcrow_font_new_from_native((__bridge CTFontRef)strongFont);
-    pilcrow_markdown_parser_set_plain_font(markdownParser, plainPFont);
-    pilcrow_markdown_parser_set_emphasis_font(markdownParser, emphasisPFont);
-    pilcrow_markdown_parser_set_strong_font(markdownParser, strongPFont);
+    pilcrow_font_t *codePFont = pilcrow_font_new_from_native((__bridge CTFontRef)codeFont);
+    pilcrow_font_t *heading1PFont = pilcrow_font_new_from_native((__bridge CTFontRef)heading1Font);
+    pilcrow_font_t *heading2PFont = pilcrow_font_new_from_native((__bridge CTFontRef)heading2Font);
+    pilcrow_markdown_parser_set_font(markdownParser, PILCROW_FONT_SELECTOR_T_PLAIN, plainPFont);
+    pilcrow_markdown_parser_set_font(markdownParser, PILCROW_FONT_SELECTOR_T_CODE, codePFont);
+    pilcrow_markdown_parser_set_font(markdownParser,
+                                     PILCROW_FONT_SELECTOR_T_HEADING1,
+                                     heading1PFont);
+    pilcrow_markdown_parser_set_font(markdownParser,
+                                     PILCROW_FONT_SELECTOR_T_HEADING2,
+                                     heading2PFont);
     
     self->_textBuffer = pilcrow_text_buf_new();
     pilcrow_markdown_parser_add_to_text_buf(markdownParser,
@@ -76,6 +82,27 @@
 
 - (pilcrow_text_buf_t *)textBuffer {
     return self->_textBuffer;
+}
+
+- (IBAction)toggleFormatPaneVisibility:(id)sender {
+    BOOL hide = ![self->formatPane isHidden];
+    [self->formatPane setHidden:hide];
+    if ([sender isKindOfClass:[NSButton class]])
+        [(NSButton *)sender setState:hide ? NSOffState : NSOnState];
+    NSView *splitView = [self->formatPane superview];
+    if ([splitView isKindOfClass:[NSSplitView class]])
+        [(NSSplitView *)splitView adjustSubviews];
+}
+
+- (IBAction)zoom:(id)sender {
+    CGFloat factor = 1.0;
+    if ([sender isKindOfClass:[NSSegmentedControl class]])
+        factor = [(NSSegmentedControl *)sender selectedSegment] == 0 ? 1./1.1 : 1.1;
+    if (factor == 1.0)
+        return;
+    NSSize textViewSize = [self->textView frame].size;
+    NSPoint center = NSMakePoint(textViewSize.width * 0.5, textViewSize.height * 0.5);
+    [self->textView zoomBy:factor atPoint:center];
 }
 
 @end

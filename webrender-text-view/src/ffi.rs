@@ -9,10 +9,10 @@
 // except according to those terms.
 
 use euclid::Length;
-use pilcrow::TextBuf;
-use webrender_api::{DevicePixel, DevicePoint, DeviceRect, DeviceSize, DeviceUintPoint, DeviceUintRect, DeviceUintSize};
-use webrender_api::{LayoutPoint, LayoutSize};
-use {GetProcAddressFn, View};
+use pilcrow::{Color, TextBuf};
+use webrender_api::{DevicePixel, DevicePoint, DeviceRect, DeviceSize, DeviceUintPoint};
+use webrender_api::{DeviceUintRect, DeviceUintSize, LayoutPoint, LayoutSize};
+use {GetProcAddressFn, MouseCursor, View};
 
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_new(text: *mut TextBuf,
@@ -47,20 +47,46 @@ pub unsafe extern "C" fn wrtv_view_repaint(view: *mut View) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_resize(view: *mut View, new_available_width: f32) {
-    (*view).resize(Length::new(new_available_width))
+pub unsafe extern "C" fn wrtv_view_get_mouse_cursor(view: *mut View, x: f32, y: f32)
+                                                    -> MouseCursor {
+    (*view).get_mouse_cursor(&LayoutPoint::new(x, y))
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_set_viewport(view: *mut View,
-                                                x: f32,
-                                                y: f32,
-                                                width: f32,
-                                                height: f32) {
-    (*view).set_viewport(&DeviceRect::new(DevicePoint::new(x, y), DeviceSize::new(width, height)))
+pub unsafe extern "C" fn wrtv_view_get_available_width(view: *mut View) -> f32 {
+    (*view).available_width().get()
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_zoom(view: *mut View, factor: f32) {
-    (*view).zoom(factor)
+pub unsafe extern "C" fn wrtv_view_set_available_width(view: *mut View, new_available_width: f32) {
+    (*view).set_available_width(Length::new(new_available_width))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_set_translation(view: *mut View, x: f32, y: f32) {
+    (*view).set_translation(&DevicePoint::new(x, y))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_set_viewport_size(view: *mut View, width: u32, height: u32) {
+    (*view).set_viewport_size(&DeviceUintSize::new(width, height))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_set_scale(view: *mut View, scale: f32) {
+    (*view).set_scale(scale)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_set_selection_background_color(view: *mut View,
+                                                                  r: u8,
+                                                                  g: u8,
+                                                                  b: u8,
+                                                                  a: u8) {
+    (*view).set_selection_background_color(Color::new(r, g, b, a))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_select_all(view: *mut View) {
+    (*view).select_all()
 }

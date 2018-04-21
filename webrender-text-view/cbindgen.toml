@@ -5,5 +5,9 @@ autogen_warning = "/* Automatically generated. Do not edit! */"
 
 [export.rename]
 "GetProcAddressFn" = "wrtv_get_proc_address_fn_t"
+"MouseCursor" = "wrtv_mouse_cursor_t"
 "TextBuf" = "pilcrow_text_buf_t"
 "View" = "wrtv_view_t"
+
+[enum]
+rename_variants = "QualifiedScreamingSnakeCase"
