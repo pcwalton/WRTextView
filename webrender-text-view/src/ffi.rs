@@ -10,8 +10,7 @@
 
 use euclid::Length;
 use pilcrow::{Color, TextBuf};
-use webrender_api::{DevicePixel, DevicePoint, DeviceRect, DeviceSize, DeviceUintPoint};
-use webrender_api::{DeviceUintRect, DeviceUintSize, LayoutPoint, LayoutSize};
+use webrender_api::{DevicePoint, DeviceUintSize, LayoutPoint};
 use {GetProcAddressFn, MouseCursor, View};
 
 #[no_mangle]

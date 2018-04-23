@@ -73,10 +73,43 @@
                                      heading2PFont);
     
     self->_textBuffer = pilcrow_text_buf_new();
-    pilcrow_markdown_parser_add_to_text_buf(markdownParser,
-                                            (const uint8_t *)bytes,
-                                            strlen(bytes),
-                                            self->_textBuffer);
+    pilcrow_markdown_parse_results_t *parseResults =
+        pilcrow_markdown_parser_add_to_text_buf(markdownParser,
+                                                (const uint8_t *)bytes,
+                                                strlen(bytes),
+                                                self->_textBuffer);
+    
+    uintptr_t imageCount = pilcrow_markdown_parse_results_get_image_count(parseResults);
+    NSURLSession *urlSession = [NSURLSession sharedSession];
+
+    for (uintptr_t imageIndex = 0; imageIndex < imageCount; imageIndex++) {
+        uintptr_t imageURLLength = pilcrow_markdown_parse_results_get_image_url_len(parseResults,
+                                                                                    imageIndex);
+        uint8_t *imageURLBytes = (uint8_t *)malloc(imageURLLength + 1);
+        pilcrow_markdown_parse_results_get_image_url(parseResults,
+                                                     imageIndex,
+                                                     imageURLBytes,
+                                                     imageURLLength);
+        imageURLBytes[imageURLLength] = '\0';
+        NSString *imageURLString = [NSString stringWithUTF8String:(const char *)imageURLBytes];
+        NSURL *imageURL = [NSURL URLWithString:imageURLString];
+        NSLog(@"found image URL: %@", imageURL);
+
+        NSURLSessionDataTask *imageDataTask =
+            [urlSession dataTaskWithURL:imageURL
+                      completionHandler:^(NSData *_Nullable data,
+                                          NSURLResponse *_Nullable response,
+                                          NSError *_Nullable error) {
+            if (error != nil) {
+                NSLog(@"failed to load image URL: %@", error);
+                return;
+            }
+
+            NSLog(@"successfully fetched image URL: %@", [response URL]);
+        }];
+        [imageDataTask resume];
+    }
+    
     return YES;
 }
 
