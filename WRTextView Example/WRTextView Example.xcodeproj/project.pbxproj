@@ -7,37 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6A0A1563208FD98000E32BC6 /* WRTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0A1561208FD98000E32BC6 /* WRTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6A0A1567208FD9AC00E32BC6 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
+		6A0A1568208FD9C400E32BC6 /* WRTextRendererView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextRendererView.m */; };
+		6A0A1569208FD9FF00E32BC6 /* WRTextView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; };
+		6A0A156A208FDA9600E32BC6 /* libwebrender_text_view.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */; };
 		6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB1207ED10400887721 /* AppDelegate.m */; };
 		6A0E3CB5207ED10400887721 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB4207ED10400887721 /* Document.m */; };
 		6A0E3CB8207ED10400887721 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB6207ED10400887721 /* Document.xib */; };
 		6A0E3CBA207ED10600887721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB9207ED10600887721 /* Assets.xcassets */; };
 		6A0E3CBD207ED10600887721 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBB207ED10600887721 /* MainMenu.xib */; };
 		6A0E3CC0207ED10600887721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBF207ED10600887721 /* main.m */; };
-		6A0E3CCB207ED10600887721 /* WRTextView_ExampleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CCA207ED10600887721 /* WRTextView_ExampleTests.m */; };
-		6A0E3CD6207ED10600887721 /* WRTextView_ExampleUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CD5207ED10600887721 /* WRTextView_ExampleUITests.m */; };
-		6A0E3CE5207ED14800887721 /* WRTextRendererView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextRendererView.m */; };
-		6A0E3CEA207FEE6800887721 /* libwebrender_text_view.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */; };
-		6A5B60032084FD8200C10F79 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		6A0E3CC7207ED10600887721 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6A0E3CA5207ED10400887721 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6A0E3CAC207ED10400887721;
-			remoteInfo = "WRTextView Example";
-		};
-		6A0E3CD2207ED10600887721 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 6A0E3CA5207ED10400887721 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6A0E3CAC207ED10400887721;
-			remoteInfo = "WRTextView Example";
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
+		6A0A155F208FD97F00E32BC6 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A0A1561208FD98000E32BC6 /* WRTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextView.h; sourceTree = "<group>"; };
+		6A0A1562208FD98000E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0E3CAD207ED10400887721 /* WRTextView Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WRTextView Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0E3CB0207ED10400887721 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6A0E3CB1207ED10400887721 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -49,10 +35,8 @@
 		6A0E3CBE207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0E3CBF207ED10600887721 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6A0E3CC1207ED10600887721 /* WRTextView_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WRTextView_Example.entitlements; sourceTree = "<group>"; };
-		6A0E3CC6207ED10600887721 /* WRTextView ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WRTextView ExampleTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0E3CCA207ED10600887721 /* WRTextView_ExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView_ExampleTests.m; sourceTree = "<group>"; };
 		6A0E3CCC207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6A0E3CD1207ED10600887721 /* WRTextView ExampleUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WRTextView ExampleUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0E3CD5207ED10600887721 /* WRTextView_ExampleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView_ExampleUITests.m; sourceTree = "<group>"; };
 		6A0E3CD7207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0E3CE3207ED14800887721 /* WRTextRendererView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextRendererView.h; sourceTree = "<group>"; };
@@ -60,42 +44,48 @@
 		6A0E3CE7207EF98A00887721 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = ../../pilcrow/target/debug/libpilcrow.dylib; sourceTree = "<group>"; };
 		6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libwebrender_text_view.dylib; path = "../webrender-text-view/target/debug/libwebrender_text_view.dylib"; sourceTree = "<group>"; };
 		6A5B5FFF208156CB00C10F79 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = "../webrender-text-view/target/debug/deps/libpilcrow.dylib"; sourceTree = "<group>"; };
-		6A5B60012084FD8200C10F79 /* WRTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextView.h; sourceTree = "<group>"; };
 		6A5B60022084FD8200C10F79 /* WRTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6A0A155B208FD97F00E32BC6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A0A156A208FDA9600E32BC6 /* libwebrender_text_view.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0E3CAA207ED10400887721 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A0E3CEA207FEE6800887721 /* libwebrender_text_view.dylib in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6A0E3CC3207ED10600887721 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6A0E3CCE207ED10600887721 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				6A0A1569208FD9FF00E32BC6 /* WRTextView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6A0A1560208FD97F00E32BC6 /* WRTextView */ = {
+			isa = PBXGroup;
+			children = (
+				6A0E3CE3207ED14800887721 /* WRTextRendererView.h */,
+				6A0E3CE4207ED14800887721 /* WRTextRendererView.m */,
+				6A5B60022084FD8200C10F79 /* WRTextView.m */,
+				6A0A1561208FD98000E32BC6 /* WRTextView.h */,
+				6A0A1562208FD98000E32BC6 /* Info.plist */,
+			);
+			path = WRTextView;
+			sourceTree = "<group>";
+		};
 		6A0E3CA4207ED10400887721 = {
 			isa = PBXGroup;
 			children = (
 				6A0E3CAF207ED10400887721 /* WRTextView Example */,
 				6A0E3CC9207ED10600887721 /* WRTextView ExampleTests */,
 				6A0E3CD4207ED10600887721 /* WRTextView ExampleUITests */,
+				6A0A1560208FD97F00E32BC6 /* WRTextView */,
 				6A0E3CAE207ED10400887721 /* Products */,
 				6A0E3CE6207EF98A00887721 /* Frameworks */,
 			);
@@ -105,8 +95,7 @@
 			isa = PBXGroup;
 			children = (
 				6A0E3CAD207ED10400887721 /* WRTextView Example.app */,
-				6A0E3CC6207ED10600887721 /* WRTextView ExampleTests.xctest */,
-				6A0E3CD1207ED10600887721 /* WRTextView ExampleUITests.xctest */,
+				6A0A155F208FD97F00E32BC6 /* WRTextView.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -119,10 +108,6 @@
 				6A0E3CB3207ED10400887721 /* Document.h */,
 				6A0E3CB4207ED10400887721 /* Document.m */,
 				6A0E3CB6207ED10400887721 /* Document.xib */,
-				6A0E3CE3207ED14800887721 /* WRTextRendererView.h */,
-				6A0E3CE4207ED14800887721 /* WRTextRendererView.m */,
-				6A5B60012084FD8200C10F79 /* WRTextView.h */,
-				6A5B60022084FD8200C10F79 /* WRTextView.m */,
 				6A0E3CB9207ED10600887721 /* Assets.xcassets */,
 				6A0E3CBB207ED10600887721 /* MainMenu.xib */,
 				6A0E3CBE207ED10600887721 /* Info.plist */,
@@ -162,7 +147,36 @@
 		};
 /* End PBXGroup section */
 
+/* Begin PBXHeadersBuildPhase section */
+		6A0A155C208FD97F00E32BC6 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A0A1563208FD98000E32BC6 /* WRTextView.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
 /* Begin PBXNativeTarget section */
+		6A0A155E208FD97F00E32BC6 /* WRTextView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6A0A1566208FD98000E32BC6 /* Build configuration list for PBXNativeTarget "WRTextView" */;
+			buildPhases = (
+				6A0A155A208FD97F00E32BC6 /* Sources */,
+				6A0A155B208FD97F00E32BC6 /* Frameworks */,
+				6A0A155C208FD97F00E32BC6 /* Headers */,
+				6A0A155D208FD97F00E32BC6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WRTextView;
+			productName = WRTextView;
+			productReference = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		6A0E3CAC207ED10400887721 /* WRTextView Example */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6A0E3CDA207ED10600887721 /* Build configuration list for PBXNativeTarget "WRTextView Example" */;
@@ -180,42 +194,6 @@
 			productReference = 6A0E3CAD207ED10400887721 /* WRTextView Example.app */;
 			productType = "com.apple.product-type.application";
 		};
-		6A0E3CC5207ED10600887721 /* WRTextView ExampleTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6A0E3CDD207ED10600887721 /* Build configuration list for PBXNativeTarget "WRTextView ExampleTests" */;
-			buildPhases = (
-				6A0E3CC2207ED10600887721 /* Sources */,
-				6A0E3CC3207ED10600887721 /* Frameworks */,
-				6A0E3CC4207ED10600887721 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				6A0E3CC8207ED10600887721 /* PBXTargetDependency */,
-			);
-			name = "WRTextView ExampleTests";
-			productName = "WRTextView ExampleTests";
-			productReference = 6A0E3CC6207ED10600887721 /* WRTextView ExampleTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		6A0E3CD0207ED10600887721 /* WRTextView ExampleUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6A0E3CE0207ED10600887721 /* Build configuration list for PBXNativeTarget "WRTextView ExampleUITests" */;
-			buildPhases = (
-				6A0E3CCD207ED10600887721 /* Sources */,
-				6A0E3CCE207ED10600887721 /* Frameworks */,
-				6A0E3CCF207ED10600887721 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				6A0E3CD3207ED10600887721 /* PBXTargetDependency */,
-			);
-			name = "WRTextView ExampleUITests";
-			productName = "WRTextView ExampleUITests";
-			productReference = 6A0E3CD1207ED10600887721 /* WRTextView ExampleUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -225,6 +203,9 @@
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Mozilla Foundation";
 				TargetAttributes = {
+					6A0A155E208FD97F00E32BC6 = {
+						CreatedOnToolsVersion = 9.3;
+					};
 					6A0E3CAC207ED10400887721 = {
 						CreatedOnToolsVersion = 9.3;
 						SystemCapabilities = {
@@ -232,14 +213,6 @@
 								enabled = 0;
 							};
 						};
-					};
-					6A0E3CC5207ED10600887721 = {
-						CreatedOnToolsVersion = 9.3;
-						TestTargetID = 6A0E3CAC207ED10400887721;
-					};
-					6A0E3CD0207ED10600887721 = {
-						CreatedOnToolsVersion = 9.3;
-						TestTargetID = 6A0E3CAC207ED10400887721;
 					};
 				};
 			};
@@ -257,13 +230,19 @@
 			projectRoot = "";
 			targets = (
 				6A0E3CAC207ED10400887721 /* WRTextView Example */,
-				6A0E3CC5207ED10600887721 /* WRTextView ExampleTests */,
-				6A0E3CD0207ED10600887721 /* WRTextView ExampleUITests */,
+				6A0A155E208FD97F00E32BC6 /* WRTextView */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		6A0A155D208FD97F00E32BC6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0E3CAB207ED10400887721 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -274,65 +253,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		6A0E3CC4207ED10600887721 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6A0E3CCF207ED10600887721 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6A0A155A208FD97F00E32BC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A0A1567208FD9AC00E32BC6 /* WRTextView.m in Sources */,
+				6A0A1568208FD9C400E32BC6 /* WRTextRendererView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0E3CA9207ED10400887721 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A5B60032084FD8200C10F79 /* WRTextView.m in Sources */,
-				6A0E3CE5207ED14800887721 /* WRTextRendererView.m in Sources */,
 				6A0E3CB5207ED10400887721 /* Document.m in Sources */,
 				6A0E3CC0207ED10600887721 /* main.m in Sources */,
 				6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		6A0E3CC2207ED10600887721 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6A0E3CCB207ED10600887721 /* WRTextView_ExampleTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		6A0E3CCD207ED10600887721 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				6A0E3CD6207ED10600887721 /* WRTextView_ExampleUITests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		6A0E3CC8207ED10600887721 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6A0E3CAC207ED10400887721 /* WRTextView Example */;
-			targetProxy = 6A0E3CC7207ED10600887721 /* PBXContainerItemProxy */;
-		};
-		6A0E3CD3207ED10600887721 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6A0E3CAC207ED10400887721 /* WRTextView Example */;
-			targetProxy = 6A0E3CD2207ED10600887721 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		6A0E3CB6207ED10400887721 /* Document.xib */ = {
@@ -354,6 +297,72 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		6A0A1564208FD98000E32BC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = (
+					../../pilcrow,
+					"../webrender-text-view",
+				);
+				INFOPLIST_FILE = WRTextView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/debug";
+				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.WRTextView;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				REEXPORTED_LIBRARY_NAMES = webrender_text_view;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		6A0A1565208FD98000E32BC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_VERSION = A;
+				HEADER_SEARCH_PATHS = (
+					../../pilcrow,
+					"../webrender-text-view",
+				);
+				INFOPLIST_FILE = WRTextView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/debug";
+				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.WRTextView;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				REEXPORTED_LIBRARY_NAMES = webrender_text_view;
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		6A0E3CD8207ED10600887721 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -511,79 +520,18 @@
 			};
 			name = Release;
 		};
-		6A0E3CDE207ED10600887721 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "WRTextView ExampleTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-ExampleTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WRTextView Example.app/Contents/MacOS/WRTextView Example";
-			};
-			name = Debug;
-		};
-		6A0E3CDF207ED10600887721 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "WRTextView ExampleTests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-ExampleTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WRTextView Example.app/Contents/MacOS/WRTextView Example";
-			};
-			name = Release;
-		};
-		6A0E3CE1207ED10600887721 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "WRTextView ExampleUITests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-ExampleUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = "WRTextView Example";
-			};
-			name = Debug;
-		};
-		6A0E3CE2207ED10600887721 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = "WRTextView ExampleUITests/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-ExampleUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = "WRTextView Example";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6A0A1566208FD98000E32BC6 /* Build configuration list for PBXNativeTarget "WRTextView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6A0A1564208FD98000E32BC6 /* Debug */,
+				6A0A1565208FD98000E32BC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6A0E3CA8207ED10400887721 /* Build configuration list for PBXProject "WRTextView Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -598,24 +546,6 @@
 			buildConfigurations = (
 				6A0E3CDB207ED10600887721 /* Debug */,
 				6A0E3CDC207ED10600887721 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		6A0E3CDD207ED10600887721 /* Build configuration list for PBXNativeTarget "WRTextView ExampleTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6A0E3CDE207ED10600887721 /* Debug */,
-				6A0E3CDF207ED10600887721 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		6A0E3CE0207ED10600887721 /* Build configuration list for PBXNativeTarget "WRTextView ExampleUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6A0E3CE1207ED10600887721 /* Debug */,
-				6A0E3CE2207ED10600887721 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

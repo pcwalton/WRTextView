@@ -55,10 +55,10 @@
         return NO;
     
     pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
-    NSFont *plainFont = [NSFont fontWithName:@"Times" size:48.0];
-    NSFont *codeFont = [NSFont fontWithName:@"Menlo" size:42.0];
-    NSFont *heading1Font = [NSFont systemFontOfSize:72.0 weight:NSFontWeightBold];
-    NSFont *heading2Font = [NSFont systemFontOfSize:64.0 weight:NSFontWeightBold];
+    NSFont *plainFont = [NSFont fontWithName:@"Times" size:18.0];
+    NSFont *codeFont = [NSFont fontWithName:@"Menlo" size:16.0];
+    NSFont *heading1Font = [NSFont systemFontOfSize:36.0 weight:NSFontWeightBold];
+    NSFont *heading2Font = [NSFont systemFontOfSize:24.0 weight:NSFontWeightBold];
     pilcrow_font_t *plainPFont = pilcrow_font_new_from_native((__bridge CTFontRef)plainFont);
     pilcrow_font_t *codePFont = pilcrow_font_new_from_native((__bridge CTFontRef)codeFont);
     pilcrow_font_t *heading1PFont = pilcrow_font_new_from_native((__bridge CTFontRef)heading1Font);

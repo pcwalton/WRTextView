@@ -12,10 +12,10 @@ use pilcrow::{Frame, Line, ParagraphStyle, Run, Section};
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Range;
-use webrender_api::{ColorF, DisplayListBuilder, GlyphInstance, LayoutPrimitiveInfo, LayoutPoint};
+use webrender_api::{ColorF, DisplayListBuilder, FontRenderMode, GlyphInstance, GlyphOptions, LayoutPrimitiveInfo, LayoutPoint};
 use webrender_api::{LayoutRect, LayoutSize, LineOrientation, LineStyle, MixBlendMode, RenderApi};
 use webrender_api::{ResourceUpdates, ScrollPolicy, TransformStyle};
-use {ComputedStyle, FontInstanceInfo, Location, PIPELINE_ID, WrDisplayList};
+use {ComputedStyle, FontInstanceInfo, PIPELINE_ID, TextLocation, WrDisplayList};
 
 const BLACK_COLOR: ColorF = ColorF {
     r: 0.0,
@@ -26,14 +26,14 @@ const BLACK_COLOR: ColorF = ColorF {
 
 pub struct SceneBuilder {
     display_list_builder: DisplayListBuilder,
-    selection: Option<Range<Location>>,
+    selection: Option<Range<TextLocation>>,
     active_link_id: Option<usize>,
     selection_background_color: ColorF,
 }
 
 impl SceneBuilder {
     pub fn new(layout_size: &LayoutSize,
-               selection: &Option<Range<Location>>,
+               selection: &Option<Range<TextLocation>>,
                active_link_id: &Option<usize>,
                selection_background_color: &ColorF)
                -> SceneBuilder {
@@ -111,11 +111,15 @@ impl SceneBuilder {
                                                           .unwrap();
 
                         let text_color = computed_style.color.unwrap_or(BLACK_COLOR);
+                        let glyph_options = GlyphOptions {
+                            render_mode: FontRenderMode::Subpixel,
+                            ..GlyphOptions::default()
+                        };
                         self.display_list_builder.push_text(&line_layout_primitive_info,
                                                             &glyphs,
                                                             font_instance_info.key.clone(),
                                                             text_color,
-                                                            None);
+                                                            Some(glyph_options));
 
                         if computed_style.underline {
                             let origin = match glyphs.get(0) {
@@ -210,12 +214,12 @@ impl RangeExt for Range<usize> {
     }
 }
 
-trait LocationRangeExt {
+trait TextLocationRangeExt {
     fn char_range_for_paragraph(&self, paragraph_index: usize, paragraph_char_len: usize)
                                 -> Option<Range<usize>>;
 }
 
-impl LocationRangeExt for Range<Location> {
+impl TextLocationRangeExt for Range<TextLocation> {
     fn char_range_for_paragraph(&self, paragraph_index: usize, paragraph_char_len: usize)
                                 -> Option<Range<usize>> {
         if paragraph_index < self.start.paragraph_index ||

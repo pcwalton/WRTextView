@@ -23,9 +23,10 @@ extern crate lazy_static;
 use app_units::Au;
 use core_text::font as ct_font;
 use euclid::{Length, Point2D, Transform2D, TypedScale, TypedSideOffsets2D};
+use euclid::{TypedTransform2D, TypedVector2D};
 use gleam::gl;
 use libc::c_char;
-use pilcrow::{Color, FontFaceId, FontId, Format, Frame, Framesetter, Section, TextBuf};
+use pilcrow::{Color, FontFaceId, FontId, Format, Framesetter, Section, TextBuf, TextLocation};
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::f32;
@@ -69,7 +70,7 @@ const DEFAULT_LINK_ACTIVE_COLOR: ColorF = ColorF {
 
 lazy_static! {
     static ref DEFAULT_PAGE_MARGIN: TypedSideOffsets2D<f32, LayoutPixel> = {
-        TypedSideOffsets2D::new(0.0, 12.0, 0.0, 12.0)
+        TypedSideOffsets2D::new(0.0, 6.0, 0.0, 6.0)
     };
 }
 
@@ -86,13 +87,13 @@ pub struct View {
     available_width: Length<f32, LayoutPixel>,
     viewport_size: DeviceUintSize,
     device_pixel_ratio: TypedScale<f32, LayoutPixel, DevicePixel>,
-    transform: Transform2D<f32>,
+    transform: TypedTransform2D<f32, LayoutPixel, LayoutPixel>,
     section: Section,
 
     page_margin: TypedSideOffsets2D<f32, LayoutPixel>,
     selection_background_color: ColorF,
 
-    selection: Option<Range<Location>>,
+    selection: Option<Range<TextLocation>>,
     active_link_id: Option<usize>,
 
     wr_renderer: Renderer,
@@ -116,10 +117,13 @@ impl View {
             })
         };
 
-        let transform = Transform2D::identity();
+        let transform = TypedTransform2D::identity();
+        let wr_options = RendererOptions {
+            enable_subpixel_aa: true,
+            ..RendererOptions::default()
+        };
 
         let (wr_new_frame_ready_tx, wr_new_frame_ready_rx) = mpsc::channel();
-        let wr_options = RendererOptions::default();
         let notifier = Box::new(Notifier::new(wr_new_frame_ready_tx));
         let (renderer, sender) = Renderer::new(gl.clone(), notifier, wr_options).unwrap();
         let sender_api = sender.create_api();
@@ -192,8 +196,9 @@ impl View {
         transaction.set_window_parameters(self.viewport_size,
                                           inner_rect,
                                           self.device_pixel_ratio.get());
-        transaction.set_pan(DeviceIntPoint::new(self.transform.m31 as i32,
-                                                self.transform.m32 as i32));
+        let pan_vector = LayoutPoint::new(self.transform.m31, self.transform.m32);
+        let pan_vector = pan_vector * self.device_pixel_ratio;
+        transaction.set_pan(DeviceIntPoint::new(pan_vector.x as i32, pan_vector.y as i32));
         transaction.set_pinch_zoom(ZoomFactor::new(self.transform.m11));
         transaction.generate_frame();
         self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
@@ -206,15 +211,16 @@ impl View {
     pub fn get_mouse_cursor(&self, point: &LayoutPoint) -> MouseCursor {
         let HitTestResult {
             point,
-            frame,
+            frame_index,
             line_index,
         } = match self.hit_test_point(point) {
             None => return MouseCursor::Default,
             Some(hit_test_result) => hit_test_result,
         };
+        let frame = &self.section.frames()[frame_index];
         let lines = frame.lines();
         let line = &lines[line_index];
-        let char_index = match line.char_index_for_position(&point) {
+        let char_index = match line.char_index_for_position(&point.to_untyped()) {
             None => return MouseCursor::Text,
             Some(char_index) => char_index,
         };
@@ -231,25 +237,36 @@ impl View {
         MouseCursor::Text
     }
 
-    pub fn mouse_down(&mut self, point: &LayoutPoint) {
+    pub fn mouse_down(&mut self, point: &LayoutPoint, kind: MouseEventKind) {
         let mut active_link_id = None;
         let mut dirty = false;
 
         {
             let HitTestResult {
                 point,
-                frame,
+                frame_index,
                 line_index,
             } = match self.hit_test_point(point) {
                 None => return,
                 Some(hit_test_result) => hit_test_result,
             };
+            let frame = &self.section.frames()[frame_index];
             let lines = frame.lines();
             let line = &lines[line_index];
-            let char_index = match line.char_index_for_position(&point) {
+            let char_index = match line.char_index_for_position(&point.to_untyped()) {
                 None => return,
                 Some(char_index) => char_index,
             };
+
+            if kind == MouseEventKind::LeftDouble {
+                let paragraph = &self.text.paragraphs()[frame_index];
+                let char_range = paragraph.word_range_at_char_index(char_index);
+                let start_location = TextLocation::new(frame_index, char_range.start);
+                let end_location = TextLocation::new(frame_index, char_range.end);
+                self.selection = Some(start_location..end_location);
+                dirty = true;
+            }
+
             let runs = line.runs();
             let run = match runs.iter().find(|run| run.char_range().has(char_index)) {
                 None => return,
@@ -259,7 +276,6 @@ impl View {
                 if let Some((id, _url)) = format.link() {
                     active_link_id = Some(id);
                     dirty = true;
-                    eprintln!("setting active link ID!");
                 }
             }
         }
@@ -277,15 +293,16 @@ impl View {
         {
             let HitTestResult {
                 point,
-                frame,
+                frame_index,
                 line_index,
             } = match self.hit_test_point(point) {
                 None => return EventResult::None,
                 Some(hit_test_result) => hit_test_result,
             };
+            let frame = &self.section.frames()[frame_index];
             let lines = frame.lines();
             let line = &lines[line_index];
-            let char_index = match line.char_index_for_position(&point) {
+            let char_index = match line.char_index_for_position(&point.to_untyped()) {
                 None => return EventResult::None,
                 Some(char_index) => char_index,
             };
@@ -320,7 +337,7 @@ impl View {
         self.layout();
     }
 
-    pub fn set_translation(&mut self, origin: &DevicePoint) {
+    pub fn set_translation(&mut self, origin: &TypedVector2D<f32, LayoutPixel>) {
         self.transform.m31 = -origin.x;
         self.transform.m32 = -origin.y;
     }
@@ -349,8 +366,8 @@ impl View {
                 None => 0,
                 Some(paragraph) => paragraph.char_len(),
             };
-            let end = Location::new(paragraph_index, character_index);
-            self.selection = Some(Location::beginning()..end);
+            let end = TextLocation::new(paragraph_index, character_index);
+            self.selection = Some(TextLocation::beginning()..end);
         }
 
         eprintln!("select_all(): new selection={:?}", self.selection);
@@ -381,47 +398,26 @@ impl View {
         self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
     }
 
-    fn hit_test_point<'a, 'b>(&'a self, point: &'b LayoutPoint) -> Option<HitTestResult<'a>> {
+    fn hit_test_point(&self, point: &LayoutPoint) -> Option<HitTestResult> {
         let inverse_transform = match self.transform.inverse() {
             None => return None,
             Some(inverse_transform) => inverse_transform,
         };
-        let point = inverse_transform.transform_point(&point.to_untyped());
-        let frame_index = match self.section.frame_index_at_point(&point) {
+        let point = inverse_transform.transform_point(&point);
+        let frame_index = match self.section.frame_index_at_point(&point.to_untyped()) {
             None => return None,
             Some(frame_index) => frame_index,
         };
         let frame = &self.section.frames()[frame_index];
-        let line_index = match frame.line_index_at_point(&point) {
+        let line_index = match frame.line_index_at_point(&point.to_untyped()) {
             None => return None,
             Some(line_index) => line_index,
         };
         Some(HitTestResult {
             point,
-            frame,
+            frame_index,
             line_index,
         })
-    }
-}
-
-#[derive(Clone, Copy, PartialEq, PartialOrd, Debug)]
-pub struct Location {
-    pub paragraph_index: usize,
-    pub character_index: usize,
-}
-
-impl Location {
-    #[inline]
-    pub fn new(paragraph_index: usize, character_index: usize) -> Location {
-        Location {
-            paragraph_index,
-            character_index,
-        }
-    }
-
-    #[inline]
-    pub fn beginning() -> Location {
-        Location::new(0, 0)
     }
 }
 
@@ -593,9 +589,9 @@ impl RangeExt for Range<usize> {
 }
 
 #[derive(Clone, Copy)]
-struct HitTestResult<'a> {
-    point: Point2D<f32>,
-    frame: &'a Frame,
+struct HitTestResult {
+    point: LayoutPoint,
+    frame_index: usize,
     line_index: usize,
 }
 
@@ -603,4 +599,11 @@ struct HitTestResult<'a> {
 pub enum EventResult {
     None,
     OpenUrl(String),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+#[repr(C)]
+pub enum MouseEventKind {
+    Left = 0,
+    LeftDouble,
 }

@@ -8,12 +8,12 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use euclid::{Length, TypedScale};
+use euclid::{Length, TypedScale, TypedVector2D};
 use pilcrow::{Color, TextBuf};
 use std::cmp;
 use std::ptr;
 use webrender_api::{DevicePoint, DeviceUintSize, LayoutPoint};
-use {EventResult, GetProcAddressFn, MouseCursor, View};
+use {EventResult, GetProcAddressFn, MouseCursor, MouseEventKind, View};
 
 pub const WRTV_EVENT_RESULT_NONE: u8 = 0;
 pub const WRTV_EVENT_RESULT_OPEN_URL: u8 = 1;
@@ -63,8 +63,11 @@ pub unsafe extern "C" fn wrtv_view_get_mouse_cursor(view: *mut View, x: f32, y: 
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_mouse_down(view: *mut View, x: f32, y: f32) {
-    (*view).mouse_down(&LayoutPoint::new(x, y))
+pub unsafe extern "C" fn wrtv_view_mouse_down(view: *mut View,
+                                              x: f32,
+                                              y: f32,
+                                              kind: MouseEventKind) {
+    (*view).mouse_down(&LayoutPoint::new(x, y), kind)
 }
 
 #[no_mangle]
@@ -84,7 +87,7 @@ pub unsafe extern "C" fn wrtv_view_set_available_width(view: *mut View, new_avai
 
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_set_translation(view: *mut View, x: f32, y: f32) {
-    (*view).set_translation(&DevicePoint::new(x, y))
+    (*view).set_translation(&TypedVector2D::new(x, y))
 }
 
 #[no_mangle]

@@ -21,11 +21,11 @@ path = "/Users/pcwalton/Source/core-foundation-rs/core-text"
 path = "../../pilcrow"
 
 [dependencies.webrender]
-git = "https://github.com/servo/webrender"
+path = "/Users/pcwalton/Source/webrender/webrender"
 features = ["pathfinder"]
 
 [dependencies.webrender_api]
-git = "https://github.com/servo/webrender"
+path = "/Users/pcwalton/Source/webrender/webrender_api"
 
 [build-dependencies]
 cbindgen = "0.5"

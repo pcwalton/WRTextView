@@ -7,6 +7,7 @@ autogen_warning = "/* Automatically generated. Do not edit! */"
 "EventResult" = "wrtv_event_result_t"
 "GetProcAddressFn" = "wrtv_get_proc_address_fn_t"
 "MouseCursor" = "wrtv_mouse_cursor_t"
+"MouseEventKind" = "wrtv_mouse_event_kind_t"
 "TextBuf" = "pilcrow_text_buf_t"
 "View" = "wrtv_view_t"
 

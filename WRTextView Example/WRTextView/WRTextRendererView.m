@@ -90,7 +90,7 @@ static const void *getGLProcAddress(const char *symbolName) {
 
     float newWidth, newHeight;
     wrtv_view_get_layout_size(self->_wrView, &newWidth, &newHeight);
-    NSSize newFrameSize = [self convertSizeFromBacking:NSMakeSize(newWidth, newHeight)];
+    NSSize newFrameSize = NSMakeSize(newWidth, newHeight);
     [self->_textView setFrameSize:newFrameSize];
     [self->_textView scrollToBeginningOfDocument:self];
     NSLog(@"layout size: %f,%f", newWidth, newHeight);
@@ -173,8 +173,18 @@ static const void *getGLProcAddress(const char *symbolName) {
     if (self->_wrView == NULL)
         return;
     NSPoint point = [self _convertEventLocationToTextViewCoordinateSystem:event];
-    
-    wrtv_view_mouse_down(self->_wrView, (float)point.x, (float)point.y);
+
+    wrtv_mouse_event_kind_t mouseEventKind;
+    switch ([event clickCount]) {
+    case 2:
+        mouseEventKind = WRTV_MOUSE_EVENT_KIND_T_LEFT_DOUBLE;
+        break;
+    default:
+        mouseEventKind = WRTV_MOUSE_EVENT_KIND_T_LEFT;
+    }
+
+    wrtv_view_mouse_down(self->_wrView, (float)point.x, (float)point.y, mouseEventKind);
+
     [self setNeedsDisplay:YES];
 }
 
@@ -198,7 +208,7 @@ static const void *getGLProcAddress(const char *symbolName) {
         free(buffer);
         break;
     }
-            
+
     case WRTV_EVENT_RESULT_NONE:
         break;
     }
