@@ -62,8 +62,8 @@
 }
 
 - (CGAffineTransform)transform {
-    NSRect viewportFrame = [self->_rendererView convertRectToBacking:[self->_rendererView frame]];
-    NSRect textViewFrame = [self convertRectToBacking:[self frame]];
+    NSRect viewportFrame = [self->_rendererView frame];
+    NSRect textViewFrame = [self frame];
     CGFloat x = viewportFrame.origin.x, y = textViewFrame.size.height - NSMaxY(viewportFrame);
     return CGAffineTransformMake(self->_scale, 1.0, 1.0, self->_scale, x, y);
 }
@@ -77,22 +77,20 @@
 
     self->_scale = transform.a;
 
-    NSRect textViewFrame = [self convertRectToBacking:[self frame]];
-    NSSize viewportSize = [self->_rendererView
-                           convertRectToBacking:[self->_rendererView frame]].size;
+    NSRect textViewFrame = [self frame];
+    NSSize viewportSize = [self->_rendererView frame].size;
     CGFloat newViewportXOrigin = transform.tx;
     CGFloat newViewportYOrigin = textViewFrame.size.height - viewportSize.height - transform.ty;
     NSPoint newViewportOrigin = NSMakePoint(newViewportXOrigin, newViewportYOrigin);
-    [self->_rendererView setFrameOrigin:[self->_rendererView
-                                         convertPointFromBacking:newViewportOrigin]];
+    [self->_rendererView setFrameOrigin:newViewportOrigin];
     [self->_rendererView setNeedsDisplay:YES];
 }
 
 - (void)_scrolled:(NSNotification *)notification {
     NSScrollView *scrollView = [notification object];
     
-    NSRect frame = [self convertRectToBacking:[self frame]];
-    NSRect documentVisibleRect = [self convertRectToBacking:[scrollView documentVisibleRect]];
+    NSRect frame = [self frame];
+    NSRect documentVisibleRect = [scrollView documentVisibleRect];
 
     CGAffineTransform transform = [self transform];
     transform.tx = documentVisibleRect.origin.x;
@@ -127,12 +125,10 @@
 }
 
 - (void)zoomBy:(CGFloat)scale atPoint:(NSPoint)point {
-    NSSize viewportSize = [self->_rendererView convertRectToBacking:
-                           [self->_rendererView frame]].size;
+    NSSize viewportSize = [self->_rendererView frame].size;
     
     CGAffineTransform transform = [self transform];
     
-    point = [self convertPointToBacking:point];
     point.y = viewportSize.height - point.y;
 
     transform = CGAffineTransformTranslate(transform, point.x, point.y);

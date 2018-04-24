@@ -8,7 +8,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use euclid::Length;
+use euclid::{Length, TypedScale};
 use pilcrow::{Color, TextBuf};
 use std::cmp;
 use std::ptr;
@@ -22,13 +22,19 @@ pub const WRTV_EVENT_RESULT_OPEN_URL: u8 = 1;
 pub unsafe extern "C" fn wrtv_view_new(text: *mut TextBuf,
                                        viewport_width: u32,
                                        viewport_height: u32,
+                                       device_pixel_ratio: f32,
                                        available_width: f32,
                                        get_proc_address: GetProcAddressFn)
                                        -> *mut View {
     let text = Box::from_raw(text);
     let viewport = DeviceUintSize::new(viewport_width, viewport_height);
+    let device_pixel_ratio = TypedScale::new(device_pixel_ratio);
     let available_width = Length::new(available_width);
-    Box::into_raw(Box::new(View::new(*text, &viewport, available_width, get_proc_address)))
+    Box::into_raw(Box::new(View::new(*text,
+                                     &viewport,
+                                     device_pixel_ratio,
+                                     available_width,
+                                     get_proc_address)))
 }
 
 #[no_mangle]

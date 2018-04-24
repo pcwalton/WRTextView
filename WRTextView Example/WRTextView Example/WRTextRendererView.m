@@ -61,12 +61,21 @@ static const void *getGLProcAddress(const char *symbolName) {
 
     NSRect frame = [self frame];
     NSRect backingFrame = [self convertRectToBacking:frame];
+    
+    float devicePixelRatio = (float)[[self window] backingScaleFactor];
+    if (devicePixelRatio == 0.0) {
+        // This is what AppKit does if there's no current window (which happens during awakening
+        // from the nib).
+        devicePixelRatio = [[NSScreen mainScreen] backingScaleFactor];
+    }
+
     self->_wrView = wrtv_view_new(textBuffer,
                                   (uint32_t)ceil(backingFrame.size.width),
                                   (uint32_t)ceil(backingFrame.size.height),
-                                  backingFrame.size.width,
+                                  devicePixelRatio,
+                                  frame.size.width,
                                   getGLProcAddress);
-    
+
     CGFloat r, g, b, a;
     [[[NSColor selectedTextBackgroundColor]
       colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]] getRed:&r
@@ -95,7 +104,7 @@ static const void *getGLProcAddress(const char *symbolName) {
     if (self->_wrView == NULL)
         return;
     
-    float newAvailableWidth = [self convertRectToBacking:[self frame]].size.width;
+    float newAvailableWidth = [self frame].size.width;
     if (wrtv_view_get_available_width(self->_wrView) == newAvailableWidth)
         return;
     NSLog(@"reshape(), setting available width");
@@ -139,13 +148,14 @@ static const void *getGLProcAddress(const char *symbolName) {
     [glContext makeCurrentContext];
     
     CGAffineTransform transform = [self->_textView transform];
-    NSRect frame = [self convertRectToBacking:[self frame]];
+    NSRect frame = [self frame];
+    NSRect backingFrame = [self convertRectToBacking:frame];
 
     wrtv_view_set_scale(self->_wrView, transform.a);
     wrtv_view_set_translation(self->_wrView, transform.tx, transform.ty);
     wrtv_view_set_viewport_size(self->_wrView,
-                                (uint32_t)frame.size.width,
-                                (uint32_t)frame.size.height);
+                                (uint32_t)backingFrame.size.width,
+                                (uint32_t)backingFrame.size.height);
 
     NSLog(@"text view scale:%f", (float)[self->_textView scale]);
     NSLog(@"frame:%f,%f for %f,%f",
@@ -199,8 +209,7 @@ static const void *getGLProcAddress(const char *symbolName) {
 - (NSPoint)_convertEventLocationToTextViewCoordinateSystem:(NSEvent *)event {
     NSView *clipView = [[self superview] superview];
     NSView *scrollView = [clipView superview];
-    NSPoint point = [scrollView convertPoint:[event locationInWindow] fromView:nil];
-    return [self convertPointToBacking:point];
+    return [scrollView convertPoint:[event locationInWindow] fromView:nil];
 }
 
 - (void)mouseMoved:(NSEvent *)event {

@@ -22,7 +22,7 @@ extern crate lazy_static;
 
 use app_units::Au;
 use core_text::font as ct_font;
-use euclid::{Length, Point2D, Transform2D, TypedSideOffsets2D};
+use euclid::{Length, Point2D, Transform2D, TypedScale, TypedSideOffsets2D};
 use gleam::gl;
 use libc::c_char;
 use pilcrow::{Color, FontFaceId, FontId, Format, Frame, Framesetter, Section, TextBuf};
@@ -35,7 +35,7 @@ use std::ops::Range;
 use std::os::raw::c_void;
 use std::sync::mpsc::{self, Receiver, Sender};
 use webrender::{Renderer, RendererOptions};
-use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DevicePoint, DeviceUintPoint};
+use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DevicePixel, DevicePoint, DeviceUintPoint};
 use webrender_api::{DeviceUintRect, DeviceUintSize, DocumentId, Epoch, FontInstanceKey, FontKey};
 use webrender_api::{LayoutPoint, LayoutPixel, LayoutRect, LayoutSize, NativeFontHandle};
 use webrender_api::{PipelineId, RenderApi, RenderNotifier, ResourceUpdates, Transaction};
@@ -85,6 +85,7 @@ pub struct View {
     text: TextBuf,
     available_width: Length<f32, LayoutPixel>,
     viewport_size: DeviceUintSize,
+    device_pixel_ratio: TypedScale<f32, LayoutPixel, DevicePixel>,
     transform: Transform2D<f32>,
     section: Section,
 
@@ -104,6 +105,7 @@ pub struct View {
 impl View {
     pub fn new(text: TextBuf,
                viewport_size: &DeviceUintSize,
+               device_pixel_ratio: TypedScale<f32, LayoutPixel, DevicePixel>,
                available_width: Length<f32, LayoutPixel>,
                get_proc_address: GetProcAddressFn)
                -> View {
@@ -147,6 +149,7 @@ impl View {
         View {
             text,
             available_width,
+            device_pixel_ratio,
             viewport_size: *viewport_size,
             transform,
             section,
@@ -186,7 +189,9 @@ impl View {
                                      true);
         transaction.set_root_pipeline(PIPELINE_ID);
         let inner_rect = DeviceUintRect::new(DeviceUintPoint::zero(), self.viewport_size);
-        transaction.set_window_parameters(self.viewport_size, inner_rect, 1.0);
+        transaction.set_window_parameters(self.viewport_size,
+                                          inner_rect,
+                                          self.device_pixel_ratio.get());
         transaction.set_pan(DeviceIntPoint::new(self.transform.m31 as i32,
                                                 self.transform.m32 as i32));
         transaction.set_pinch_zoom(ZoomFactor::new(self.transform.m11));
