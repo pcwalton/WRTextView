@@ -8,14 +8,14 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use pilcrow::{Frame, Line, ParagraphStyle, Section};
+use pilcrow::{Frame, Line, ParagraphStyle, Run, Section};
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Range;
 use webrender_api::{ColorF, DisplayListBuilder, GlyphInstance, LayoutPrimitiveInfo, LayoutPoint};
 use webrender_api::{LayoutRect, LayoutSize, LineOrientation, LineStyle, MixBlendMode, RenderApi};
 use webrender_api::{ResourceUpdates, ScrollPolicy, TransformStyle};
-use {ComputedStyle, Location, PIPELINE_ID, WrDisplayList};
+use {ComputedStyle, FontInstanceInfo, Location, PIPELINE_ID, WrDisplayList};
 
 const BLACK_COLOR: ColorF = ColorF {
     r: 0.0,
@@ -27,12 +27,14 @@ const BLACK_COLOR: ColorF = ColorF {
 pub struct SceneBuilder {
     display_list_builder: DisplayListBuilder,
     selection: Option<Range<Location>>,
+    active_link_id: Option<usize>,
     selection_background_color: ColorF,
 }
 
 impl SceneBuilder {
     pub fn new(layout_size: &LayoutSize,
                selection: &Option<Range<Location>>,
+               active_link_id: &Option<usize>,
                selection_background_color: &ColorF)
                -> SceneBuilder {
         let mut display_list_builder = DisplayListBuilder::new(PIPELINE_ID, *layout_size);
@@ -49,6 +51,7 @@ impl SceneBuilder {
         SceneBuilder {
             display_list_builder,
             selection: (*selection).clone(),
+            active_link_id: *active_link_id,
             selection_background_color: *selection_background_color,
         }
     }
@@ -95,16 +98,17 @@ impl SceneBuilder {
                     }
 
                     let computed_style = ComputedStyle::from_formatting(run.formatting(),
+                                                                        &self.active_link_id,
                                                                         &mut font_keys,
                                                                         &render_api,
                                                                         resource_updates);
 
                     if let Some((computed_font_face_id, computed_font_id)) = computed_style.font {
                         let font_instance_info = font_keys.get(&computed_font_face_id)
-                                                        .unwrap()
-                                                        .instance_infos
-                                                        .get(&computed_font_id)
-                                                        .unwrap();
+                                                          .unwrap()
+                                                          .instance_infos
+                                                          .get(&computed_font_id)
+                                                          .unwrap();
 
                         let text_color = computed_style.color.unwrap_or(BLACK_COLOR);
                         self.display_list_builder.push_text(&line_layout_primitive_info,
@@ -114,22 +118,11 @@ impl SceneBuilder {
                                                             None);
 
                         if computed_style.underline {
-                            // FIXME(pcwalton): Use run origin/size, not line origin/size!
-                            let underline_origin =
-                                LayoutPoint::new(line_origin.x,
-                                                line_origin.y +
-                                                font_instance_info.underline_position);
-                            let underline_size =
-                                LayoutSize::new(line_size.width,
-                                                font_instance_info.underline_thickness);
-                            let underline_layout_primitive_info =
-                                LayoutPrimitiveInfo::new(LayoutRect::new(underline_origin,
-                                                                        underline_size));
-                            self.display_list_builder.push_line(&underline_layout_primitive_info,
-                                                                underline_size.height,
-                                                                LineOrientation::Horizontal,
-                                                                &text_color,
-                                                                LineStyle::Solid)
+                            let origin = match glyphs.get(0) {
+                                None => line_origin,
+                                Some(ref glyph) => glyph.point,
+                            };
+                            self.add_underline(&font_instance_info, &run, &origin, &text_color);
                         }
                     }
                 }
@@ -160,13 +153,32 @@ impl SceneBuilder {
 
         let start_offset = line.inline_position_for_char_index(selected_char_range.start);
         let end_offset = line.inline_position_for_char_index(selected_char_range.end);
-        let selection_bounds = LayoutRect::new(LayoutPoint::new(line_bounds.origin.x + start_offset,
-                                                                line_bounds.origin.y),
-                                            LayoutSize::new(end_offset - start_offset,
-                                                            line_size.height));
+        let selection_bounds =
+            LayoutRect::new(LayoutPoint::new(line_bounds.origin.x + start_offset,
+                                             line_bounds.origin.y),
+                            LayoutSize::new(end_offset - start_offset, line_size.height));
         let layout_primitive_info = LayoutPrimitiveInfo::new(selection_bounds);
         self.display_list_builder.push_rect(&layout_primitive_info,
                                             self.selection_background_color)
+    }
+
+    fn add_underline(&mut self,
+                     font_instance_info: &FontInstanceInfo,
+                     run: &Run,
+                     run_origin: &LayoutPoint,
+                     color: &ColorF) {
+        let typographic_bounds = run.typographic_bounds();
+        let origin = LayoutPoint::new(run_origin.x,
+                                      run_origin.y - font_instance_info.underline_position);
+        let size = LayoutSize::new(typographic_bounds.width,
+                                   font_instance_info.underline_thickness);
+        let layout_primitive_info = LayoutPrimitiveInfo::new(LayoutRect::new(origin, size));
+        self.display_list_builder.push_line(&layout_primitive_info,
+                                            size.height,
+                                            LineOrientation::Horizontal,
+                                            color,
+                                            LineStyle::Solid);
+        eprintln!("added underline: origin={:?} size={:?}", origin, size);
     }
 
     fn add_frame_decorations(&mut self, frame: &Frame) {

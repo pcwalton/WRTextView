@@ -10,8 +10,13 @@
 
 use euclid::Length;
 use pilcrow::{Color, TextBuf};
+use std::cmp;
+use std::ptr;
 use webrender_api::{DevicePoint, DeviceUintSize, LayoutPoint};
-use {GetProcAddressFn, MouseCursor, View};
+use {EventResult, GetProcAddressFn, MouseCursor, View};
+
+pub const WRTV_EVENT_RESULT_NONE: u8 = 0;
+pub const WRTV_EVENT_RESULT_OPEN_URL: u8 = 1;
 
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_new(text: *mut TextBuf,
@@ -52,6 +57,16 @@ pub unsafe extern "C" fn wrtv_view_get_mouse_cursor(view: *mut View, x: f32, y: 
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn wrtv_view_mouse_down(view: *mut View, x: f32, y: f32) {
+    (*view).mouse_down(&LayoutPoint::new(x, y))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_mouse_up(view: *mut View, x: f32, y: f32) -> *mut EventResult {
+    Box::into_raw(Box::new((*view).mouse_up(&LayoutPoint::new(x, y))))
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn wrtv_view_get_available_width(view: *mut View) -> f32 {
     (*view).available_width().get()
 }
@@ -88,4 +103,38 @@ pub unsafe extern "C" fn wrtv_view_set_selection_background_color(view: *mut Vie
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_select_all(view: *mut View) {
     (*view).select_all()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_event_result_destroy(event_result: *mut EventResult) {
+    drop(Box::from_raw(event_result))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_event_result_get_type(event_result: *const EventResult) -> u8 {
+    match *event_result {
+        EventResult::None => WRTV_EVENT_RESULT_NONE,
+        EventResult::OpenUrl(_) => WRTV_EVENT_RESULT_OPEN_URL,
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_event_result_get_string_len(event_result: *const EventResult)
+                                                          -> usize {
+    match *event_result {
+        EventResult::None => 0,
+        EventResult::OpenUrl(ref url) => url.len(),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_event_result_get_string(event_result: *const EventResult,
+                                                      buffer: *mut u8,
+                                                      buffer_len: usize) {
+    match *event_result {
+        EventResult::None => {}
+        EventResult::OpenUrl(ref url) => {
+            ptr::copy_nonoverlapping(url.as_ptr(), buffer, cmp::min(url.len(), buffer_len))
+        }
+    }
 }

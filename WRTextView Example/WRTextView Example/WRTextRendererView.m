@@ -160,17 +160,53 @@ static const void *getGLProcAddress(const char *symbolName) {
 }
 
 - (void)mouseDown:(NSEvent *)event {
-    NSLog(@"mouseDown");
+    if (self->_wrView == NULL)
+        return;
+    NSPoint point = [self _convertEventLocationToTextViewCoordinateSystem:event];
+    
+    wrtv_view_mouse_down(self->_wrView, (float)point.x, (float)point.y);
     [self setNeedsDisplay:YES];
+}
+
+- (void)mouseUp:(NSEvent *)event {
+    if (self->_wrView == NULL)
+        return;
+    NSPoint point = [self _convertEventLocationToTextViewCoordinateSystem:event];
+    
+    wrtv_event_result_t *eventResult = wrtv_view_mouse_up(self->_wrView,
+                                                          (float)point.x,
+                                                          (float)point.y);
+    switch (wrtv_event_result_get_type(eventResult)) {
+    case WRTV_EVENT_RESULT_OPEN_URL: {
+        size_t length = wrtv_event_result_get_string_len(eventResult);
+        uint8_t *buffer = malloc(length + 1);
+        wrtv_event_result_get_string(eventResult, buffer, length);
+        buffer[length] = '\0';
+        NSString *string = [NSString stringWithUTF8String:(char *)buffer];
+        NSURL *url = [NSURL URLWithString:string];
+        [[NSWorkspace sharedWorkspace] openURL:url];
+        free(buffer);
+        break;
+    }
+            
+    case WRTV_EVENT_RESULT_NONE:
+        break;
+    }
+
+    [self setNeedsDisplay:YES];
+}
+
+- (NSPoint)_convertEventLocationToTextViewCoordinateSystem:(NSEvent *)event {
+    NSView *clipView = [[self superview] superview];
+    NSView *scrollView = [clipView superview];
+    NSPoint point = [scrollView convertPoint:[event locationInWindow] fromView:nil];
+    return [self convertPointToBacking:point];
 }
 
 - (void)mouseMoved:(NSEvent *)event {
     if (self->_wrView == NULL)
         return;
-
-    NSView *superview = [self superview];
-    NSPoint point = [superview convertPoint:[event locationInWindow] fromView:nil];
-    point.y = [superview frame].size.height - point.y;
+    NSPoint point = [self _convertEventLocationToTextViewCoordinateSystem:event];
 
     NSCursor *cursor = nil;
     switch (wrtv_view_get_mouse_cursor(self->_wrView, (float)point.x, (float)point.y)) {

@@ -11,6 +11,7 @@ crate-type = ["cdylib"]
 app_units = "0.6"
 euclid = "0.17"
 gleam = "0.4"
+lazy_static = "1.0"
 libc = "0.2"
 
 [dependencies.core-text]

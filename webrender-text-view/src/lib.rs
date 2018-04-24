@@ -17,12 +17,15 @@ extern crate pilcrow;
 extern crate webrender;
 extern crate webrender_api;
 
+#[macro_use]
+extern crate lazy_static;
+
 use app_units::Au;
 use core_text::font as ct_font;
-use euclid::{Length, Transform2D};
+use euclid::{Length, Point2D, Transform2D, TypedSideOffsets2D};
 use gleam::gl;
 use libc::c_char;
-use pilcrow::{Color, FontFaceId, FontId, Format, Framesetter, Section, TextBuf};
+use pilcrow::{Color, FontFaceId, FontId, Format, Frame, Framesetter, Section, TextBuf};
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::f32;
@@ -50,6 +53,26 @@ const DEFAULT_SELECTION_BACKGROUND_COLOR: ColorF = ColorF {
     a: 1.0,
 };
 
+const DEFAULT_LINK_COLOR: ColorF = ColorF {
+    r: 0.0,
+    g: 0.0,
+    b: 1.0,
+    a: 1.0,
+};
+
+const DEFAULT_LINK_ACTIVE_COLOR: ColorF = ColorF {
+    r: 1.0,
+    g: 0.0,
+    b: 0.0,
+    a: 1.0,
+};
+
+lazy_static! {
+    static ref DEFAULT_PAGE_MARGIN: TypedSideOffsets2D<f32, LayoutPixel> = {
+        TypedSideOffsets2D::new(0.0, 12.0, 0.0, 12.0)
+    };
+}
+
 pub const PIPELINE_ID: PipelineId = PipelineId(0, 0);
 
 pub type GetProcAddressFn = unsafe extern "C" fn(*const c_char) -> *const c_void;
@@ -64,8 +87,12 @@ pub struct View {
     viewport_size: DeviceUintSize,
     transform: Transform2D<f32>,
     section: Section,
-    selection: Option<Range<Location>>,
+
+    page_margin: TypedSideOffsets2D<f32, LayoutPixel>,
     selection_background_color: ColorF,
+
+    selection: Option<Range<Location>>,
+    active_link_id: Option<usize>,
 
     wr_renderer: Renderer,
     wr_sender_api: RenderApi,
@@ -100,13 +127,16 @@ impl View {
                                                         available_layout_size.height as u32);
         let document_id = sender_api.add_document(available_device_size, 0);
 
-        let selection = None;
+        let page_margin = *DEFAULT_PAGE_MARGIN;
+        let section = layout_text(&text, available_width, &page_margin);
+
+        let (selection, active_link_id) = (None, None);
         let selection_background_color = DEFAULT_SELECTION_BACKGROUND_COLOR;
         let mut scene_builder = SceneBuilder::new(&available_layout_size,
                                                   &selection,
+                                                  &active_link_id,
                                                   &selection_background_color);
         let mut resource_updates = ResourceUpdates::new();
-        let section = layout_text(&text, available_width);
         scene_builder.build_display_list(&sender_api, &mut resource_updates, &section);
         let display_list = scene_builder.finalize();
 
@@ -120,8 +150,12 @@ impl View {
             viewport_size: *viewport_size,
             transform,
             section,
-            selection,
+
+            page_margin: *DEFAULT_PAGE_MARGIN,
             selection_background_color,
+
+            selection,
+            active_link_id,
 
             wr_renderer: renderer,
             wr_sender_api: sender_api,
@@ -165,13 +199,111 @@ impl View {
     }
 
     pub fn get_mouse_cursor(&self, point: &LayoutPoint) -> MouseCursor {
-        let point = point.to_untyped();
-        match self.section
-                  .frame_at_point(&point)
-                  .and_then(|frame| frame.line_index_at_point(&point)) {
-            None => MouseCursor::Default,
-            Some(_) => MouseCursor::Text,
+        let HitTestResult {
+            point,
+            frame,
+            line_index,
+        } = match self.hit_test_point(point) {
+            None => return MouseCursor::Default,
+            Some(hit_test_result) => hit_test_result,
+        };
+        let lines = frame.lines();
+        let line = &lines[line_index];
+        let char_index = match line.char_index_for_position(&point) {
+            None => return MouseCursor::Text,
+            Some(char_index) => char_index,
+        };
+        let runs = line.runs();
+        let run = match runs.iter().find(|run| run.char_range().has(char_index)) {
+            None => return MouseCursor::Text,
+            Some(run) => run,
+        };
+        for format in run.formatting().iter() {
+            if format.link().is_some() {
+                return MouseCursor::Pointer
+            }
         }
+        MouseCursor::Text
+    }
+
+    pub fn mouse_down(&mut self, point: &LayoutPoint) {
+        let mut active_link_id = None;
+        let mut dirty = false;
+
+        {
+            let HitTestResult {
+                point,
+                frame,
+                line_index,
+            } = match self.hit_test_point(point) {
+                None => return,
+                Some(hit_test_result) => hit_test_result,
+            };
+            let lines = frame.lines();
+            let line = &lines[line_index];
+            let char_index = match line.char_index_for_position(&point) {
+                None => return,
+                Some(char_index) => char_index,
+            };
+            let runs = line.runs();
+            let run = match runs.iter().find(|run| run.char_range().has(char_index)) {
+                None => return,
+                Some(run) => run,
+            };
+            for format in run.formatting().iter() {
+                if let Some((id, _url)) = format.link() {
+                    active_link_id = Some(id);
+                    dirty = true;
+                    eprintln!("setting active link ID!");
+                }
+            }
+        }
+
+        if dirty {
+            self.active_link_id = active_link_id;
+            self.rebuild_display_list();
+        }
+    }
+
+    pub fn mouse_up(&mut self, point: &LayoutPoint) -> EventResult {
+        let mut event_result = EventResult::None;
+        let dirty = self.active_link_id.is_some();
+
+        {
+            let HitTestResult {
+                point,
+                frame,
+                line_index,
+            } = match self.hit_test_point(point) {
+                None => return EventResult::None,
+                Some(hit_test_result) => hit_test_result,
+            };
+            let lines = frame.lines();
+            let line = &lines[line_index];
+            let char_index = match line.char_index_for_position(&point) {
+                None => return EventResult::None,
+                Some(char_index) => char_index,
+            };
+            let runs = line.runs();
+            let run = match runs.iter().find(|run| run.char_range().has(char_index)) {
+                None => return EventResult::None,
+                Some(run) => run,
+            };
+            for format in run.formatting().iter() {
+                if let Some((link_id, url)) = format.link() {
+                    if Some(link_id) == self.active_link_id {
+                        event_result = EventResult::OpenUrl(url)
+                    }
+                }
+            }
+        }
+
+        if dirty {
+            self.active_link_id = None;
+            self.rebuild_display_list();
+        }
+
+        event_result
     }
 
     pub fn available_width(&self) -> Length<f32, LayoutPixel> {
@@ -222,7 +354,7 @@ impl View {
 
     fn layout(&mut self) {
         let available_width = self.available_width;
-        self.section = layout_text(&self.text, available_width);
+        self.section = layout_text(&self.text, available_width, &self.page_margin);
 
         self.rebuild_display_list();
     }
@@ -231,6 +363,7 @@ impl View {
         let available_layout_size = LayoutSize::new(self.available_width.get(), 1000000.0);
         let mut scene_builder = SceneBuilder::new(&available_layout_size,
                                                   &self.selection,
+                                                  &self.active_link_id,
                                                   &self.selection_background_color);
         let mut resource_updates = ResourceUpdates::new();
         scene_builder.build_display_list(&self.wr_sender_api,
@@ -241,6 +374,28 @@ impl View {
         let mut transaction = Transaction::new();
         transaction.update_resources(resource_updates);
         self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
+    }
+
+    fn hit_test_point<'a, 'b>(&'a self, point: &'b LayoutPoint) -> Option<HitTestResult<'a>> {
+        let inverse_transform = match self.transform.inverse() {
+            None => return None,
+            Some(inverse_transform) => inverse_transform,
+        };
+        let point = inverse_transform.transform_point(&point.to_untyped());
+        let frame_index = match self.section.frame_index_at_point(&point) {
+            None => return None,
+            Some(frame_index) => frame_index,
+        };
+        let frame = &self.section.frames()[frame_index];
+        let line_index = match frame.line_index_at_point(&point) {
+            None => return None,
+            Some(line_index) => line_index,
+        };
+        Some(HitTestResult {
+            point,
+            frame,
+            line_index,
+        })
     }
 }
 
@@ -273,11 +428,15 @@ pub enum MouseCursor {
     Pointer,
 }
 
-fn layout_text(text: &TextBuf, available_width: Length<f32, LayoutPixel>) -> Section {
+fn layout_text(text: &TextBuf,
+               available_width: Length<f32, LayoutPixel>,
+               page_margin: &TypedSideOffsets2D<f32, LayoutPixel>)
+               -> Section {
     let framesetter = Framesetter::new(text);
-    let layout_size = LayoutSize::new(available_width.get(), 1000000.0);
-    let layout_rect = LayoutRect::new(LayoutPoint::zero(), layout_size);
-    framesetter.layout_in_rect(&layout_rect.to_untyped())
+    let layout_origin = LayoutPoint::new(page_margin.left, page_margin.top);
+    let layout_width = available_width.get() - page_margin.horizontal();
+    let layout_size = LayoutSize::new(layout_width, 1000000.0);
+    framesetter.layout_in_rect(&LayoutRect::new(layout_origin, layout_size).to_untyped())
 }
 
 struct Notifier {
@@ -312,6 +471,7 @@ pub(crate) struct ComputedStyle {
 
 impl ComputedStyle {
     pub fn from_formatting(formatting: Vec<Format>,
+                           active_link_id: &Option<usize>,
                            font_keys: &mut FontKeyMap,
                            render_api: &RenderApi,
                            resource_updates: &mut ResourceUpdates)
@@ -372,8 +532,16 @@ impl ComputedStyle {
                 }
             }
 
-            if format.link().is_some() {
-                computed_style.underline = true
+            if let Some((link_id, _)) = format.link() {
+                computed_style.underline = true;
+                if computed_style.color.is_none() {
+                    let color = if *active_link_id == Some(link_id) {
+                        DEFAULT_LINK_ACTIVE_COLOR
+                    } else {
+                        DEFAULT_LINK_COLOR
+                    };
+                    computed_style.color = Some(color)
+                }
             }
         }
 
@@ -406,4 +574,28 @@ impl ColorExt for Color {
             a: self.a_f32(),
         }
     }
+}
+
+trait RangeExt {
+    fn has(&self, index: usize) -> bool;
+}
+
+impl RangeExt for Range<usize> {
+    #[inline]
+    fn has(&self, index: usize) -> bool {
+        self.start <= index && index < self.end
+    }
+}
+
+#[derive(Clone, Copy)]
+struct HitTestResult<'a> {
+    point: Point2D<f32>,
+    frame: &'a Frame,
+    line_index: usize,
+}
+
+#[derive(Clone, Debug)]
+pub enum EventResult {
+    None,
+    OpenUrl(String),
 }
