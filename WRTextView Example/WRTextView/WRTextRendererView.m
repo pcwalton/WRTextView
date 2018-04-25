@@ -49,15 +49,10 @@ static const void *getGLProcAddress(const char *symbolName) {
 - (void)setTextView:(WRTextView *)textView {
     self->_textView = textView;
 
-    pilcrow_text_buf_t *textBuffer = [[textView document] textBuffer];
-
     NSOpenGLContext *glContext = [self openGLContext];
     [glContext makeCurrentContext];
     GLint one = 1;
     CGLSetParameter([glContext CGLContextObj], kCGLCPSwapInterval, &one);
-
-    if (textBuffer == NULL)
-        return;
 
     NSRect frame = [self frame];
     NSRect backingFrame = [self convertRectToBacking:frame];
@@ -68,6 +63,10 @@ static const void *getGLProcAddress(const char *symbolName) {
         // from the nib).
         devicePixelRatio = [[NSScreen mainScreen] backingScaleFactor];
     }
+    
+    pilcrow_text_buf_t *textBuffer = [[textView document] takeTextBuffer];
+    if (textBuffer == NULL)
+        return;
 
     self->_wrView = wrtv_view_new(textBuffer,
                                   (uint32_t)ceil(backingFrame.size.width),
@@ -95,6 +94,20 @@ static const void *getGLProcAddress(const char *symbolName) {
     [self->_textView scrollToBeginningOfDocument:self];
     NSLog(@"layout size: %f,%f", newWidth, newHeight);
 
+    [self setNeedsDisplay:YES];
+}
+
+- (void)reloadText {
+    NSLog(@"reloading text!");
+    if (self->_wrView == NULL)
+        return;
+    pilcrow_text_buf_t *newTextBuffer = [[self->_textView document] takeTextBuffer];
+    if (newTextBuffer == NULL)
+        return;
+    pilcrow_text_buf_t *currentTextBuffer = wrtv_view_get_text(self->_wrView);
+    pilcrow_text_buf_clear(currentTextBuffer);
+    pilcrow_text_buf_append_text_buf(currentTextBuffer, newTextBuffer);
+    wrtv_view_text_changed(self->_wrView);
     [self setNeedsDisplay:YES];
 }
 
@@ -188,6 +201,14 @@ static const void *getGLProcAddress(const char *symbolName) {
     [self setNeedsDisplay:YES];
 }
 
+- (void)mouseDragged:(NSEvent *)event {
+    if (self->_wrView == NULL)
+        return;
+    NSPoint point = [self _convertEventLocationToTextViewCoordinateSystem:event];
+    wrtv_view_mouse_dragged(self->_wrView, (float)point.x, (float)point.y);
+    [self setNeedsDisplay:YES];
+}
+
 - (void)mouseUp:(NSEvent *)event {
     if (self->_wrView == NULL)
         return;
@@ -247,12 +268,36 @@ static const void *getGLProcAddress(const char *symbolName) {
 }
 
 - (void)selectAll:(id)sender {
-    wrtv_view_select_all(self->_wrView);
+    if (self->_wrView != NULL)
+        wrtv_view_select_all(self->_wrView);
     [self setNeedsDisplay:YES];
+}
+
+- (IBAction)copy:(id)sender {
+    if (self->_wrView == NULL)
+        return;
+    pilcrow_string_t *pString = wrtv_view_copy_selected_text(self->_wrView);
+    if (pString == NULL)
+        return;
+    NSString *string = [[NSString alloc] initWithBytes:pilcrow_string_get_chars(pString)
+                                                length:pilcrow_string_get_byte_len(pString)
+                                              encoding:NSUTF8StringEncoding];
+    pilcrow_string_destroy(pString);
+    if (string == nil)
+        return;
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    [pasteboard clearContents];
+    [pasteboard writeObjects:[NSArray arrayWithObject:string]];
 }
 
 - (BOOL)acceptsFirstResponder {
     return YES;
+}
+
+- (void)setDebuggerEnabled:(BOOL)enabled {
+    if (self->_wrView != NULL)
+        wrtv_view_set_debugger_enabled(self->_wrView, enabled);
+    [self setNeedsDisplay:YES];
 }
 
 @end

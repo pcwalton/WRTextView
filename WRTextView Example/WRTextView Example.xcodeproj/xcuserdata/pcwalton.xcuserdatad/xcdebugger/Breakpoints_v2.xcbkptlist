@@ -20,7 +20,7 @@
                   moduleName = "libwebrender_text_view.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/travis/build/rust-lang/rust/src/libstd/panicking.rs"
-                  timestampString = "546298729.5851671"
+                  timestampString = "546388234.115635"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "433"
@@ -85,23 +85,8 @@
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "std::sys_common::util::abort::h757ea6f1a5cd9a8a"
-                  moduleName = "libwebrender_text_view.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/travis/build/rust-lang/rust/src/libstd/sys_common/util.rs"
-                  timestampString = "546298729.595219"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "26"
-                  endingLineNumber = "26"
-                  offsetFromSymbolStart = "4">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Security::KeychainCore::TrustSettings::abort(char const*, int)"
-                  moduleName = "Security"
+                  symbolName = "abort"
+                  moduleName = "libsystem_c.dylib"
                   usesParentBreakpointCondition = "Yes"
                   offsetFromSymbolStart = "0">
                </Location>
@@ -109,8 +94,8 @@
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "abort"
-                  moduleName = "libsystem_c.dylib"
+                  symbolName = "Security::KeychainCore::TrustSettings::abort(char const*, int)"
+                  moduleName = "Security"
                   usesParentBreakpointCondition = "Yes"
                   offsetFromSymbolStart = "0">
                </Location>
@@ -140,6 +125,21 @@
                   moduleName = "IOBluetooth"
                   usesParentBreakpointCondition = "Yes"
                   offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "std::sys_common::util::abort::h757ea6f1a5cd9a8a"
+                  moduleName = "libwebrender_text_view.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/travis/build/rust-lang/rust/src/libstd/sys_common/util.rs"
+                  timestampString = "546388234.118716"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "26"
+                  endingLineNumber = "26"
+                  offsetFromSymbolStart = "4">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -309,6 +309,24 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[HPDClient abort]"
                   moduleName = "HelpData"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "TAOQueue::abort()"
+                  moduleName = "DiskImages"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[DRBurn abort]"
+                  moduleName = "DiscRecording"
                   usesParentBreakpointCondition = "Yes"
                   offsetFromSymbolStart = "0">
                </Location>

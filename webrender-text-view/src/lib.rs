@@ -35,7 +35,7 @@ use std::mem;
 use std::ops::Range;
 use std::os::raw::c_void;
 use std::sync::mpsc::{self, Receiver, Sender};
-use webrender::{Renderer, RendererOptions};
+use webrender::{DebugFlags, Renderer, RendererOptions};
 use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DevicePixel, DevicePoint, DeviceUintPoint};
 use webrender_api::{DeviceUintRect, DeviceUintSize, DocumentId, Epoch, FontInstanceKey, FontKey};
 use webrender_api::{LayoutPoint, LayoutPixel, LayoutRect, LayoutSize, NativeFontHandle};
@@ -80,7 +80,7 @@ pub type GetProcAddressFn = unsafe extern "C" fn(*const c_char) -> *const c_void
 
 type WrDisplayList = (PipelineId, LayoutSize, BuiltDisplayList);
 
-type FontKeyMap = HashMap<FontFaceId, FontInfo>;
+pub type FontKeyMap = HashMap<FontFaceId, FontInfo>;
 
 pub struct View {
     text: TextBuf,
@@ -93,8 +93,10 @@ pub struct View {
     page_margin: TypedSideOffsets2D<f32, LayoutPixel>,
     selection_background_color: ColorF,
 
-    selection: Option<Range<TextLocation>>,
+    selection: Option<Selection>,
     active_link_id: Option<usize>,
+
+    font_keys: FontKeyMap,
 
     wr_renderer: Renderer,
     wr_sender_api: RenderApi,
@@ -136,14 +138,18 @@ impl View {
         let page_margin = *DEFAULT_PAGE_MARGIN;
         let section = layout_text(&text, available_width, &page_margin);
 
-        let (selection, active_link_id) = (None, None);
+        let active_link_id = None;
         let selection_background_color = DEFAULT_SELECTION_BACKGROUND_COLOR;
+        let mut font_keys = FontKeyMap::new();
         let mut scene_builder = SceneBuilder::new(&available_layout_size,
-                                                  &selection,
+                                                  &None,
                                                   &active_link_id,
                                                   &selection_background_color);
         let mut resource_updates = ResourceUpdates::new();
-        scene_builder.build_display_list(&sender_api, &mut resource_updates, &section);
+        scene_builder.build_display_list(&sender_api,
+                                         &mut resource_updates,
+                                         &mut font_keys,
+                                         &section);
         let display_list = scene_builder.finalize();
 
         let mut transaction = Transaction::new();
@@ -161,8 +167,10 @@ impl View {
             page_margin: *DEFAULT_PAGE_MARGIN,
             selection_background_color,
 
-            selection,
+            selection: None,
             active_link_id,
+
+            font_keys,
 
             wr_renderer: renderer,
             wr_sender_api: sender_api,
@@ -170,6 +178,16 @@ impl View {
             wr_display_list: display_list,
             wr_new_frame_ready_rx,
         }
+    }
+
+    #[inline]
+    pub fn set_debugger_enabled(&mut self, enabled: bool) {
+        let flags = if enabled {
+            DebugFlags::GPU_TIME_QUERIES | DebugFlags::PROFILER_DBG
+        } else {
+            DebugFlags::empty()
+        };
+        self.wr_renderer.set_debug_flags(flags)
     }
 
     pub fn layout_size(&self) -> LayoutSize {
@@ -263,7 +281,7 @@ impl View {
                 let char_range = paragraph.word_range_at_char_index(char_index);
                 let start_location = TextLocation::new(frame_index, char_range.start);
                 let end_location = TextLocation::new(frame_index, char_range.end);
-                self.selection = Some(start_location..end_location);
+                self.selection = Some(Selection::forward(start_location..end_location));
                 dirty = true;
             }
 
@@ -328,6 +346,50 @@ impl View {
         event_result
     }
 
+    pub fn mouse_dragged(&mut self, point: &LayoutPoint) {
+        {
+            let HitTestResult {
+                point,
+                frame_index,
+                line_index,
+            } = match self.hit_test_point(point) {
+                None => return,
+                Some(hit_test_result) => hit_test_result,
+            };
+            let frame = &self.section.frames()[frame_index];
+            let lines = frame.lines();
+            let line = &lines[line_index];
+            let char_index = match line.char_index_for_position(&point.to_untyped()) {
+                None => return,
+                Some(char_index) => char_index,
+            };
+
+            let location = TextLocation::new(frame_index, char_index);
+            match self.selection {
+                None => self.selection = Some(Selection::forward(location..location)),
+                Some(ref mut selection) => {
+                    match selection.direction {
+                        SelectionDirection::Forward if location < selection.range.start => {
+                            selection.direction = SelectionDirection::Backward;
+                            selection.range.end = selection.range.start;
+                            selection.range.start = location;
+                        }
+                        SelectionDirection::Forward => selection.range.end = location,
+                        SelectionDirection::Backward if location >= selection.range.end => {
+                            selection.direction = SelectionDirection::Forward;
+                            selection.range.start = selection.range.end;
+                            selection.range.end = location;
+                        }
+                        SelectionDirection::Backward => selection.range.start = location,
+                    }
+                }
+            }
+        }
+
+        self.active_link_id = None;
+        self.rebuild_display_list();
+    }
+
     pub fn available_width(&self) -> Length<f32, LayoutPixel> {
         self.available_width
     }
@@ -367,11 +429,27 @@ impl View {
                 Some(paragraph) => paragraph.char_len(),
             };
             let end = TextLocation::new(paragraph_index, character_index);
-            self.selection = Some(TextLocation::beginning()..end);
+            self.selection = Some(Selection::forward(TextLocation::beginning()..end));
         }
 
         eprintln!("select_all(): new selection={:?}", self.selection);
         self.rebuild_display_list();
+    }
+
+    #[inline]
+    pub fn text_mut(&mut self) -> &mut TextBuf {
+        &mut self.text
+    }
+
+    #[inline]
+    pub fn text_changed(&mut self) {
+        self.layout()
+    }
+
+    pub fn copy_selected_text(&self) -> Option<String> {
+        self.selection.as_ref().map(|selection| {
+            self.text.copy_string_in_range(selection.range.clone())
+        })
     }
 
     fn layout(&mut self) {
@@ -383,13 +461,15 @@ impl View {
 
     fn rebuild_display_list(&mut self) {
         let available_layout_size = LayoutSize::new(self.available_width.get(), 1000000.0);
+        let selected_range = self.selection.as_ref().map(|selection| selection.range.clone());
         let mut scene_builder = SceneBuilder::new(&available_layout_size,
-                                                  &self.selection,
+                                                  &selected_range,
                                                   &self.active_link_id,
                                                   &self.selection_background_color);
         let mut resource_updates = ResourceUpdates::new();
         scene_builder.build_display_list(&self.wr_sender_api,
                                          &mut resource_updates,
+                                         &mut self.font_keys,
                                          &self.section);
         self.wr_display_list = scene_builder.finalize();
 
@@ -550,7 +630,7 @@ impl ComputedStyle {
     }
 }
 
-struct FontInfo {
+pub struct FontInfo {
     key: FontKey,
     instance_infos: HashMap<FontId, FontInstanceInfo>,
     native_handle: NativeFontHandle,
@@ -606,4 +686,26 @@ pub enum EventResult {
 pub enum MouseEventKind {
     Left = 0,
     LeftDouble,
+}
+
+#[derive(Clone, Debug)]
+struct Selection {
+    range: Range<TextLocation>,
+    direction: SelectionDirection,
+}
+
+impl Selection {
+    #[inline]
+    fn forward(range: Range<TextLocation>) -> Selection {
+        Selection {
+            range,
+            direction: SelectionDirection::Forward,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum SelectionDirection {
+    Backward,
+    Forward,
 }

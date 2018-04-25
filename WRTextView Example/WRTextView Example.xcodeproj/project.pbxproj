@@ -10,8 +10,9 @@
 		6A0A1563208FD98000E32BC6 /* WRTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0A1561208FD98000E32BC6 /* WRTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6A0A1567208FD9AC00E32BC6 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
 		6A0A1568208FD9C400E32BC6 /* WRTextRendererView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextRendererView.m */; };
-		6A0A1569208FD9FF00E32BC6 /* WRTextView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; };
 		6A0A156A208FDA9600E32BC6 /* libwebrender_text_view.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */; };
+		6A0A1570208FE6AA00E32BC6 /* WindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A156F208FE6AA00E32BC6 /* WindowController.m */; };
+		6A0A1577208FEE9400E32BC6 /* WRTextView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB1207ED10400887721 /* AppDelegate.m */; };
 		6A0E3CB5207ED10400887721 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB4207ED10400887721 /* Document.m */; };
 		6A0E3CB8207ED10400887721 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB6207ED10400887721 /* Document.xib */; };
@@ -20,10 +21,36 @@
 		6A0E3CC0207ED10600887721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBF207ED10600887721 /* main.m */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		6A0A1578208FEE9400E32BC6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6A0E3CA5207ED10400887721 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6A0A155E208FD97F00E32BC6;
+			remoteInfo = WRTextView;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		6A0A157A208FEE9400E32BC6 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6A0A1577208FEE9400E32BC6 /* WRTextView.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		6A0A155F208FD97F00E32BC6 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0A1561208FD98000E32BC6 /* WRTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextView.h; sourceTree = "<group>"; };
 		6A0A1562208FD98000E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6A0A156E208FE6AA00E32BC6 /* WindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowController.h; sourceTree = "<group>"; };
+		6A0A156F208FE6AA00E32BC6 /* WindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowController.m; sourceTree = "<group>"; };
 		6A0E3CAD207ED10400887721 /* WRTextView Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WRTextView Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0E3CB0207ED10400887721 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6A0E3CB1207ED10400887721 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -60,7 +87,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A0A1569208FD9FF00E32BC6 /* WRTextView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -72,8 +98,8 @@
 			children = (
 				6A0E3CE3207ED14800887721 /* WRTextRendererView.h */,
 				6A0E3CE4207ED14800887721 /* WRTextRendererView.m */,
-				6A5B60022084FD8200C10F79 /* WRTextView.m */,
 				6A0A1561208FD98000E32BC6 /* WRTextView.h */,
+				6A5B60022084FD8200C10F79 /* WRTextView.m */,
 				6A0A1562208FD98000E32BC6 /* Info.plist */,
 			);
 			path = WRTextView;
@@ -107,6 +133,8 @@
 				6A0E3CB1207ED10400887721 /* AppDelegate.m */,
 				6A0E3CB3207ED10400887721 /* Document.h */,
 				6A0E3CB4207ED10400887721 /* Document.m */,
+				6A0A156E208FE6AA00E32BC6 /* WindowController.h */,
+				6A0A156F208FE6AA00E32BC6 /* WindowController.m */,
 				6A0E3CB6207ED10400887721 /* Document.xib */,
 				6A0E3CB9207ED10600887721 /* Assets.xcassets */,
 				6A0E3CBB207ED10600887721 /* MainMenu.xib */,
@@ -184,10 +212,12 @@
 				6A0E3CA9207ED10400887721 /* Sources */,
 				6A0E3CAA207ED10400887721 /* Frameworks */,
 				6A0E3CAB207ED10400887721 /* Resources */,
+				6A0A157A208FEE9400E32BC6 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				6A0A1579208FEE9400E32BC6 /* PBXTargetDependency */,
 			);
 			name = "WRTextView Example";
 			productName = "WRTextView Example";
@@ -270,12 +300,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				6A0E3CB5207ED10400887721 /* Document.m in Sources */,
+				6A0A1570208FE6AA00E32BC6 /* WindowController.m in Sources */,
 				6A0E3CC0207ED10600887721 /* main.m in Sources */,
 				6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6A0A1579208FEE9400E32BC6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6A0A155E208FD97F00E32BC6 /* WRTextView */;
+			targetProxy = 6A0A1578208FEE9400E32BC6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		6A0E3CB6207ED10400887721 /* Document.xib */ = {
@@ -300,11 +339,12 @@
 		6A0A1564208FD98000E32BC6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = B6DKJ8Z6R9;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -333,11 +373,12 @@
 		6A0A1565208FD98000E32BC6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = B6DKJ8Z6R9;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";

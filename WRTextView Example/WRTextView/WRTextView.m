@@ -18,7 +18,7 @@
     NSScrollView *scrollView = [self _scrollView];
     if (scrollView == nil)
         return;
-    
+
     NSRect rendererViewFrame;
     rendererViewFrame.origin = NSZeroPoint;
     rendererViewFrame.size = [scrollView frame].size;
@@ -137,6 +137,14 @@
     [self setTransform:transform];
 
     [self->_rendererView setNeedsDisplay:YES];
+}
+
+- (void)reloadText {
+    [self->_rendererView reloadText];
+}
+
+- (void)setDebuggerEnabled:(BOOL)enabled {
+    [self->_rendererView setDebuggerEnabled:enabled];
 }
 
 @end

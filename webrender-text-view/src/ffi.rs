@@ -43,6 +43,11 @@ pub unsafe extern "C" fn wrtv_view_destroy(view: *mut View) {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn wrtv_view_set_debugger_enabled(view: *mut View, enabled: bool) {
+    (*view).set_debugger_enabled(enabled)
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn wrtv_view_get_layout_size(view: *mut View,
                                                    width: *mut f32,
                                                    height: *mut f32) {
@@ -73,6 +78,19 @@ pub unsafe extern "C" fn wrtv_view_mouse_down(view: *mut View,
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_mouse_up(view: *mut View, x: f32, y: f32) -> *mut EventResult {
     Box::into_raw(Box::new((*view).mouse_up(&LayoutPoint::new(x, y))))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_mouse_dragged(view: *mut View, x: f32, y: f32) {
+    (*view).mouse_dragged(&LayoutPoint::new(x, y))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_copy_selected_text(view: *mut View) -> *mut String {
+    match (*view).copy_selected_text() {
+        Some(string) => Box::into_raw(Box::new(string)),
+        None => ptr::null_mut(),
+    }
 }
 
 #[no_mangle]
@@ -112,6 +130,16 @@ pub unsafe extern "C" fn wrtv_view_set_selection_background_color(view: *mut Vie
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_select_all(view: *mut View) {
     (*view).select_all()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_get_text(view: *mut View) -> *mut TextBuf {
+    (*view).text_mut()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_text_changed(view: *mut View) {
+    (*view).text_changed()
 }
 
 #[no_mangle]

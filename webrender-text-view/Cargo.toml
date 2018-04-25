@@ -22,7 +22,7 @@ path = "../../pilcrow"
 
 [dependencies.webrender]
 path = "/Users/pcwalton/Source/webrender/webrender"
-features = ["pathfinder"]
+features = ["pathfinder", "debugger"]
 
 [dependencies.webrender_api]
 path = "/Users/pcwalton/Source/webrender/webrender_api"

@@ -20,4 +20,7 @@
 
 @property(nonatomic, strong) WRTextView *textView;
 
+- (void)reloadText;
+- (void)setDebuggerEnabled:(BOOL)enabled;
+
 @end

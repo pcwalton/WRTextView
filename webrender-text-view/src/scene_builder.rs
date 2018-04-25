@@ -12,10 +12,11 @@ use pilcrow::{Frame, Line, ParagraphStyle, Run, Section};
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Range;
-use webrender_api::{ColorF, DisplayListBuilder, FontRenderMode, GlyphInstance, GlyphOptions, LayoutPrimitiveInfo, LayoutPoint};
+use webrender_api::{ColorF, DisplayListBuilder, FontRenderMode, GlyphInstance, GlyphOptions};
+use webrender_api::{GlyphRasterSpace, LayoutPrimitiveInfo, LayoutPoint};
 use webrender_api::{LayoutRect, LayoutSize, LineOrientation, LineStyle, MixBlendMode, RenderApi};
 use webrender_api::{ResourceUpdates, ScrollPolicy, TransformStyle};
-use {ComputedStyle, FontInstanceInfo, PIPELINE_ID, TextLocation, WrDisplayList};
+use {ComputedStyle, FontInstanceInfo, FontKeyMap, PIPELINE_ID, TextLocation, WrDisplayList};
 
 const BLACK_COLOR: ColorF = ColorF {
     r: 0.0,
@@ -47,7 +48,8 @@ impl SceneBuilder {
                                                    TransformStyle::Flat,
                                                    None,
                                                    MixBlendMode::Normal,
-                                                   vec![]);
+                                                   vec![],
+                                                   GlyphRasterSpace::Screen);
         SceneBuilder {
             display_list_builder,
             selection: (*selection).clone(),
@@ -64,9 +66,8 @@ impl SceneBuilder {
     pub fn build_display_list(&mut self,
                               render_api: &RenderApi,
                               resource_updates: &mut ResourceUpdates,
+                              font_keys: &mut FontKeyMap,
                               section: &Section) {
-        let mut font_keys = HashMap::new();
-
         for (frame_index, frame) in section.frames().iter().enumerate() {
             let frame_char_len = frame.char_len();
 
@@ -99,7 +100,7 @@ impl SceneBuilder {
 
                     let computed_style = ComputedStyle::from_formatting(run.formatting(),
                                                                         &self.active_link_id,
-                                                                        &mut font_keys,
+                                                                        font_keys,
                                                                         &render_api,
                                                                         resource_updates);
 

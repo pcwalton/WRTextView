@@ -12,14 +12,22 @@
 @class WRTextView;
 
 @interface Document : NSDocument {
+    pilcrow_text_buf_t *_textBuffer;
+    NSString *_textString;
+    BOOL _debuggerEnabled;
     IBOutlet WRTextView *textView;
     IBOutlet NSView *formatPane;
 }
 
-@property(nonatomic) pilcrow_text_buf_t *textBuffer;
+@property(nonatomic, strong) IBOutlet NSButton *debuggerToolbarButton;
+@property(nonatomic, strong) IBOutlet NSButton *formatToolbarButton;
+@property(nonatomic, strong) IBOutlet NSPopUpButton *fontPopUpButton;
 
+- (IBAction)toggleDebugger:(id)sender;
 - (IBAction)toggleFormatPaneVisibility:(id)sender;
 - (IBAction)zoom:(id)sender;
+- (IBAction)changeFontFamily:(id)sender;
+- (pilcrow_text_buf_t *)takeTextBuffer;
 
 @end
 
