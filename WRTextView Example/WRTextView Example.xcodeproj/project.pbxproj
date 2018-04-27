@@ -13,6 +13,15 @@
 		6A0A156A208FDA9600E32BC6 /* libwebrender_text_view.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */; };
 		6A0A1570208FE6AA00E32BC6 /* WindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A156F208FE6AA00E32BC6 /* WindowController.m */; };
 		6A0A1577208FEE9400E32BC6 /* WRTextView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6A0A157C2092B72400E32BC6 /* ContextMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A157B2092B72400E32BC6 /* ContextMenu.xib */; };
+		6A0A15852092BD8400E32BC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15842092BD8400E32BC6 /* AppDelegate.m */; };
+		6A0A15882092BD8400E32BC6 /* DocumentBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */; };
+		6A0A158B2092BD8400E32BC6 /* DocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A158A2092BD8400E32BC6 /* DocumentViewController.m */; };
+		6A0A158E2092BD8400E32BC6 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A158D2092BD8400E32BC6 /* Document.m */; };
+		6A0A15912092BD8400E32BC6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A158F2092BD8400E32BC6 /* Main.storyboard */; };
+		6A0A15932092BD8500E32BC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A15922092BD8500E32BC6 /* Assets.xcassets */; };
+		6A0A15962092BD8500E32BC6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A15942092BD8500E32BC6 /* LaunchScreen.storyboard */; };
+		6A0A15992092BD8500E32BC6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15982092BD8500E32BC6 /* main.m */; };
 		6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB1207ED10400887721 /* AppDelegate.m */; };
 		6A0E3CB5207ED10400887721 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB4207ED10400887721 /* Document.m */; };
 		6A0E3CB8207ED10400887721 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB6207ED10400887721 /* Document.xib */; };
@@ -51,6 +60,21 @@
 		6A0A1562208FD98000E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0A156E208FE6AA00E32BC6 /* WindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowController.h; sourceTree = "<group>"; };
 		6A0A156F208FE6AA00E32BC6 /* WindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowController.m; sourceTree = "<group>"; };
+		6A0A157B2092B72400E32BC6 /* ContextMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContextMenu.xib; sourceTree = "<group>"; };
+		6A0A15812092BD8400E32BC6 /* WRMobileTextView Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WRMobileTextView Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A0A15832092BD8400E32BC6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		6A0A15842092BD8400E32BC6 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		6A0A15862092BD8400E32BC6 /* DocumentBrowserViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentBrowserViewController.h; sourceTree = "<group>"; };
+		6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DocumentBrowserViewController.m; sourceTree = "<group>"; };
+		6A0A15892092BD8400E32BC6 /* DocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentViewController.h; sourceTree = "<group>"; };
+		6A0A158A2092BD8400E32BC6 /* DocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DocumentViewController.m; sourceTree = "<group>"; };
+		6A0A158C2092BD8400E32BC6 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
+		6A0A158D2092BD8400E32BC6 /* Document.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
+		6A0A15902092BD8400E32BC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		6A0A15922092BD8500E32BC6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6A0A15952092BD8500E32BC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		6A0A15972092BD8500E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6A0A15982092BD8500E32BC6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6A0E3CAD207ED10400887721 /* WRTextView Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WRTextView Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0E3CB0207ED10400887721 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		6A0E3CB1207ED10400887721 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -62,10 +86,6 @@
 		6A0E3CBE207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0E3CBF207ED10600887721 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6A0E3CC1207ED10600887721 /* WRTextView_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WRTextView_Example.entitlements; sourceTree = "<group>"; };
-		6A0E3CCA207ED10600887721 /* WRTextView_ExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView_ExampleTests.m; sourceTree = "<group>"; };
-		6A0E3CCC207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6A0E3CD5207ED10600887721 /* WRTextView_ExampleUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView_ExampleUITests.m; sourceTree = "<group>"; };
-		6A0E3CD7207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0E3CE3207ED14800887721 /* WRTextRendererView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextRendererView.h; sourceTree = "<group>"; };
 		6A0E3CE4207ED14800887721 /* WRTextRendererView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextRendererView.m; sourceTree = "<group>"; };
 		6A0E3CE7207EF98A00887721 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = ../../pilcrow/target/debug/libpilcrow.dylib; sourceTree = "<group>"; };
@@ -83,6 +103,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6A0A157E2092BD8400E32BC6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0E3CAA207ED10400887721 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -96,23 +123,44 @@
 		6A0A1560208FD97F00E32BC6 /* WRTextView */ = {
 			isa = PBXGroup;
 			children = (
+				6A0E3CAE207ED10400887721 /* Products */,
 				6A0E3CE3207ED14800887721 /* WRTextRendererView.h */,
 				6A0E3CE4207ED14800887721 /* WRTextRendererView.m */,
 				6A0A1561208FD98000E32BC6 /* WRTextView.h */,
 				6A5B60022084FD8200C10F79 /* WRTextView.m */,
+				6A0A157B2092B72400E32BC6 /* ContextMenu.xib */,
 				6A0A1562208FD98000E32BC6 /* Info.plist */,
 			);
 			path = WRTextView;
+			sourceTree = "<group>";
+		};
+		6A0A15822092BD8400E32BC6 /* WRMobileTextView Example */ = {
+			isa = PBXGroup;
+			children = (
+				6A0A15832092BD8400E32BC6 /* AppDelegate.h */,
+				6A0A15842092BD8400E32BC6 /* AppDelegate.m */,
+				6A0A15862092BD8400E32BC6 /* DocumentBrowserViewController.h */,
+				6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */,
+				6A0A15892092BD8400E32BC6 /* DocumentViewController.h */,
+				6A0A158A2092BD8400E32BC6 /* DocumentViewController.m */,
+				6A0A158C2092BD8400E32BC6 /* Document.h */,
+				6A0A158D2092BD8400E32BC6 /* Document.m */,
+				6A0A158F2092BD8400E32BC6 /* Main.storyboard */,
+				6A0A15922092BD8500E32BC6 /* Assets.xcassets */,
+				6A0A15942092BD8500E32BC6 /* LaunchScreen.storyboard */,
+				6A0A15972092BD8500E32BC6 /* Info.plist */,
+				6A0A15982092BD8500E32BC6 /* main.m */,
+			);
+			name = "WRMobileTextView Example";
+			path = "../WRMobileTextView Example";
 			sourceTree = "<group>";
 		};
 		6A0E3CA4207ED10400887721 = {
 			isa = PBXGroup;
 			children = (
 				6A0E3CAF207ED10400887721 /* WRTextView Example */,
-				6A0E3CC9207ED10600887721 /* WRTextView ExampleTests */,
-				6A0E3CD4207ED10600887721 /* WRTextView ExampleUITests */,
+				6A0A15822092BD8400E32BC6 /* WRMobileTextView Example */,
 				6A0A1560208FD97F00E32BC6 /* WRTextView */,
-				6A0E3CAE207ED10400887721 /* Products */,
 				6A0E3CE6207EF98A00887721 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -122,8 +170,10 @@
 			children = (
 				6A0E3CAD207ED10400887721 /* WRTextView Example.app */,
 				6A0A155F208FD97F00E32BC6 /* WRTextView.framework */,
+				6A0A15812092BD8400E32BC6 /* WRMobileTextView Example.app */,
 			);
 			name = Products;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		6A0E3CAF207ED10400887721 /* WRTextView Example */ = {
@@ -143,24 +193,6 @@
 				6A0E3CC1207ED10600887721 /* WRTextView_Example.entitlements */,
 			);
 			path = "WRTextView Example";
-			sourceTree = "<group>";
-		};
-		6A0E3CC9207ED10600887721 /* WRTextView ExampleTests */ = {
-			isa = PBXGroup;
-			children = (
-				6A0E3CCA207ED10600887721 /* WRTextView_ExampleTests.m */,
-				6A0E3CCC207ED10600887721 /* Info.plist */,
-			);
-			path = "WRTextView ExampleTests";
-			sourceTree = "<group>";
-		};
-		6A0E3CD4207ED10600887721 /* WRTextView ExampleUITests */ = {
-			isa = PBXGroup;
-			children = (
-				6A0E3CD5207ED10600887721 /* WRTextView_ExampleUITests.m */,
-				6A0E3CD7207ED10600887721 /* Info.plist */,
-			);
-			path = "WRTextView ExampleUITests";
 			sourceTree = "<group>";
 		};
 		6A0E3CE6207EF98A00887721 /* Frameworks */ = {
@@ -205,6 +237,23 @@
 			productReference = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		6A0A15802092BD8400E32BC6 /* WRMobileTextView Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6A0A159A2092BD8500E32BC6 /* Build configuration list for PBXNativeTarget "WRMobileTextView Example" */;
+			buildPhases = (
+				6A0A157D2092BD8400E32BC6 /* Sources */,
+				6A0A157E2092BD8400E32BC6 /* Frameworks */,
+				6A0A157F2092BD8400E32BC6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "WRMobileTextView Example";
+			productName = "WRMobileTextView Example";
+			productReference = 6A0A15812092BD8400E32BC6 /* WRMobileTextView Example.app */;
+			productType = "com.apple.product-type.application";
+		};
 		6A0E3CAC207ED10400887721 /* WRTextView Example */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6A0E3CDA207ED10600887721 /* Build configuration list for PBXNativeTarget "WRTextView Example" */;
@@ -236,6 +285,9 @@
 					6A0A155E208FD97F00E32BC6 = {
 						CreatedOnToolsVersion = 9.3;
 					};
+					6A0A15802092BD8400E32BC6 = {
+						CreatedOnToolsVersion = 9.3;
+					};
 					6A0E3CAC207ED10400887721 = {
 						CreatedOnToolsVersion = 9.3;
 						SystemCapabilities = {
@@ -261,6 +313,7 @@
 			targets = (
 				6A0E3CAC207ED10400887721 /* WRTextView Example */,
 				6A0A155E208FD97F00E32BC6 /* WRTextView */,
+				6A0A15802092BD8400E32BC6 /* WRMobileTextView Example */,
 			);
 		};
 /* End PBXProject section */
@@ -270,6 +323,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A0A157C2092B72400E32BC6 /* ContextMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6A0A157F2092BD8400E32BC6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A0A15962092BD8500E32BC6 /* LaunchScreen.storyboard in Resources */,
+				6A0A15932092BD8500E32BC6 /* Assets.xcassets in Resources */,
+				6A0A15912092BD8400E32BC6 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +359,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6A0A157D2092BD8400E32BC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A0A15992092BD8500E32BC6 /* main.m in Sources */,
+				6A0A158E2092BD8400E32BC6 /* Document.m in Sources */,
+				6A0A15882092BD8400E32BC6 /* DocumentBrowserViewController.m in Sources */,
+				6A0A158B2092BD8400E32BC6 /* DocumentViewController.m in Sources */,
+				6A0A15852092BD8400E32BC6 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0E3CA9207ED10400887721 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -317,6 +393,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		6A0A158F2092BD8400E32BC6 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6A0A15902092BD8400E32BC6 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		6A0A15942092BD8500E32BC6 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6A0A15952092BD8500E32BC6 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 		6A0E3CB6207ED10400887721 /* Document.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -394,13 +486,52 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/debug";
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/release";
 				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.WRTextView;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				REEXPORTED_LIBRARY_NAMES = webrender_text_view;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		6A0A159B2092BD8500E32BC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "WRMobileTextView Example/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRMobileTextView-Example";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6A0A159C2092BD8500E32BC6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = "WRMobileTextView Example/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRMobileTextView-Example";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -531,7 +662,7 @@
 					"@executable_path/../Frameworks",
 				);
 				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/debug";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-Example";
+				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.WRTextViewExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -554,8 +685,8 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/debug";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.mozilla.WRTextView-Example";
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/release";
+				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.WRTextViewExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -569,6 +700,15 @@
 			buildConfigurations = (
 				6A0A1564208FD98000E32BC6 /* Debug */,
 				6A0A1565208FD98000E32BC6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6A0A159A2092BD8500E32BC6 /* Build configuration list for PBXNativeTarget "WRMobileTextView Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6A0A159B2092BD8500E32BC6 /* Debug */,
+				6A0A159C2092BD8500E32BC6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -17,7 +17,36 @@ static const void *getGLProcAddress(const char *symbolName) {
     return CFBundleGetFunctionPointerForName(bundle, (__bridge CFStringRef)symbolString);
 }
 
+static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event) {
+    switch ([event clickCount]) {
+        case 2:
+            return WRTV_MOUSE_EVENT_KIND_T_LEFT_DOUBLE;
+    }
+    return WRTV_MOUSE_EVENT_KIND_T_LEFT;
+}
+
+static NSString *WRNSStringFromPilcrowString(pilcrow_string_t *pString) {
+    if (pString == NULL)
+        return nil;
+    NSString *string = [[NSString alloc] initWithBytes:pilcrow_string_get_chars(pString)
+                                                length:pilcrow_string_get_byte_len(pString)
+                                              encoding:NSUTF8StringEncoding];
+    pilcrow_string_destroy(pString);
+    return string;
+}
+
+// Can't use the AppKit one because it's a private API...
+static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
+
 @implementation WRTextRendererView
+
++ (void)initialize {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [NSApp registerServicesMenuSendTypes:[NSArray arrayWithObject:NSStringPboardType]
+                                 returnTypes:[NSArray array]];
+    });
+}
 
 - (id)initWithFrame:(NSRect)frameRect pixelFormat:(NSOpenGLPixelFormat *)pixelFormat {
     self = [super initWithFrame:frameRect pixelFormat:pixelFormat];
@@ -27,6 +56,9 @@ static const void *getGLProcAddress(const char *symbolName) {
                                                             shareContext:nil];
     [self setOpenGLContext:glContext];
     [self setWantsBestResolutionOpenGLSurface:YES];
+
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    [bundle loadNibNamed:@"ContextMenu" owner:self topLevelObjects:nil];
     
     return self;
 }
@@ -64,11 +96,11 @@ static const void *getGLProcAddress(const char *symbolName) {
         devicePixelRatio = [[NSScreen mainScreen] backingScaleFactor];
     }
     
-    pilcrow_text_buf_t *textBuffer = [[textView document] takeTextBuffer];
-    if (textBuffer == NULL)
+    pilcrow_document_t *document = [[textView document] takeDocument];
+    if (document == NULL)
         return;
 
-    self->_wrView = wrtv_view_new(textBuffer,
+    self->_wrView = wrtv_view_new(document,
                                   (uint32_t)ceil(backingFrame.size.width),
                                   (uint32_t)ceil(backingFrame.size.height),
                                   devicePixelRatio,
@@ -101,13 +133,15 @@ static const void *getGLProcAddress(const char *symbolName) {
     NSLog(@"reloading text!");
     if (self->_wrView == NULL)
         return;
-    pilcrow_text_buf_t *newTextBuffer = [[self->_textView document] takeTextBuffer];
-    if (newTextBuffer == NULL)
+    pilcrow_document_t *newDocument = [[self->_textView document] takeDocument];
+    if (newDocument == NULL)
         return;
-    pilcrow_text_buf_t *currentTextBuffer = wrtv_view_get_text(self->_wrView);
-    pilcrow_text_buf_clear(currentTextBuffer);
-    pilcrow_text_buf_append_text_buf(currentTextBuffer, newTextBuffer);
-    wrtv_view_text_changed(self->_wrView);
+    pilcrow_document_t *currentDocument = wrtv_view_get_document(self->_wrView);
+    pilcrow_document_clear(currentDocument);
+    pilcrow_document_style_copy(pilcrow_document_get_style(currentDocument),
+                                pilcrow_document_get_style(newDocument));
+    pilcrow_document_append_document(currentDocument, newDocument);
+    wrtv_view_document_changed(self->_wrView);
     [self setNeedsDisplay:YES];
 }
 
@@ -187,15 +221,7 @@ static const void *getGLProcAddress(const char *symbolName) {
         return;
     NSPoint point = [self _convertEventLocationToTextViewCoordinateSystem:event];
 
-    wrtv_mouse_event_kind_t mouseEventKind;
-    switch ([event clickCount]) {
-    case 2:
-        mouseEventKind = WRTV_MOUSE_EVENT_KIND_T_LEFT_DOUBLE;
-        break;
-    default:
-        mouseEventKind = WRTV_MOUSE_EVENT_KIND_T_LEFT;
-    }
-
+    wrtv_mouse_event_kind_t mouseEventKind = WRMouseEventKindFromNSEvent(event);
     wrtv_view_mouse_down(self->_wrView, (float)point.x, (float)point.y, mouseEventKind);
 
     [self setNeedsDisplay:YES];
@@ -212,11 +238,14 @@ static const void *getGLProcAddress(const char *symbolName) {
 - (void)mouseUp:(NSEvent *)event {
     if (self->_wrView == NULL)
         return;
+
     NSPoint point = [self _convertEventLocationToTextViewCoordinateSystem:event];
-    
+    wrtv_mouse_event_kind_t mouseEventKind = WRMouseEventKindFromNSEvent(event);
     wrtv_event_result_t *eventResult = wrtv_view_mouse_up(self->_wrView,
                                                           (float)point.x,
-                                                          (float)point.y);
+                                                          (float)point.y,
+                                                          mouseEventKind);
+
     switch (wrtv_event_result_get_type(eventResult)) {
     case WRTV_EVENT_RESULT_OPEN_URL: {
         size_t length = wrtv_event_result_get_string_len(eventResult);
@@ -273,21 +302,30 @@ static const void *getGLProcAddress(const char *symbolName) {
     [self setNeedsDisplay:YES];
 }
 
-- (IBAction)copy:(id)sender {
+- (NSString *)_allText {
+    pilcrow_string_t *string = pilcrow_document_copy_string(wrtv_view_get_document(self->_wrView));
+    return WRNSStringFromPilcrowString(string);
+}
+
+- (NSString *)_selectedText {
     if (self->_wrView == NULL)
-        return;
-    pilcrow_string_t *pString = wrtv_view_copy_selected_text(self->_wrView);
-    if (pString == NULL)
-        return;
-    NSString *string = [[NSString alloc] initWithBytes:pilcrow_string_get_chars(pString)
-                                                length:pilcrow_string_get_byte_len(pString)
-                                              encoding:NSUTF8StringEncoding];
-    pilcrow_string_destroy(pString);
-    if (string == nil)
-        return;
+        return nil;
+    return WRNSStringFromPilcrowString(wrtv_view_copy_selected_text(self->_wrView));
+}
+
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pasteboard types:(NSArray *)types {
+    if (![types containsObject:NSStringPboardType])
+        return NO;
+    NSString *string = [self _selectedText];
+    [pasteboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
+    return [pasteboard setString:string forType:NSStringPboardType];
+}
+
+- (IBAction)copy:(id)sender {
     NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
     [pasteboard clearContents];
-    [pasteboard writeObjects:[NSArray arrayWithObject:string]];
+    [self writeSelectionToPasteboard:pasteboard
+                               types:[NSArray arrayWithObject:NSStringPboardType]];
 }
 
 - (BOOL)acceptsFirstResponder {
@@ -299,5 +337,35 @@ static const void *getGLProcAddress(const char *symbolName) {
         wrtv_view_set_debugger_enabled(self->_wrView, enabled);
     [self setNeedsDisplay:YES];
 }
+
+- (id)validRequestorForSendType:(NSPasteboardType)sendType
+                     returnType:(NSPasteboardType)returnType {
+    if ([sendType isEqual:NSStringPboardType])
+        return self;
+    return [super validRequestorForSendType:sendType returnType:returnType];
+}
+
+- (IBAction)startSpeaking:(id)sender {
+    NSString *string = [self _selectedText];
+    if (string == nil)
+        string = [self _allText];
+    if (gWRGlobalSpeechSynthesizer == nil)
+        gWRGlobalSpeechSynthesizer = [[NSSpeechSynthesizer alloc] initWithVoice:nil];
+    [gWRGlobalSpeechSynthesizer startSpeakingString:string];
+}
+
+- (IBAction)stopSpeaking:(id)sender {
+    if (gWRGlobalSpeechSynthesizer != nil)
+        [gWRGlobalSpeechSynthesizer stopSpeaking];
+}
+
+/*
+- (void)rightMouseDown:(NSEvent *)event {
+    if (self->_contextMenu == nil) {
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        [bundle loadNibNamed:@"ContextMenu" owner:self topLevelObjects:nil];
+    }
+    [NSMenu popUpContextMenu:self->_contextMenu withEvent:event forView:self];
+}*/
 
 @end

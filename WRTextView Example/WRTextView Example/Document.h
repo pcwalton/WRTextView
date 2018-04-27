@@ -9,25 +9,44 @@
 #import <Cocoa/Cocoa.h>
 #include <pilcrow.h>
 
+struct WRTextViewSideOffsets {
+    float top, right, bottom, left;
+};
+
+typedef struct WRTextViewSideOffsets WRTextViewSideOffsets;
+
 @class WRTextView;
 
 @interface Document : NSDocument {
-    pilcrow_text_buf_t *_textBuffer;
+    pilcrow_document_t *_document;
     NSString *_textString;
     BOOL _debuggerEnabled;
+    NSMutableArray<NSFont *> *_fonts;
+    WRTextViewSideOffsets _documentMargins;
+    WRTextViewSideOffsets _paragraphMargins[4];
     IBOutlet WRTextView *textView;
     IBOutlet NSView *formatPane;
 }
 
 @property(nonatomic, strong) IBOutlet NSButton *debuggerToolbarButton;
 @property(nonatomic, strong) IBOutlet NSButton *formatToolbarButton;
+@property(nonatomic, strong) IBOutlet NSSplitView *splitView;
+@property(nonatomic, strong) IBOutlet NSPopUpButton *selectorPopUpButton;
 @property(nonatomic, strong) IBOutlet NSPopUpButton *fontPopUpButton;
+@property(nonatomic, strong) IBOutlet NSTextField *fontSizeField;
+@property(nonatomic, strong) IBOutlet NSStepper *fontSizeStepper;
+@property(nonatomic, strong) IBOutlet NSTabView *formatTabView;
+@property(nonatomic, strong) IBOutlet NSTextField *marginTopField;
+@property(nonatomic, strong) IBOutlet NSTextField *marginRightField;
+@property(nonatomic, strong) IBOutlet NSTextField *marginBottomField;
+@property(nonatomic, strong) IBOutlet NSTextField *marginLeftField;
 
 - (IBAction)toggleDebugger:(id)sender;
 - (IBAction)toggleFormatPaneVisibility:(id)sender;
-- (IBAction)zoom:(id)sender;
 - (IBAction)changeFontFamily:(id)sender;
-- (pilcrow_text_buf_t *)takeTextBuffer;
+- (IBAction)changeFontSize:(id)sender;
+- (IBAction)changeMargins:(id)sender;
+- (IBAction)selectNewStyle:(id)sender;
+- (pilcrow_document_t *)takeDocument;
 
 @end
-

@@ -10,6 +10,19 @@
 #import "WRTextView.h"
 #import "WindowController.h"
 
+#define DEFAULT_FORMAT_PANE_SIZE    250.0
+
+#define WRTextViewSelectorKindDocument  0
+#define WRTextViewSelectorKindParagraph 1
+#define WRTextViewSelectorKindInline    2
+
+struct WRTextViewSelector {
+    uint8_t selector;
+    uint8_t kind;
+};
+
+typedef struct WRTextViewSelector WRTextViewSelector;
+
 @interface Document ()
 
 @end
@@ -41,6 +54,53 @@
     return nil;
 }
 
+- (uint8_t)_paragraphStyleCount {
+    return (uint8_t)(sizeof(self->_paragraphMargins) / sizeof(self->_paragraphMargins[0]));
+}
+
+- (void)_populateDefaultStyles {
+    self->_fonts = [NSMutableArray arrayWithObjects:
+                    [NSFont fontWithName:@"Times" size:18.0],
+                    [NSFont fontWithName:@"Menlo" size:16.0],
+                    [NSFont systemFontOfSize:36.0 weight:NSFontWeightBold],
+                    [NSFont systemFontOfSize:24.0 weight:NSFontWeightBold],
+                    nil];
+    self->_documentMargins.left = self->_documentMargins.right = 6.0;
+    self->_documentMargins.bottom = self->_documentMargins.top = 0.0;
+
+    size_t paragraphStyleCount = [self _paragraphStyleCount];
+    for (size_t paragraphStyleIndex = 0;
+         paragraphStyleIndex < paragraphStyleCount;
+         paragraphStyleIndex++) {
+        WRTextViewSideOffsets *sideOffsets = &self->_paragraphMargins[paragraphStyleIndex];
+        sideOffsets->top = sideOffsets->right = sideOffsets->bottom = sideOffsets->left = 0.0;
+    }
+}
+
+- (pilcrow_markdown_parser_t *)_createMarkdownParser {
+    pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
+ 
+    uint32_t fontCount = (uint32_t)[self->_fonts count];
+    for (uint32_t index = 0; index < fontCount; index++) {
+        NSFont *font = [self->_fonts objectAtIndex:index];
+        pilcrow_font_t *pFont = pilcrow_font_new_from_native((__bridge CTFontRef)font);
+        pilcrow_markdown_parser_set_font(markdownParser, (pilcrow_inline_selector_t)index, pFont);
+    }
+    
+    uint32_t paragraphStyleCount = (uint32_t)[self _paragraphStyleCount];
+    for (uint32_t index = 0; index < paragraphStyleCount; index++) {
+        pilcrow_paragraph_style_t *style =
+            pilcrow_markdown_parser_get_paragraph_style(markdownParser, index);
+        WRTextViewSideOffsets *margins = &self->_paragraphMargins[index];
+        pilcrow_paragraph_style_set_margin(style,
+                                           margins->top,
+                                           margins->right,
+                                           margins->bottom,
+                                           margins->left);
+    }
+    
+    return markdownParser;
+}
 
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError {
     // Insert code here to read your document from the given data of the specified type. If outError != NULL, ensure that you create and set an appropriate error when returning NO.
@@ -49,24 +109,8 @@
     self->_textString = [[NSString alloc] initWithContentsOfURL:absoluteURL
                                                        encoding:NSUTF8StringEncoding
                                                           error:outError];
-    pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
-    NSFont *plainFont = [NSFont fontWithName:@"Times" size:18.0];
-    NSFont *codeFont = [NSFont fontWithName:@"Menlo" size:16.0];
-    NSFont *heading1Font = [NSFont systemFontOfSize:36.0 weight:NSFontWeightBold];
-    NSFont *heading2Font = [NSFont systemFontOfSize:24.0 weight:NSFontWeightBold];
-    pilcrow_font_t *plainPFont = pilcrow_font_new_from_native((__bridge CTFontRef)plainFont);
-    pilcrow_font_t *codePFont = pilcrow_font_new_from_native((__bridge CTFontRef)codeFont);
-    pilcrow_font_t *heading1PFont = pilcrow_font_new_from_native((__bridge CTFontRef)heading1Font);
-    pilcrow_font_t *heading2PFont = pilcrow_font_new_from_native((__bridge CTFontRef)heading2Font);
-    pilcrow_markdown_parser_set_font(markdownParser, PILCROW_FONT_SELECTOR_T_PLAIN, plainPFont);
-    pilcrow_markdown_parser_set_font(markdownParser, PILCROW_FONT_SELECTOR_T_CODE, codePFont);
-    pilcrow_markdown_parser_set_font(markdownParser,
-                                     PILCROW_FONT_SELECTOR_T_HEADING1,
-                                     heading1PFont);
-    pilcrow_markdown_parser_set_font(markdownParser,
-                                     PILCROW_FONT_SELECTOR_T_HEADING2,
-                                     heading2PFont);
-
+    [self _populateDefaultStyles];
+    pilcrow_markdown_parser_t *markdownParser = [self _createMarkdownParser];
     return [self _recreateTextBufferWithMarkdownParser:markdownParser];
 }
 
@@ -75,12 +119,20 @@
     if (bytes == NULL)
         return NO;
 
-    self->_textBuffer = pilcrow_text_buf_new();
+    self->_document = pilcrow_document_new();
+
+    pilcrow_document_style_t *documentStyle = pilcrow_document_get_style(self->_document);
+    pilcrow_document_style_set_margin(documentStyle,
+                                      self->_documentMargins.top,
+                                      self->_documentMargins.right,
+                                      self->_documentMargins.bottom,
+                                      self->_documentMargins.left);
+    
     pilcrow_markdown_parse_results_t *parseResults =
-        pilcrow_markdown_parser_add_to_text_buf(markdownParser,
+        pilcrow_markdown_parser_add_to_document(markdownParser,
                                                 (const uint8_t *)bytes,
                                                 strlen(bytes),
-                                                self->_textBuffer);
+                                                self->_document);
     
     uintptr_t imageCount = pilcrow_markdown_parse_results_get_image_count(parseResults);
     NSURLSession *urlSession = [NSURLSession sharedSession];
@@ -116,36 +168,29 @@
     return YES;
 }
 
-- (pilcrow_text_buf_t *)takeTextBuffer {
-    pilcrow_text_buf_t *textBuffer = self->_textBuffer;
-    self->_textBuffer = nil;
-    return textBuffer;
+- (pilcrow_document_t *)takeDocument {
+    pilcrow_document_t *document = self->_document;
+    self->_document = nil;
+    return document;
 }
 
 - (IBAction)toggleDebugger:(id)sender {
     self->_debuggerEnabled = !self->_debuggerEnabled;
+    [self->_debuggerToolbarButton setState:self->_debuggerEnabled ? NSOnState : NSOffState];
     [self->textView setDebuggerEnabled:self->_debuggerEnabled];
 }
 
 - (IBAction)toggleFormatPaneVisibility:(id)sender {
-    BOOL hide = ![self->formatPane isHidden];
-    [self->formatPane setHidden:hide];
-    if ([sender isKindOfClass:[NSButton class]])
-        [(NSButton *)sender setState:hide ? NSOffState : NSOnState];
-    NSView *splitView = [self->formatPane superview];
-    if ([splitView isKindOfClass:[NSSplitView class]])
-        [(NSSplitView *)splitView adjustSubviews];
-}
-
-- (IBAction)zoom:(id)sender {
-    CGFloat factor = 1.0;
-    if ([sender isKindOfClass:[NSSegmentedControl class]])
-        factor = [(NSSegmentedControl *)sender selectedSegment] == 0 ? 1./1.1 : 1.1;
-    if (factor == 1.0)
+    NSView *formatSuperview = [self->formatPane superview];
+    if (![formatSuperview isKindOfClass:[NSSplitView class]])
         return;
-    NSSize textViewSize = [self->textView frame].size;
-    NSPoint center = NSMakePoint(textViewSize.width * 0.5, textViewSize.height * 0.5);
-    [self->textView zoomBy:factor atPoint:center];
+    NSSplitView *splitView = (NSSplitView *)formatSuperview;
+
+    BOOL collapse = ![splitView isSubviewCollapsed:self->formatPane];
+    [self->_formatToolbarButton setState:collapse ? NSOffState : NSOnState];
+
+    CGFloat position = [splitView frame].size.width - (collapse ? 0.0 : DEFAULT_FORMAT_PANE_SIZE);
+    [splitView setPosition:position ofDividerAtIndex:0];
 }
 
 - (void)makeWindowControllers {
@@ -153,30 +198,89 @@
                                                                         owner:self]];
 }
 
-- (IBAction)changeFontFamily:(id)sender {
-    NSPopUpButton *fontPopUpButton = sender;
-    
-    pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
-    NSFont *plainFont = [NSFont fontWithName:[fontPopUpButton titleOfSelectedItem] size:18.0];
-    NSFont *codeFont = [NSFont fontWithName:@"Menlo" size:16.0];
-    NSFont *heading1Font = [NSFont systemFontOfSize:36.0 weight:NSFontWeightBold];
-    NSFont *heading2Font = [NSFont systemFontOfSize:24.0 weight:NSFontWeightBold];
-    pilcrow_font_t *plainPFont = pilcrow_font_new_from_native((__bridge CTFontRef)plainFont);
-    pilcrow_font_t *codePFont = pilcrow_font_new_from_native((__bridge CTFontRef)codeFont);
-    pilcrow_font_t *heading1PFont = pilcrow_font_new_from_native((__bridge CTFontRef)heading1Font);
-    pilcrow_font_t *heading2PFont = pilcrow_font_new_from_native((__bridge CTFontRef)heading2Font);
-    pilcrow_markdown_parser_set_font(markdownParser, PILCROW_FONT_SELECTOR_T_PLAIN, plainPFont);
-    pilcrow_markdown_parser_set_font(markdownParser, PILCROW_FONT_SELECTOR_T_CODE, codePFont);
-    pilcrow_markdown_parser_set_font(markdownParser,
-                                     PILCROW_FONT_SELECTOR_T_HEADING1,
-                                     heading1PFont);
-    pilcrow_markdown_parser_set_font(markdownParser,
-                                     PILCROW_FONT_SELECTOR_T_HEADING2,
-                                     heading2PFont);
-    
+- (WRTextViewSelector)_currentSelector {
+    NSInteger tag = [self->_selectorPopUpButton selectedTag];
+    WRTextViewSelector selector;
+    selector.kind = (tag >> 8);
+    selector.selector = (tag & 0xff);
+    return selector;
+}
+
+- (void)_recreateTextBufferAndReloadText {
+    pilcrow_markdown_parser_t *markdownParser = [self _createMarkdownParser];
     [self _recreateTextBufferWithMarkdownParser:markdownParser];
-    
     [self->textView reloadText];
+}
+
+- (void)_updateFont {
+    uint32_t fontSelector = (uint32_t)[self _currentSelector].selector;
+    NSString *familyName = [self->_fontPopUpButton titleOfSelectedItem];
+    CGFloat size = [self->_fontSizeField doubleValue];
+    NSFont *font = [NSFont fontWithName:familyName size:size];
+    [self->_fonts replaceObjectAtIndex:fontSelector withObject:font];
+
+    [self _recreateTextBufferAndReloadText];
+}
+
+- (void)_updateMargins:(WRTextViewSideOffsets *)destMargins {
+    destMargins->top = [self->_marginTopField floatValue];
+    destMargins->right = [self->_marginRightField floatValue];
+    destMargins->bottom = [self->_marginBottomField floatValue];
+    destMargins->left = [self->_marginLeftField floatValue];
+    
+    [self _recreateTextBufferAndReloadText];
+}
+
+- (void)_updateDocumentStyle {
+    [self _updateMargins:&self->_documentMargins];
+}
+
+- (void)_updateParagraphStyle {
+    uint32_t paragraphStyleCount = [self _paragraphStyleCount];
+    uint8_t paragraphSelector = (uint8_t)[self _currentSelector].selector;
+    if (paragraphSelector >= paragraphStyleCount)
+        paragraphSelector = paragraphStyleCount - 1;
+    [self _updateMargins:&self->_paragraphMargins[paragraphSelector]];
+}
+
+- (IBAction)changeFontFamily:(id)sender {
+    [self _updateFont];
+}
+
+- (IBAction)changeFontSize:(id)sender {
+    CGFloat newSize = [sender doubleValue];
+    [self->_fontSizeStepper setDoubleValue:newSize];
+    [self->_fontSizeField setDoubleValue:newSize];
+
+    [self _updateFont];
+}
+
+- (IBAction)changeMargins:(id)sender {
+    switch ([self _currentSelector].kind) {
+    case WRTextViewSelectorKindDocument:
+        [self _updateDocumentStyle];
+        break;
+    case WRTextViewSelectorKindParagraph:
+        [self _updateParagraphStyle];
+        break;
+    }
+}
+
+- (IBAction)selectNewStyle:(id)sender {
+    WRTextViewSelector selector = [self _currentSelector];
+    
+    NSInteger tabIndex = selector.kind == WRTextViewSelectorKindInline ? 1 : 0;
+    [self->_formatTabView selectTabViewItemAtIndex:tabIndex];
+
+    NSFont *font = [self->_fonts objectAtIndex:selector.selector];
+    CGFloat size = [font pointSize];
+    [self->_fontSizeField setDoubleValue:size];
+    [self->_fontSizeStepper setDoubleValue:size];
+
+    NSString *familyName = [font familyName];
+    if ([self->_fontPopUpButton indexOfItemWithTitle:familyName] < 0)
+        [self->_fontPopUpButton addItemWithTitle:familyName];
+    [self->_fontPopUpButton selectItemWithTitle:familyName];
 }
 
 @end

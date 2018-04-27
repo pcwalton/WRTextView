@@ -8,7 +8,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use pilcrow::{Frame, Line, ParagraphStyle, Run, Section};
+use pilcrow::{Frame, Line, ParagraphContent, ParagraphStyle, Run, Section};
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Range;
@@ -187,9 +187,9 @@ impl SceneBuilder {
     }
 
     fn add_frame_decorations(&mut self, frame: &Frame) {
-        match frame.style() {
-            ParagraphStyle::Plain => {}
-            ParagraphStyle::Rule => {
+        match frame.style().content {
+            ParagraphContent::Text => {}
+            ParagraphContent::Rule => {
                 let frame_bounds = frame.bounds();
                 let origin = LayoutPoint::new(frame_bounds.origin.x, frame_bounds.max_y() - 1.0);
                 let size = LayoutSize::new(frame_bounds.size.width, 1.0);

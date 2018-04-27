@@ -9,7 +9,7 @@
 // except according to those terms.
 
 use euclid::{Length, TypedScale, TypedVector2D};
-use pilcrow::{Color, TextBuf};
+use pilcrow::{Color, Document};
 use std::cmp;
 use std::ptr;
 use webrender_api::{DevicePoint, DeviceUintSize, LayoutPoint};
@@ -19,18 +19,18 @@ pub const WRTV_EVENT_RESULT_NONE: u8 = 0;
 pub const WRTV_EVENT_RESULT_OPEN_URL: u8 = 1;
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_new(text: *mut TextBuf,
+pub unsafe extern "C" fn wrtv_view_new(document: *mut Document,
                                        viewport_width: u32,
                                        viewport_height: u32,
                                        device_pixel_ratio: f32,
                                        available_width: f32,
                                        get_proc_address: GetProcAddressFn)
                                        -> *mut View {
-    let text = Box::from_raw(text);
+    let document = Box::from_raw(document);
     let viewport = DeviceUintSize::new(viewport_width, viewport_height);
     let device_pixel_ratio = TypedScale::new(device_pixel_ratio);
     let available_width = Length::new(available_width);
-    Box::into_raw(Box::new(View::new(*text,
+    Box::into_raw(Box::new(View::new(*document,
                                      &viewport,
                                      device_pixel_ratio,
                                      available_width,
@@ -76,8 +76,9 @@ pub unsafe extern "C" fn wrtv_view_mouse_down(view: *mut View,
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_mouse_up(view: *mut View, x: f32, y: f32) -> *mut EventResult {
-    Box::into_raw(Box::new((*view).mouse_up(&LayoutPoint::new(x, y))))
+pub unsafe extern "C" fn wrtv_view_mouse_up(view: *mut View, x: f32, y: f32, kind: MouseEventKind)
+                                            -> *mut EventResult {
+    Box::into_raw(Box::new((*view).mouse_up(&LayoutPoint::new(x, y), kind)))
 }
 
 #[no_mangle]
@@ -133,13 +134,13 @@ pub unsafe extern "C" fn wrtv_view_select_all(view: *mut View) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_get_text(view: *mut View) -> *mut TextBuf {
-    (*view).text_mut()
+pub unsafe extern "C" fn wrtv_view_get_document(view: *mut View) -> *mut Document {
+    (*view).document_mut()
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn wrtv_view_text_changed(view: *mut View) {
-    (*view).text_changed()
+pub unsafe extern "C" fn wrtv_view_document_changed(view: *mut View) {
+    (*view).document_changed()
 }
 
 #[no_mangle]

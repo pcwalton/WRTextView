@@ -26,7 +26,7 @@ use euclid::{Length, Point2D, Transform2D, TypedScale, TypedSideOffsets2D};
 use euclid::{TypedTransform2D, TypedVector2D};
 use gleam::gl;
 use libc::c_char;
-use pilcrow::{Color, FontFaceId, FontId, Format, Framesetter, Section, TextBuf, TextLocation};
+use pilcrow::{Color, FontFaceId, FontId, Format, Framesetter, Section, Document, TextLocation};
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::f32;
@@ -68,12 +68,6 @@ const DEFAULT_LINK_ACTIVE_COLOR: ColorF = ColorF {
     a: 1.0,
 };
 
-lazy_static! {
-    static ref DEFAULT_PAGE_MARGIN: TypedSideOffsets2D<f32, LayoutPixel> = {
-        TypedSideOffsets2D::new(0.0, 6.0, 0.0, 6.0)
-    };
-}
-
 pub const PIPELINE_ID: PipelineId = PipelineId(0, 0);
 
 pub type GetProcAddressFn = unsafe extern "C" fn(*const c_char) -> *const c_void;
@@ -83,18 +77,18 @@ type WrDisplayList = (PipelineId, LayoutSize, BuiltDisplayList);
 pub type FontKeyMap = HashMap<FontFaceId, FontInfo>;
 
 pub struct View {
-    text: TextBuf,
+    document: Document,
     available_width: Length<f32, LayoutPixel>,
     viewport_size: DeviceUintSize,
     device_pixel_ratio: TypedScale<f32, LayoutPixel, DevicePixel>,
     transform: TypedTransform2D<f32, LayoutPixel, LayoutPixel>,
     section: Section,
 
-    page_margin: TypedSideOffsets2D<f32, LayoutPixel>,
     selection_background_color: ColorF,
 
     selection: Option<Selection>,
     active_link_id: Option<usize>,
+    mouse_status: MouseStatus,
 
     font_keys: FontKeyMap,
 
@@ -106,7 +100,7 @@ pub struct View {
 }
 
 impl View {
-    pub fn new(text: TextBuf,
+    pub fn new(document: Document,
                viewport_size: &DeviceUintSize,
                device_pixel_ratio: TypedScale<f32, LayoutPixel, DevicePixel>,
                available_width: Length<f32, LayoutPixel>,
@@ -135,8 +129,7 @@ impl View {
                                                         available_layout_size.height as u32);
         let document_id = sender_api.add_document(available_device_size, 0);
 
-        let page_margin = *DEFAULT_PAGE_MARGIN;
-        let section = layout_text(&text, available_width, &page_margin);
+        let section = layout_text(&document, available_width);
 
         let active_link_id = None;
         let selection_background_color = DEFAULT_SELECTION_BACKGROUND_COLOR;
@@ -157,18 +150,18 @@ impl View {
         sender_api.send_transaction(document_id, transaction);
 
         View {
-            text,
+            document,
             available_width,
             device_pixel_ratio,
             viewport_size: *viewport_size,
             transform,
             section,
 
-            page_margin: *DEFAULT_PAGE_MARGIN,
             selection_background_color,
 
             selection: None,
             active_link_id,
+            mouse_status: MouseStatus::Up,
 
             font_keys,
 
@@ -259,87 +252,84 @@ impl View {
         let mut active_link_id = None;
         let mut dirty = false;
 
-        {
-            let HitTestResult {
-                point,
-                frame_index,
-                line_index,
-            } = match self.hit_test_point(point) {
-                None => return,
-                Some(hit_test_result) => hit_test_result,
-            };
+        if let Some(HitTestResult {
+            point,
+            frame_index,
+            line_index,
+        }) = self.hit_test_point(point) {
             let frame = &self.section.frames()[frame_index];
             let lines = frame.lines();
             let line = &lines[line_index];
-            let char_index = match line.char_index_for_position(&point.to_untyped()) {
-                None => return,
-                Some(char_index) => char_index,
-            };
-
-            if kind == MouseEventKind::LeftDouble {
-                let paragraph = &self.text.paragraphs()[frame_index];
-                let char_range = paragraph.word_range_at_char_index(char_index);
-                let start_location = TextLocation::new(frame_index, char_range.start);
-                let end_location = TextLocation::new(frame_index, char_range.end);
-                self.selection = Some(Selection::forward(start_location..end_location));
-                dirty = true;
-            }
-
-            let runs = line.runs();
-            let run = match runs.iter().find(|run| run.char_range().has(char_index)) {
-                None => return,
-                Some(run) => run,
-            };
-            for format in run.formatting().iter() {
-                if let Some((id, _url)) = format.link() {
-                    active_link_id = Some(id);
+            if let Some(char_index) = line.char_index_for_position(&point.to_untyped()) {
+                if kind == MouseEventKind::LeftDouble {
+                    let paragraph = &self.document.paragraphs()[frame_index];
+                    let char_range = paragraph.word_range_at_char_index(char_index);
+                    let start_location = TextLocation::new(frame_index, char_range.start);
+                    let end_location = TextLocation::new(frame_index, char_range.end);
+                    self.selection = Some(Selection::forward(start_location..end_location));
+                    dirty = true;
+                } else if self.selection.is_some() {
+                    self.selection = None;
                     dirty = true;
                 }
-            }
-        }
 
-        if dirty {
-            self.active_link_id = active_link_id;
-            self.rebuild_display_list();
-        }
-    }
-
-    pub fn mouse_up(&mut self, point: &LayoutPoint) -> EventResult {
-        let mut event_result = EventResult::None;
-        let dirty = self.active_link_id.is_some();
-
-        {
-            let HitTestResult {
-                point,
-                frame_index,
-                line_index,
-            } = match self.hit_test_point(point) {
-                None => return EventResult::None,
-                Some(hit_test_result) => hit_test_result,
-            };
-            let frame = &self.section.frames()[frame_index];
-            let lines = frame.lines();
-            let line = &lines[line_index];
-            let char_index = match line.char_index_for_position(&point.to_untyped()) {
-                None => return EventResult::None,
-                Some(char_index) => char_index,
-            };
-            let runs = line.runs();
-            let run = match runs.iter().find(|run| run.char_range().has(char_index)) {
-                None => return EventResult::None,
-                Some(run) => run,
-            };
-            for format in run.formatting().iter() {
-                if let Some((link_id, url)) = format.link() {
-                    if Some(link_id) == self.active_link_id {
-                        event_result = EventResult::OpenUrl(url)
+                let runs = line.runs();
+                if let Some(run) = runs.iter().find(|run| run.char_range().has(char_index)) {
+                    for format in run.formatting().iter() {
+                        if let Some((id, _url)) = format.link() {
+                            active_link_id = Some(id);
+                            dirty = true;
+                        }
                     }
                 }
             }
         }
 
+        self.mouse_status = match kind {
+            MouseEventKind::LeftDouble => MouseStatus::LeftDouble,
+            _ => MouseStatus::LeftSingle,
+        };
+        self.active_link_id = active_link_id;
+
         if dirty {
-            self.active_link_id = None;
+            self.rebuild_display_list();
+        }
+    }
+
+    pub fn mouse_up(&mut self, point: &LayoutPoint, _: MouseEventKind) -> EventResult {
+        let mut event_result = EventResult::None;
+        let mut dirty = self.active_link_id.is_some();
+
+        if let Some(HitTestResult {
+            point,
+            frame_index,
+            line_index,
+        }) = self.hit_test_point(point) {
+            let frame = &self.section.frames()[frame_index];
+            let lines = frame.lines();
+            let line = &lines[line_index];
+            if let Some(char_index) = line.char_index_for_position(&point.to_untyped()) {
+                let runs = line.runs();
+                if let Some(run) = runs.iter().find(|run| run.char_range().has(char_index)) {
+                    for format in run.formatting().iter() {
+                        if let Some((link_id, url)) = format.link() {
+                            if Some(link_id) == self.active_link_id {
+                                event_result = EventResult::OpenUrl(url)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if self.mouse_status == MouseStatus::LeftSingle {
+            self.selection = None;
+            dirty = true;
+        }
+        self.mouse_status = MouseStatus::Up;
+        self.active_link_id = None;
+
+        if dirty {
             self.rebuild_display_list();
         }
 
@@ -347,46 +337,41 @@ impl View {
     }
 
     pub fn mouse_dragged(&mut self, point: &LayoutPoint) {
-        {
-            let HitTestResult {
-                point,
-                frame_index,
-                line_index,
-            } = match self.hit_test_point(point) {
-                None => return,
-                Some(hit_test_result) => hit_test_result,
-            };
+        if let Some(HitTestResult {
+            point,
+            frame_index,
+            line_index,
+        }) = self.hit_test_point(point) {
             let frame = &self.section.frames()[frame_index];
             let lines = frame.lines();
             let line = &lines[line_index];
-            let char_index = match line.char_index_for_position(&point.to_untyped()) {
-                None => return,
-                Some(char_index) => char_index,
-            };
-
-            let location = TextLocation::new(frame_index, char_index);
-            match self.selection {
-                None => self.selection = Some(Selection::forward(location..location)),
-                Some(ref mut selection) => {
-                    match selection.direction {
-                        SelectionDirection::Forward if location < selection.range.start => {
-                            selection.direction = SelectionDirection::Backward;
-                            selection.range.end = selection.range.start;
-                            selection.range.start = location;
+            if let Some(char_index) = line.char_index_for_position(&point.to_untyped()) {
+                let location = TextLocation::new(frame_index, char_index);
+                match self.selection {
+                    None => self.selection = Some(Selection::forward(location..location)),
+                    Some(ref mut selection) => {
+                        match selection.direction {
+                            SelectionDirection::Forward if location < selection.range.start => {
+                                selection.direction = SelectionDirection::Backward;
+                                selection.range.end = selection.range.start;
+                                selection.range.start = location;
+                            }
+                            SelectionDirection::Forward => selection.range.end = location,
+                            SelectionDirection::Backward if location >= selection.range.end => {
+                                selection.direction = SelectionDirection::Forward;
+                                selection.range.start = selection.range.end;
+                                selection.range.end = location;
+                            }
+                            SelectionDirection::Backward => selection.range.start = location,
                         }
-                        SelectionDirection::Forward => selection.range.end = location,
-                        SelectionDirection::Backward if location >= selection.range.end => {
-                            selection.direction = SelectionDirection::Forward;
-                            selection.range.start = selection.range.end;
-                            selection.range.end = location;
-                        }
-                        SelectionDirection::Backward => selection.range.start = location,
                     }
                 }
             }
         }
 
+        self.mouse_status = MouseStatus::LeftDrag;
         self.active_link_id = None;
+
         self.rebuild_display_list();
     }
 
@@ -419,7 +404,7 @@ impl View {
 
     pub fn select_all(&mut self) {
         {
-            let paragraphs = self.text.paragraphs();
+            let paragraphs = self.document.paragraphs();
             let paragraph_index = match paragraphs.len() {
                 0 => 0,
                 paragraph_count => paragraph_count - 1,
@@ -437,24 +422,24 @@ impl View {
     }
 
     #[inline]
-    pub fn text_mut(&mut self) -> &mut TextBuf {
-        &mut self.text
+    pub fn document_mut(&mut self) -> &mut Document {
+        &mut self.document
     }
 
     #[inline]
-    pub fn text_changed(&mut self) {
+    pub fn document_changed(&mut self) {
         self.layout()
     }
 
     pub fn copy_selected_text(&self) -> Option<String> {
         self.selection.as_ref().map(|selection| {
-            self.text.copy_string_in_range(selection.range.clone())
+            self.document.copy_string_in_range(selection.range.clone())
         })
     }
 
     fn layout(&mut self) {
         let available_width = self.available_width;
-        self.section = layout_text(&self.text, available_width, &self.page_margin);
+        self.section = layout_text(&self.document, available_width);
 
         self.rebuild_display_list();
     }
@@ -509,14 +494,10 @@ pub enum MouseCursor {
     Pointer,
 }
 
-fn layout_text(text: &TextBuf,
-               available_width: Length<f32, LayoutPixel>,
-               page_margin: &TypedSideOffsets2D<f32, LayoutPixel>)
-               -> Section {
+fn layout_text(text: &Document, available_width: Length<f32, LayoutPixel>) -> Section {
     let framesetter = Framesetter::new(text);
-    let layout_origin = LayoutPoint::new(page_margin.left, page_margin.top);
-    let layout_width = available_width.get() - page_margin.horizontal();
-    let layout_size = LayoutSize::new(layout_width, 1000000.0);
+    let layout_origin = LayoutPoint::zero();
+    let layout_size = LayoutSize::new(available_width.get(), 1000000.0);
     framesetter.layout_in_rect(&LayoutRect::new(layout_origin, layout_size).to_untyped())
 }
 
@@ -708,4 +689,12 @@ impl Selection {
 enum SelectionDirection {
     Backward,
     Forward,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum MouseStatus {
+    Up,
+    LeftSingle,
+    LeftDouble,
+    LeftDrag,
 }

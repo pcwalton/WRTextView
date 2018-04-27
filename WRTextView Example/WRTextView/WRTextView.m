@@ -120,23 +120,22 @@
     return (NSScrollView *)supersuperview;
 }
 
-- (void)mouseDown:(NSEvent *)event {
-    NSLog(@"????? mouseDown on superview?????");
-}
-
 - (void)zoomBy:(CGFloat)scale atPoint:(NSPoint)point {
-    NSSize viewportSize = [self->_rendererView frame].size;
-    
     CGAffineTransform transform = [self transform];
+    NSSize documentSize = [self frame].size;
     
-    point.y = viewportSize.height - point.y;
+    point.y = documentSize.height - point.y;
 
-    transform = CGAffineTransformTranslate(transform, point.x, point.y);
-    transform = CGAffineTransformScale(transform, scale, scale);
     transform = CGAffineTransformTranslate(transform, -point.x, -point.y);
+    transform = CGAffineTransformScale(transform, scale, scale);
+    transform = CGAffineTransformTranslate(transform, point.x / scale, point.y / scale);
     [self setTransform:transform];
 
     [self->_rendererView setNeedsDisplay:YES];
+}
+
+- (CGFloat)zoomLevel {
+    return [self transform].a;
 }
 
 - (void)reloadText {
@@ -145,6 +144,36 @@
 
 - (void)setDebuggerEnabled:(BOOL)enabled {
     [self->_rendererView setDebuggerEnabled:enabled];
+}
+
+- (void)_zoomAtCenterBy:(CGFloat)factor {
+    NSSize size = [self frame].size;
+    [self zoomBy:factor atPoint:NSMakePoint(size.width * 0.5, size.height * 0.5)];
+}
+
+- (IBAction)zoom:(id)sender {
+    if (![sender isKindOfClass:[NSSegmentedControl class]])
+        return;
+    if ([(NSSegmentedControl *)sender selectedSegment] == 0)
+        [self zoomOut:sender];
+    else
+        [self zoomIn:sender];
+}
+
+- (IBAction)zoomIn:(id)sender {
+    [self _zoomAtCenterBy:1.1];
+}
+
+- (IBAction)zoomOut:(id)sender {
+    [self _zoomAtCenterBy:1./1.1];
+}
+
+- (IBAction)zoomToActualSize:(id)sender {
+    [self _zoomAtCenterBy:1. / [self zoomLevel]];
+}
+
+- (BOOL)acceptsFirstResponder {
+    return YES;
 }
 
 @end

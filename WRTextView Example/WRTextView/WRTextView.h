@@ -27,6 +27,10 @@ FOUNDATION_EXPORT const unsigned char WRTextViewVersionString[];
 - (void)zoomBy:(CGFloat)scale atPoint:(NSPoint)point;
 - (void)reloadText;
 - (void)setDebuggerEnabled:(BOOL)enabled;
+- (IBAction)zoom:(id)sender;
+- (IBAction)zoomIn:(id)sender;
+- (IBAction)zoomOut:(id)sender;
+- (IBAction)zoomToActualSize:(id)sender;
 
 @end
 

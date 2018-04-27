@@ -328,6 +328,33 @@
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <menu key="submenu" title="View" id="HyV-fh-RgO">
                         <items>
+                            <menuItem title="Show Debugger" keyEquivalent="d" id="a8I-hT-yUX">
+                                <connections>
+                                    <action selector="toggleDebugger:" target="-1" id="PLk-uI-wIs"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show Formatting" keyEquivalent="t" id="w4W-Ne-lzz">
+                                <connections>
+                                    <action selector="toggleFormatPaneVisibility:" target="-1" id="wdh-aL-I5O"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="aTz-b0-Qr7"/>
+                            <menuItem title="Actual Size" keyEquivalent="0" id="5MX-8D-EWc">
+                                <connections>
+                                    <action selector="zoomToActualSize:" target="-1" id="lnN-de-GO0"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom In" keyEquivalent="=" id="2A1-fY-roy">
+                                <connections>
+                                    <action selector="zoomIn:" target="-1" id="q95-gB-YU0"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Zoom Out" keyEquivalent="-" id="nhr-uR-eRx">
+                                <connections>
+                                    <action selector="zoomOut:" target="-1" id="YYF-Bx-9OR"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="O5d-bh-aIt"/>
                             <menuItem title="Show Toolbar" keyEquivalent="t" id="snW-S8-Cw5">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
