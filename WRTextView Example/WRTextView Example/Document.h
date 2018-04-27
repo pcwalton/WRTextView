@@ -23,7 +23,7 @@ typedef struct WRTextViewSideOffsets WRTextViewSideOffsets;
     BOOL _debuggerEnabled;
     NSMutableArray<NSFont *> *_fonts;
     WRTextViewSideOffsets _documentMargins;
-    WRTextViewSideOffsets _paragraphMargins[4];
+    WRTextViewSideOffsets _paragraphMargins[5];
     IBOutlet WRTextView *textView;
     IBOutlet NSView *formatPane;
 }

@@ -21,7 +21,7 @@
     [super windowDidLoad];
 
     Document *document = [self owner];
-    
+
     NSCellStyleMask highlightMask = NSPushInCellMask | NSContentsCellMask;
     NSCellStyleMask showsStateMask = highlightMask | NSChangeBackgroundCellMask;
     NSButtonCell *debuggerToolbarButtonCell = [[document debuggerToolbarButton] cell];

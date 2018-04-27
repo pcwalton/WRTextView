@@ -272,15 +272,39 @@ typedef struct WRTextViewSelector WRTextViewSelector;
     NSInteger tabIndex = selector.kind == WRTextViewSelectorKindInline ? 1 : 0;
     [self->_formatTabView selectTabViewItemAtIndex:tabIndex];
 
-    NSFont *font = [self->_fonts objectAtIndex:selector.selector];
-    CGFloat size = [font pointSize];
-    [self->_fontSizeField setDoubleValue:size];
-    [self->_fontSizeStepper setDoubleValue:size];
+    switch (selector.kind) {
+    case WRTextViewSelectorKindInline: {
+        NSFont *font = [self->_fonts objectAtIndex:selector.selector];
+        CGFloat size = [font pointSize];
+        [self->_fontSizeField setDoubleValue:size];
+        [self->_fontSizeStepper setDoubleValue:size];
+        
+        NSString *familyName = [font familyName];
+        if ([self->_fontPopUpButton indexOfItemWithTitle:familyName] < 0)
+            [self->_fontPopUpButton addItemWithTitle:familyName];
+        [self->_fontPopUpButton selectItemWithTitle:familyName];
 
-    NSString *familyName = [font familyName];
-    if ([self->_fontPopUpButton indexOfItemWithTitle:familyName] < 0)
-        [self->_fontPopUpButton addItemWithTitle:familyName];
-    [self->_fontPopUpButton selectItemWithTitle:familyName];
+        break;
+    }
+
+    case WRTextViewSelectorKindDocument:
+    case WRTextViewSelectorKindParagraph: {
+        const WRTextViewSideOffsets *margins;
+        if (selector.kind == WRTextViewSelectorKindDocument) {
+            margins = &self->_documentMargins;
+        } else {
+            NSAssert(selector.selector < [self _paragraphStyleCount], @"Bad selector!");
+            margins = &self->_paragraphMargins[selector.selector];
+        }
+        
+        [self->_marginTopField setFloatValue:margins->top];
+        [self->_marginRightField setFloatValue:margins->right];
+        [self->_marginBottomField setFloatValue:margins->bottom];
+        [self->_marginLeftField setFloatValue:margins->left];
+
+        break;
+    }
+    }
 }
 
 @end

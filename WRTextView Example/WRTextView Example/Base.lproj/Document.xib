@@ -87,24 +87,25 @@
                                                 <popUpButton verticalHuggingPriority="750" misplaced="YES" id="SMG-0l-cw1">
                                                     <rect key="frame" x="18" y="369" width="217" height="26"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                    <popUpButtonCell key="cell" type="push" title="Document" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" autoenablesItems="NO" selectedItem="Cc6-U5-Eqt" id="1KO-j1-uOy">
+                                                    <popUpButtonCell key="cell" type="push" title="Document" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" autoenablesItems="NO" selectedItem="Cc6-U5-Eqt" id="1KO-j1-uOy">
                                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                        <font key="font" metaFont="system"/>
+                                                        <font key="font" metaFont="menu"/>
                                                         <menu key="menu" autoenablesItems="NO" id="t7L-ZU-Iev">
                                                             <items>
-                                                                <menuItem title="Document" id="Cc6-U5-Eqt">
+                                                                <menuItem title="Document" state="on" id="Cc6-U5-Eqt">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
                                                                 <menuItem isSeparatorItem="YES" id="rWi-aw-wy0"/>
                                                                 <menuItem title="Paragraph" enabled="NO" id="3T2-55-WhU">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
-                                                                <menuItem title="Text" state="on" tag="256" indentationLevel="1" id="pUY-cM-ZsO"/>
+                                                                <menuItem title="Text" tag="256" indentationLevel="1" id="pUY-cM-ZsO"/>
                                                                 <menuItem title="Code" tag="257" indentationLevel="1" id="P9X-eA-rSX">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
                                                                 </menuItem>
                                                                 <menuItem title="Heading 1" tag="258" indentationLevel="1" id="2a7-bx-wLh"/>
                                                                 <menuItem title="Heading 2" tag="259" indentationLevel="1" id="mSP-Yf-y19"/>
+                                                                <menuItem title="Rule" tag="260" indentationLevel="1" id="YWJ-TZ-MhT"/>
                                                                 <menuItem isSeparatorItem="YES" id="vFv-SV-A2u"/>
                                                                 <menuItem title="Inline" enabled="NO" id="j8D-D1-U4H">
                                                                     <modifierMask key="keyEquivalentModifierMask"/>
@@ -240,7 +241,7 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                         <popUpButtonCell key="cell" type="push" title="Times" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="lSR-wy-oq6" id="WNC-RJ-cTp">
                                                                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                            <font key="font" metaFont="system"/>
+                                                                            <font key="font" metaFont="menu"/>
                                                                             <menu key="menu" id="mFb-Su-h0B">
                                                                                 <items>
                                                                                     <menuItem title="Times" state="on" id="lSR-wy-oq6"/>
