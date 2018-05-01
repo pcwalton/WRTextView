@@ -12,11 +12,12 @@ use pilcrow::{Frame, Line, ParagraphContent, ParagraphStyle, Run, Section};
 use std::cmp;
 use std::collections::HashMap;
 use std::ops::Range;
-use webrender_api::{ColorF, DisplayListBuilder, FontRenderMode, GlyphInstance, GlyphOptions};
-use webrender_api::{GlyphRasterSpace, LayoutPrimitiveInfo, LayoutPoint};
+use webrender_api::{AlphaType, ColorF, DisplayListBuilder, FontRenderMode, GlyphInstance, GlyphOptions};
+use webrender_api::{GlyphRasterSpace, IdNamespace, ImageKey, ImageRendering, LayoutPrimitiveInfo, LayoutPoint};
 use webrender_api::{LayoutRect, LayoutSize, LineOrientation, LineStyle, MixBlendMode, RenderApi};
 use webrender_api::{ResourceUpdates, ScrollPolicy, TransformStyle};
-use {ComputedStyle, FontInstanceInfo, FontKeyMap, PIPELINE_ID, TextLocation, WrDisplayList};
+use {ComputedStyle, FontInstanceInfo, FontKeyMap, ImageMap, LinkId, PIPELINE_ID};
+use {TextLocation, WrDisplayList};
 
 const BLACK_COLOR: ColorF = ColorF {
     r: 0.0,
@@ -28,14 +29,14 @@ const BLACK_COLOR: ColorF = ColorF {
 pub struct SceneBuilder {
     display_list_builder: DisplayListBuilder,
     selection: Option<Range<TextLocation>>,
-    active_link_id: Option<usize>,
+    active_link_id: Option<LinkId>,
     selection_background_color: ColorF,
 }
 
 impl SceneBuilder {
     pub fn new(layout_size: &LayoutSize,
                selection: &Option<Range<TextLocation>>,
-               active_link_id: &Option<usize>,
+               active_link_id: &Option<LinkId>,
                selection_background_color: &ColorF)
                -> SceneBuilder {
         let mut display_list_builder = DisplayListBuilder::new(PIPELINE_ID, *layout_size);
@@ -63,11 +64,12 @@ impl SceneBuilder {
         self.display_list_builder.finalize()
     }
 
-    pub fn build_display_list(&mut self,
-                              render_api: &RenderApi,
-                              resource_updates: &mut ResourceUpdates,
-                              font_keys: &mut FontKeyMap,
-                              section: &Section) {
+    pub(crate) fn build_display_list(&mut self,
+                                     render_api: &RenderApi,
+                                     resource_updates: &mut ResourceUpdates,
+                                     font_keys: &mut FontKeyMap,
+                                     images: &mut ImageMap,
+                                     section: &Section) {
         for (frame_index, frame) in section.frames().iter().enumerate() {
             let frame_char_len = frame.char_len();
 
@@ -82,9 +84,10 @@ impl SceneBuilder {
                 let line_origin = LayoutPoint::from_untyped(&line.origin);
                 let line_size = LayoutSize::new(typo_bounds.width,
                                                 typo_bounds.ascent + typo_bounds.descent);
-                let line_bounds = LayoutRect::new(LayoutPoint::new(line_origin.x,
-                                                                line_origin.y - typo_bounds.ascent),
-                                                line_size);
+                let line_bounds =
+                    LayoutRect::new(LayoutPoint::new(line_origin.x,
+                                                     line_origin.y - typo_bounds.ascent),
+                                    line_size);
                 let line_layout_primitive_info = LayoutPrimitiveInfo::new(line_bounds);
 
                 for run in line.runs() {
@@ -104,7 +107,24 @@ impl SceneBuilder {
                                                                         &render_api,
                                                                         resource_updates);
 
-                    if let Some((computed_font_face_id, computed_font_id)) = computed_style.font {
+                    if let Some(image_id) = computed_style.image {
+                        if let Some(image_info) = images.read().unwrap().get(&image_id) {
+                            // TODO(pcwalton): Take device pixel ratio into account!
+                            let image_size = LayoutSize::new(image_info.size.width as f32,
+                                                             image_info.size.height as f32);
+                            let image_layout_primitive_info =
+                                LayoutPrimitiveInfo::new(LayoutRect::new(line_bounds.origin,
+                                                                         image_size));
+                            let image_key = ImageKey(IdNamespace(0), image_id.0);
+                            self.display_list_builder.push_image(&image_layout_primitive_info,
+                                                                 image_size,
+                                                                 LayoutSize::zero(),
+                                                                 ImageRendering::Auto,
+                                                                 AlphaType::PremultipliedAlpha,
+                                                                 image_key);
+                        }
+                    } else if let Some((computed_font_face_id,
+                                        computed_font_id)) = computed_style.font {
                         let font_instance_info = font_keys.get(&computed_font_face_id)
                                                           .unwrap()
                                                           .instance_infos

@@ -22,11 +22,12 @@ extern crate lazy_static;
 
 use app_units::Au;
 use core_text::font as ct_font;
-use euclid::{Length, Point2D, Transform2D, TypedScale, TypedSideOffsets2D};
+use euclid::{Length, Point2D, Size2D, Transform2D, TypedScale, TypedSideOffsets2D};
 use euclid::{TypedTransform2D, TypedVector2D};
 use gleam::gl;
 use libc::c_char;
-use pilcrow::{Color, FontFaceId, FontId, Format, Framesetter, Section, Document, TextLocation};
+use pilcrow::{Color, Document, FontFaceId, FontId, Format, Framesetter, LayoutCallbacks};
+use pilcrow::{Section, TextLocation};
 use std::collections::HashMap;
 use std::collections::hash_map::Entry;
 use std::f32;
@@ -34,11 +35,12 @@ use std::ffi::CString;
 use std::mem;
 use std::ops::Range;
 use std::os::raw::c_void;
+use std::sync::{Arc, RwLock};
 use std::sync::mpsc::{self, Receiver, Sender};
 use webrender::{DebugFlags, Renderer, RendererOptions};
 use webrender_api::{BuiltDisplayList, ColorF, DeviceIntPoint, DevicePixel, DevicePoint, DeviceUintPoint};
 use webrender_api::{DeviceUintRect, DeviceUintSize, DocumentId, Epoch, FontInstanceKey, FontKey};
-use webrender_api::{LayoutPoint, LayoutPixel, LayoutRect, LayoutSize, NativeFontHandle};
+use webrender_api::{IdNamespace, ImageData, ImageDescriptor, ImageFormat, ImageKey, LayoutPoint, LayoutPixel, LayoutRect, LayoutSize, NativeFontHandle};
 use webrender_api::{PipelineId, RenderApi, RenderNotifier, ResourceUpdates, Transaction};
 use webrender_api::{ZoomFactor};
 
@@ -76,6 +78,20 @@ type WrDisplayList = (PipelineId, LayoutSize, BuiltDisplayList);
 
 pub type FontKeyMap = HashMap<FontFaceId, FontInfo>;
 
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub struct LinkId(pub u32);
+
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+pub struct ImageId(pub u32);
+
+// TODO(pcwalton): Add image pixel data.
+struct ImageInfo {
+    size: Size2D<u32>,
+    data: Arc<Vec<u8>>,
+}
+
+pub(crate) type ImageMap = Arc<RwLock<HashMap<ImageId, ImageInfo>>>;
+
 pub struct View {
     document: Document,
     available_width: Length<f32, LayoutPixel>,
@@ -87,10 +103,11 @@ pub struct View {
     selection_background_color: ColorF,
 
     selection: Option<Selection>,
-    active_link_id: Option<usize>,
+    active_link_id: Option<LinkId>,
     mouse_status: MouseStatus,
 
     font_keys: FontKeyMap,
+    images: ImageMap,
 
     wr_renderer: Renderer,
     wr_sender_api: RenderApi,
@@ -128,8 +145,9 @@ impl View {
         let available_device_size = DeviceUintSize::new(available_layout_size.width as u32,
                                                         available_layout_size.height as u32);
         let document_id = sender_api.add_document(available_device_size, 0);
+        let mut images = Arc::new(RwLock::new(HashMap::new()));
 
-        let section = layout_text(&document, available_width);
+        let section = layout_text(&document, images.clone(), available_width);
 
         let active_link_id = None;
         let selection_background_color = DEFAULT_SELECTION_BACKGROUND_COLOR;
@@ -142,6 +160,7 @@ impl View {
         scene_builder.build_display_list(&sender_api,
                                          &mut resource_updates,
                                          &mut font_keys,
+                                         &mut images,
                                          &section);
         let display_list = scene_builder.finalize();
 
@@ -164,6 +183,7 @@ impl View {
             mouse_status: MouseStatus::Up,
 
             font_keys,
+            images,
 
             wr_renderer: renderer,
             wr_sender_api: sender_api,
@@ -268,6 +288,12 @@ impl View {
                     let end_location = TextLocation::new(frame_index, char_range.end);
                     self.selection = Some(Selection::forward(start_location..end_location));
                     dirty = true;
+                } else if kind == MouseEventKind::LeftTriple {
+                    let paragraph = &self.document.paragraphs()[frame_index];
+                    let start_location = TextLocation::new(frame_index, 0);
+                    let end_location = TextLocation::new(frame_index, paragraph.char_len());
+                    self.selection = Some(Selection::forward(start_location..end_location));
+                    dirty = true;
                 } else if self.selection.is_some() {
                     self.selection = None;
                     dirty = true;
@@ -277,7 +303,7 @@ impl View {
                 if let Some(run) = runs.iter().find(|run| run.char_range().has(char_index)) {
                     for format in run.formatting().iter() {
                         if let Some((id, _url)) = format.link() {
-                            active_link_id = Some(id);
+                            active_link_id = Some(LinkId(id));
                             dirty = true;
                         }
                     }
@@ -287,6 +313,7 @@ impl View {
 
         self.mouse_status = match kind {
             MouseEventKind::LeftDouble => MouseStatus::LeftDouble,
+            MouseEventKind::LeftTriple => MouseStatus::LeftTriple,
             _ => MouseStatus::LeftSingle,
         };
         self.active_link_id = active_link_id;
@@ -313,8 +340,8 @@ impl View {
                 if let Some(run) = runs.iter().find(|run| run.char_range().has(char_index)) {
                     for format in run.formatting().iter() {
                         if let Some((link_id, url)) = format.link() {
-                            if Some(link_id) == self.active_link_id {
-                                event_result = EventResult::OpenUrl(url)
+                            if Some(LinkId(link_id)) == self.active_link_id {
+                                event_result = EventResult::OpenUrl(url.to_string())
                             }
                         }
                     }
@@ -342,34 +369,83 @@ impl View {
             frame_index,
             line_index,
         }) = self.hit_test_point(point) {
+            let paragraph = &self.document.paragraphs()[frame_index];
             let frame = &self.section.frames()[frame_index];
             let lines = frame.lines();
             let line = &lines[line_index];
             if let Some(char_index) = line.char_index_for_position(&point.to_untyped()) {
-                let location = TextLocation::new(frame_index, char_index);
+                let mut location = TextLocation::new(frame_index, char_index);
                 match self.selection {
                     None => self.selection = Some(Selection::forward(location..location)),
                     Some(ref mut selection) => {
-                        match selection.direction {
+                        if selection.direction == SelectionDirection::Forward &&
+                                location < selection.range.start {
+                            selection.direction = SelectionDirection::Backward;
+                            selection.range.end = selection.range.start;
+                        } else if selection.direction == SelectionDirection::Backward &&
+                                location >= selection.range.end {
+                            selection.direction = SelectionDirection::Forward;
+                            selection.range.start = selection.range.end;
+                        }
+                        /*match selection.direction {
                             SelectionDirection::Forward if location < selection.range.start => {
                                 selection.direction = SelectionDirection::Backward;
                                 selection.range.end = selection.range.start;
-                                selection.range.start = location;
+                                //selection.range.start = backwards_location(location);
                             }
-                            SelectionDirection::Forward => selection.range.end = location,
+                            SelectionDirection::Forward => {
+                                //selection.range.end = forwards_location(location)
+                            }
                             SelectionDirection::Backward if location >= selection.range.end => {
                                 selection.direction = SelectionDirection::Forward;
                                 selection.range.start = selection.range.end;
-                                selection.range.end = location;
+                                //selection.range.end = forwards_location(location);
                             }
-                            SelectionDirection::Backward => selection.range.start = location,
+                            SelectionDirection::Backward => {
+                                //selection.range.start = backwards_location(location)
+                            }
+                        }*/
+
+                        match selection.direction {
+                            SelectionDirection::Forward => {
+                                match self.mouse_status {
+                                    MouseStatus::LeftDouble | MouseStatus::LeftDragDouble => {
+                                        location.character_index =
+                                            paragraph.word_range_at_char_index(char_index).end
+                                    }
+                                    MouseStatus::LeftTriple | MouseStatus::LeftDragTriple => {
+                                        location.character_index = paragraph.char_len()
+                                    }
+                                    _ => {}
+                                }
+                                selection.range.end = location
+                            }
+                            SelectionDirection::Backward => {
+                                match self.mouse_status {
+                                    MouseStatus::LeftDouble | MouseStatus::LeftDragDouble => {
+                                        location.character_index =
+                                            paragraph.word_range_at_char_index(char_index).start
+                                    }
+                                    MouseStatus::LeftTriple | MouseStatus::LeftDragTriple => {
+                                        location.character_index = 0
+                                    }
+                                    _ => {}
+                                }
+                                selection.range.start = location
+                            }
                         }
                     }
                 }
             }
         }
 
-        self.mouse_status = MouseStatus::LeftDrag;
+        match self.mouse_status {
+            MouseStatus::LeftSingle => self.mouse_status = MouseStatus::LeftDragSingle,
+            MouseStatus::LeftDouble => self.mouse_status = MouseStatus::LeftDragDouble,
+            MouseStatus::LeftTriple => self.mouse_status = MouseStatus::LeftDragTriple,
+            _ => {}
+        }
+
         self.active_link_id = None;
 
         self.rebuild_display_list();
@@ -417,7 +493,6 @@ impl View {
             self.selection = Some(Selection::forward(TextLocation::beginning()..end));
         }
 
-        eprintln!("select_all(): new selection={:?}", self.selection);
         self.rebuild_display_list();
     }
 
@@ -437,9 +512,39 @@ impl View {
         })
     }
 
+    pub fn set_image_size(&mut self, id: ImageId, size: &Size2D<u32>) {
+        match self.images.write().unwrap().entry(id) {
+            Entry::Occupied(mut entry) => entry.get_mut().size = *size,
+            Entry::Vacant(entry) => {
+                entry.insert(ImageInfo {
+                    size: *size,
+                    data: Arc::new(vec![]),
+                });
+            }
+        }
+
+        self.refresh_image(id);
+        self.layout();
+    }
+
+    pub fn set_image_data(&mut self, id: ImageId, data: Vec<u8>) {
+        match self.images.write().unwrap().entry(id) {
+            Entry::Occupied(mut entry) => entry.get_mut().data = Arc::new(data),
+            Entry::Vacant(entry) => {
+                entry.insert(ImageInfo {
+                    size: Size2D::zero(),
+                    data: Arc::new(vec![]),
+                });
+            }
+        }
+
+        self.refresh_image(id);
+        self.rebuild_display_list();
+    }
+
     fn layout(&mut self) {
         let available_width = self.available_width;
-        self.section = layout_text(&self.document, available_width);
+        self.section = layout_text(&self.document, self.images.clone(), available_width);
 
         self.rebuild_display_list();
     }
@@ -455,6 +560,7 @@ impl View {
         scene_builder.build_display_list(&self.wr_sender_api,
                                          &mut resource_updates,
                                          &mut self.font_keys,
+                                         &mut self.images,
                                          &self.section);
         self.wr_display_list = scene_builder.finalize();
 
@@ -484,6 +590,32 @@ impl View {
             line_index,
         })
     }
+
+    fn refresh_image(&mut self, image_id: ImageId) {
+        let images = self.images.read().unwrap();
+        let image = match images.get(&image_id) {
+            None => return,
+            Some(image) => image,
+        };
+
+        if image.data.is_empty() || image.size.width == 0 || image.size.height == 0 {
+            return
+        }
+
+        let mut resource_updates = ResourceUpdates::new();
+        resource_updates.add_image(ImageKey::new(IdNamespace(0), image_id.0),
+                                   ImageDescriptor::new(image.size.width,
+                                                        image.size.height,
+                                                        ImageFormat::BGRA8,
+                                                        false,
+                                                        true),
+                                   ImageData::Raw(image.data.clone()),
+                                   None);
+
+        let mut transaction = Transaction::new();
+        transaction.update_resources(resource_updates);
+        self.wr_sender_api.send_transaction(self.wr_document_id, transaction);
+    }
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -494,11 +626,17 @@ pub enum MouseCursor {
     Pointer,
 }
 
-fn layout_text(text: &Document, available_width: Length<f32, LayoutPixel>) -> Section {
+fn layout_text(text: &Document, images: ImageMap, available_width: Length<f32, LayoutPixel>)
+               -> Section {
     let framesetter = Framesetter::new(text);
     let layout_origin = LayoutPoint::zero();
     let layout_size = LayoutSize::new(available_width.get(), 1000000.0);
-    framesetter.layout_in_rect(&LayoutRect::new(layout_origin, layout_size).to_untyped())
+    let layout_rect = LayoutRect::new(layout_origin, layout_size).to_untyped();
+    let helper = Box::new(LayoutHelper {
+        images,
+    });
+
+    framesetter.layout_in_rect(&layout_rect, Some(helper))
 }
 
 struct Notifier {
@@ -528,12 +666,13 @@ impl RenderNotifier for Notifier {
 pub(crate) struct ComputedStyle {
     font: Option<(FontFaceId, FontId)>,
     color: Option<ColorF>,
+    image: Option<ImageId>,
     underline: bool,
 }
 
 impl ComputedStyle {
     pub fn from_formatting(formatting: Vec<Format>,
-                           active_link_id: &Option<usize>,
+                           active_link_id: &Option<LinkId>,
                            font_keys: &mut FontKeyMap,
                            render_api: &RenderApi,
                            resource_updates: &mut ResourceUpdates)
@@ -541,6 +680,7 @@ impl ComputedStyle {
         let mut computed_style = ComputedStyle {
             font: None,
             color: None,
+            image: None,
             underline: false,
         };
 
@@ -597,12 +737,18 @@ impl ComputedStyle {
             if let Some((link_id, _)) = format.link() {
                 computed_style.underline = true;
                 if computed_style.color.is_none() {
-                    let color = if *active_link_id == Some(link_id) {
+                    let color = if *active_link_id == Some(LinkId(link_id)) {
                         DEFAULT_LINK_ACTIVE_COLOR
                     } else {
                         DEFAULT_LINK_COLOR
                     };
                     computed_style.color = Some(color)
+                }
+            }
+
+            if let Some(image_id) = format.image() {
+                if computed_style.image.is_none() {
+                    computed_style.image = Some(ImageId(image_id));
                 }
             }
         }
@@ -667,6 +813,7 @@ pub enum EventResult {
 pub enum MouseEventKind {
     Left = 0,
     LeftDouble,
+    LeftTriple,
 }
 
 #[derive(Clone, Debug)]
@@ -696,5 +843,18 @@ enum MouseStatus {
     Up,
     LeftSingle,
     LeftDouble,
-    LeftDrag,
+    LeftTriple,
+    LeftDragSingle,
+    LeftDragDouble,
+    LeftDragTriple,
+}
+
+struct LayoutHelper {
+    images: ImageMap,
+}
+
+impl LayoutCallbacks for LayoutHelper {
+    fn get_image_size(&self, image_id: u32) -> Option<Size2D<u32>> {
+        self.images.read().unwrap().get(&ImageId(image_id)).map(|image| image.size)
+    }
 }

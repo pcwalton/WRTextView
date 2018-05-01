@@ -133,7 +133,7 @@ typedef struct WRTextViewSelector WRTextViewSelector;
                                                 (const uint8_t *)bytes,
                                                 strlen(bytes),
                                                 self->_document);
-    
+
     uintptr_t imageCount = pilcrow_markdown_parse_results_get_image_count(parseResults);
     NSURLSession *urlSession = [NSURLSession sharedSession];
 
@@ -147,21 +147,35 @@ typedef struct WRTextViewSelector WRTextViewSelector;
                                                      imageURLLength);
         imageURLBytes[imageURLLength] = '\0';
         NSString *imageURLString = [NSString stringWithUTF8String:(const char *)imageURLBytes];
-        NSURL *imageURL = [NSURL URLWithString:imageURLString];
+        NSURL *imageURL = [NSURL URLWithString:imageURLString relativeToURL:[self fileURL]];
         NSLog(@"found image URL: %@", imageURL);
 
+        uintptr_t thisImageIndex = imageIndex;
+    
         NSURLSessionDataTask *imageDataTask =
             [urlSession dataTaskWithURL:imageURL
                       completionHandler:^(NSData *_Nullable data,
                                           NSURLResponse *_Nullable response,
                                           NSError *_Nullable error) {
-            if (error != nil) {
-                NSLog(@"failed to load image URL: %@", error);
-                return;
-            }
+                if (error != nil) {
+                    NSLog(@"failed to load image URL: %@", error);
+                    return;
+                }
 
-            NSLog(@"successfully fetched image URL: %@", [response URL]);
-        }];
+                NSLog(@"successfully fetched image URL: %@ index: %u",
+                      [response URL],
+                      (unsigned)imageIndex);
+
+                NSDictionary *imageInfo =
+                    [NSDictionary dictionaryWithObjectsAndKeys:
+                     [NSNumber numberWithUnsignedInteger:thisImageIndex], @"ImageID",
+                     [[NSImage alloc] initWithData:data], @"Image",
+                     nil];
+
+                [self performSelectorOnMainThread:@selector(_imageLoaded:)
+                                       withObject:imageInfo
+                                    waitUntilDone:NO];
+            }];
         [imageDataTask resume];
     }
     
@@ -296,7 +310,7 @@ typedef struct WRTextViewSelector WRTextViewSelector;
             NSAssert(selector.selector < [self _paragraphStyleCount], @"Bad selector!");
             margins = &self->_paragraphMargins[selector.selector];
         }
-        
+
         [self->_marginTopField setFloatValue:margins->top];
         [self->_marginRightField setFloatValue:margins->right];
         [self->_marginBottomField setFloatValue:margins->bottom];
@@ -305,6 +319,12 @@ typedef struct WRTextViewSelector WRTextViewSelector;
         break;
     }
     }
+}
+
+- (void)_imageLoaded:(NSDictionary *)imageInfo {
+    NSLog(@"imageLoaded: %@", imageInfo);
+    [self->textView setImage:[imageInfo objectForKey:@"Image"]
+                       forID:[[imageInfo objectForKey:@"ImageID"] unsignedIntValue]];
 }
 
 @end

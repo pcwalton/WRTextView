@@ -20,7 +20,7 @@
                   moduleName = "libwebrender_text_view.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/travis/build/rust-lang/rust/src/libstd/panicking.rs"
-                  timestampString = "546547413.293223"
+                  timestampString = "546891733.783241"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "433"
@@ -134,7 +134,7 @@
                   moduleName = "libwebrender_text_view.dylib"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/travis/build/rust-lang/rust/src/libstd/sys_common/util.rs"
-                  timestampString = "546547413.295927"
+                  timestampString = "546891733.7860661"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "26"
@@ -309,24 +309,6 @@
                   continueAfterRunningActions = "No"
                   symbolName = "-[HPDClient abort]"
                   moduleName = "HelpData"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "TAOQueue::abort()"
-                  moduleName = "DiskImages"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[DRBurn abort]"
-                  moduleName = "DiscRecording"
                   usesParentBreakpointCondition = "Yes"
                   offsetFromSymbolStart = "0">
                </Location>

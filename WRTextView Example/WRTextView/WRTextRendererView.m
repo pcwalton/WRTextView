@@ -21,6 +21,8 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     switch ([event clickCount]) {
         case 2:
             return WRTV_MOUSE_EVENT_KIND_T_LEFT_DOUBLE;
+        case 3:
+            return WRTV_MOUSE_EVENT_KIND_T_LEFT_TRIPLE;
     }
     return WRTV_MOUSE_EVENT_KIND_T_LEFT;
 }
@@ -95,8 +97,9 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
         // from the nib).
         devicePixelRatio = [[NSScreen mainScreen] backingScaleFactor];
     }
-    
-    pilcrow_document_t *document = [[textView document] takeDocument];
+
+    Document *textDocument = [textView document];
+    pilcrow_document_t *document = [textDocument takeDocument];
     if (document == NULL)
         return;
 
@@ -106,6 +109,7 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
                                   devicePixelRatio,
                                   frame.size.width,
                                   getGLProcAddress);
+    
 
     CGFloat r, g, b, a;
     [[[NSColor selectedTextBackgroundColor]
@@ -359,13 +363,40 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
         [gWRGlobalSpeechSynthesizer stopSpeaking];
 }
 
-/*
-- (void)rightMouseDown:(NSEvent *)event {
-    if (self->_contextMenu == nil) {
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-        [bundle loadNibNamed:@"ContextMenu" owner:self topLevelObjects:nil];
-    }
-    [NSMenu popUpContextMenu:self->_contextMenu withEvent:event forView:self];
-}*/
+- (void)setImage:(NSImage *)image forID:(uint32_t)imageID {
+    if (self->_wrView == NULL)
+        return;
+
+    NSSize imageSize = [image size];
+    uint32_t imageWidth = (uint32_t)imageSize.width, imageHeight = (uint32_t)imageSize.height;
+    wrtv_view_set_image_size(self->_wrView, imageID, imageWidth, imageHeight);
+    
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef cgContext = CGBitmapContextCreate(NULL,
+                                                   imageWidth,
+                                                   imageHeight,
+                                                   8,
+                                                   imageWidth * 4,
+                                                   colorSpace,
+                                                   kCGImageAlphaPremultipliedLast);
+    NSGraphicsContext *nsContext = [NSGraphicsContext graphicsContextWithCGContext:cgContext
+                                                                            flipped:NO];
+    [NSGraphicsContext setCurrentContext:nsContext];
+    
+    NSRect imageRect;
+    imageRect.origin = NSZeroPoint;
+    imageRect.size = imageSize;
+    [image drawInRect:imageRect];
+
+    const uint8_t *pixelData = (const uint8_t *)CGBitmapContextGetData(cgContext);
+    size_t pixelDataSize = CGBitmapContextGetBytesPerRow(cgContext) * imageHeight;
+    wrtv_view_set_image_data(self->_wrView, imageID, pixelData, pixelDataSize);
+    
+    [NSGraphicsContext setCurrentContext:nil];
+    CGContextRelease(cgContext);
+    CGColorSpaceRelease(colorSpace);
+    
+    [self setNeedsDisplay:YES];
+}
 
 @end

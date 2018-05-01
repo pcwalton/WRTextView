@@ -176,4 +176,9 @@
     return YES;
 }
 
+- (void)setImage:(NSImage *)image forID:(uint32_t)imageID {
+    NSLog(@"-[WRTextView setImage:forID:]");
+    [self->_rendererView setImage:image forID:imageID];
+}
+
 @end

@@ -22,5 +22,6 @@
 
 - (void)reloadText;
 - (void)setDebuggerEnabled:(BOOL)enabled;
+- (void)setImage:(NSImage *)image forID:(uint32_t)imageID;
 
 @end

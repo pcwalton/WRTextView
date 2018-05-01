@@ -31,6 +31,7 @@ FOUNDATION_EXPORT const unsigned char WRTextViewVersionString[];
 - (IBAction)zoomIn:(id)sender;
 - (IBAction)zoomOut:(id)sender;
 - (IBAction)zoomToActualSize:(id)sender;
+- (void)setImage:(NSImage *)image forID:(uint32_t)imageID;
 
 @end
 

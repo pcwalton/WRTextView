@@ -8,12 +8,13 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use euclid::{Length, TypedScale, TypedVector2D};
+use euclid::{Length, Size2D, TypedScale, TypedVector2D};
 use pilcrow::{Color, Document};
 use std::cmp;
 use std::ptr;
+use std::slice;
 use webrender_api::{DevicePoint, DeviceUintSize, LayoutPoint};
-use {EventResult, GetProcAddressFn, MouseCursor, MouseEventKind, View};
+use {EventResult, GetProcAddressFn, ImageId, MouseCursor, MouseEventKind, View};
 
 pub const WRTV_EVENT_RESULT_NONE: u8 = 0;
 pub const WRTV_EVENT_RESULT_OPEN_URL: u8 = 1;
@@ -141,6 +142,23 @@ pub unsafe extern "C" fn wrtv_view_get_document(view: *mut View) -> *mut Documen
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_document_changed(view: *mut View) {
     (*view).document_changed()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_set_image_size(view: *mut View,
+                                                  image_id: u32,
+                                                  width: u32,
+                                                  height: u32) {
+    (*view).set_image_size(ImageId(image_id), &Size2D::new(width, height))
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn wrtv_view_set_image_data(view: *mut View,
+                                                  image_id: u32,
+                                                  data: *const u8,
+                                                  size: usize) {
+    let data = slice::from_raw_parts(data, size);
+    (*view).set_image_data(ImageId(image_id), data.to_vec())
 }
 
 #[no_mangle]
