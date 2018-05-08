@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include <pilcrow.h>
+#import "WRTextStorage.h"
 
 struct WRTextViewSideOffsets {
     float top, right, bottom, left;
@@ -17,17 +18,17 @@ typedef struct WRTextViewSideOffsets WRTextViewSideOffsets;
 
 @class WRTextView;
 
-@interface Document : NSDocument {
+@interface Document : NSDocument<WRTextStorage> {
     pilcrow_document_t *_document;
     NSString *_textString;
     BOOL _debuggerEnabled;
     NSMutableArray<NSFont *> *_fonts;
     WRTextViewSideOffsets _documentMargins;
     WRTextViewSideOffsets _paragraphMargins[5];
-    IBOutlet WRTextView *textView;
     IBOutlet NSView *formatPane;
 }
 
+@property(nonatomic, strong) IBOutlet WRTextView *textView;
 @property(nonatomic, strong) IBOutlet NSButton *debuggerToolbarButton;
 @property(nonatomic, strong) IBOutlet NSButton *formatToolbarButton;
 @property(nonatomic, strong) IBOutlet NSSplitView *splitView;

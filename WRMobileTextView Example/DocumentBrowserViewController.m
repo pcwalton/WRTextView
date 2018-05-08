@@ -18,9 +18,11 @@
     
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.delegate = self;
-    self.allowsDocumentCreation = YES;
-    self.allowsPickingMultipleItems = NO;
+
+    [self setDelegate:self];
+
+    [self setAllowsDocumentCreation:NO];
+    [self setAllowsPickingMultipleItems:NO];
     
     // Update the style of the UIDocumentBrowserViewController
     // self.browserUserInterfaceStyle = UIDocumentBrowserUserInterfaceStyleDark;

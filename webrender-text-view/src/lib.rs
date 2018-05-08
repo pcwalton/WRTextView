@@ -18,6 +18,8 @@ extern crate webrender;
 extern crate webrender_api;
 
 #[macro_use]
+extern crate bitflags;
+#[macro_use]
 extern crate lazy_static;
 
 use app_units::Au;
@@ -92,6 +94,12 @@ struct ImageInfo {
 
 pub(crate) type ImageMap = Arc<RwLock<HashMap<ImageId, ImageInfo>>>;
 
+bitflags! {
+    pub struct ViewFlags: u32 {
+        const ENABLE_SUBPIXEL_AA = 0x01;
+    }
+}
+
 pub struct View {
     document: Document,
     available_width: Length<f32, LayoutPixel>,
@@ -121,18 +129,30 @@ impl View {
                viewport_size: &DeviceUintSize,
                device_pixel_ratio: TypedScale<f32, LayoutPixel, DevicePixel>,
                available_width: Length<f32, LayoutPixel>,
-               get_proc_address: GetProcAddressFn)
+               api: Api,
+               get_proc_address: GetProcAddressFn,
+               flags: ViewFlags)
                -> View {
         let gl = unsafe {
-            gl::GlFns::load_with(|symbol| {
-                let symbol = CString::new(symbol).unwrap();
-                get_proc_address(symbol.as_ptr())
-            })
+            match api {
+                Api::Opengl => {
+                    gl::GlFns::load_with(|symbol| {
+                        let symbol = CString::new(symbol).unwrap();
+                        get_proc_address(symbol.as_ptr())
+                    })
+                }
+                Api::Opengles => {
+                    gl::GlesFns::load_with(|symbol| {
+                        let symbol = CString::new(symbol).unwrap();
+                        get_proc_address(symbol.as_ptr())
+                    })
+                }
+            }
         };
 
         let transform = TypedTransform2D::identity();
         let wr_options = RendererOptions {
-            enable_subpixel_aa: true,
+            enable_subpixel_aa: flags.contains(ViewFlags::ENABLE_SUBPIXEL_AA),
             ..RendererOptions::default()
         };
 
@@ -857,4 +877,11 @@ impl LayoutCallbacks for LayoutHelper {
     fn get_image_size(&self, image_id: u32) -> Option<Size2D<u32>> {
         self.images.read().unwrap().get(&ImageId(image_id)).map(|image| image.size)
     }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+#[repr(u32)]
+pub enum Api {
+    Opengl = 0,
+    Opengles = 1,
 }

@@ -8,6 +8,7 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="Document">
             <connections>
+                <outlet property="clipView" destination="6Qk-JA-bB2" id="rrf-Ud-TGI"/>
                 <outlet property="debuggerToolbarButton" destination="Yx0-4t-Ktu" id="W9D-wn-pMf"/>
                 <outlet property="fontPopUpButton" destination="j2P-F9-6f8" id="uGD-JC-YGM"/>
                 <outlet property="fontSizeField" destination="f0l-fq-xPO" id="YqV-pg-ClB"/>
@@ -21,7 +22,7 @@
                 <outlet property="marginTopField" destination="Huw-MU-Srj" id="cfJ-iR-4Zs"/>
                 <outlet property="selectorPopUpButton" destination="SMG-0l-cw1" id="SRX-M5-dz6"/>
                 <outlet property="splitView" destination="80X-yT-6Zy" id="jf6-7X-fKS"/>
-                <outlet property="textView" destination="21t-pH-RHT" id="OCW-Ue-b7i"/>
+                <outlet property="textView" destination="6Qk-JA-bB2" id="PVI-Cs-FfZ"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -45,14 +46,14 @@
                                 <rect key="frame" x="0.0" y="0.0" width="254" height="413"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
-                                    <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="yeI-5o-3r9">
+                                    <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" usesPredominantAxisScrolling="NO" id="yeI-5o-3r9" customClass="WRTextScrollView">
                                         <rect key="frame" x="0.0" y="0.0" width="254" height="413"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <clipView key="contentView" copiesOnScroll="NO" id="6Qk-JA-bB2">
+                                        <clipView key="contentView" copiesOnScroll="NO" id="6Qk-JA-bB2" customClass="WRTextView">
                                             <rect key="frame" x="0.0" y="0.0" width="254" height="413"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
-                                                <view id="21t-pH-RHT" customClass="WRTextView">
+                                                <view id="21t-pH-RHT">
                                                     <rect key="frame" x="0.0" y="0.0" width="239" height="398"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <connections>
@@ -61,6 +62,10 @@
                                                 </view>
                                             </subviews>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            <connections>
+                                                <outlet property="document" destination="-2" id="1vl-jy-f9z"/>
+                                                <outlet property="textStorage" destination="-2" id="KvZ-yb-wfx"/>
+                                            </connections>
                                         </clipView>
                                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="uHq-08-k8d">
                                             <rect key="frame" x="0.0" y="397" width="346" height="16"/>
@@ -291,7 +296,7 @@
                             </segmentedCell>
                         </segmentedControl>
                         <connections>
-                            <action selector="zoom:" target="21t-pH-RHT" id="FPa-XY-5E3"/>
+                            <action selector="zoom:" target="yeI-5o-3r9" id="kpX-qP-6tt"/>
                         </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="EF2DD550-2555-465E-9A2E-1A5320BEEE5B" label="Debugger" paletteLabel="Debugger" image="ToolbarDebugger" id="EW2-lG-mOK">

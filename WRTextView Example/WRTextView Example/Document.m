@@ -191,7 +191,7 @@ typedef struct WRTextViewSelector WRTextViewSelector;
 - (IBAction)toggleDebugger:(id)sender {
     self->_debuggerEnabled = !self->_debuggerEnabled;
     [self->_debuggerToolbarButton setState:self->_debuggerEnabled ? NSOnState : NSOffState];
-    [self->textView setDebuggerEnabled:self->_debuggerEnabled];
+    [self->_textView setDebuggerEnabled:self->_debuggerEnabled];
 }
 
 - (IBAction)toggleFormatPaneVisibility:(id)sender {
@@ -223,7 +223,7 @@ typedef struct WRTextViewSelector WRTextViewSelector;
 - (void)_recreateTextBufferAndReloadText {
     pilcrow_markdown_parser_t *markdownParser = [self _createMarkdownParser];
     [self _recreateTextBufferWithMarkdownParser:markdownParser];
-    [self->textView reloadText];
+    [self->_textView reloadText];
 }
 
 - (void)_updateFont {
@@ -323,8 +323,8 @@ typedef struct WRTextViewSelector WRTextViewSelector;
 
 - (void)_imageLoaded:(NSDictionary *)imageInfo {
     NSLog(@"imageLoaded: %@", imageInfo);
-    [self->textView setImage:[imageInfo objectForKey:@"Image"]
-                       forID:[[imageInfo objectForKey:@"ImageID"] unsignedIntValue]];
+    [self->_textView setImage:[imageInfo objectForKey:@"Image"]
+                        forID:[[imageInfo objectForKey:@"ImageID"] unsignedIntValue]];
 }
 
 @end

@@ -5,10 +5,11 @@ authors = ["Patrick Walton <pcwalton@mimiga.net>"]
 build = "build.rs"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["staticlib"]
 
 [dependencies]
 app_units = "0.6"
+bitflags = "1.0"
 euclid = "0.17"
 gleam = "0.4"
 lazy_static = "1.0"
@@ -23,6 +24,7 @@ path = "../../pilcrow"
 [dependencies.webrender]
 path = "/Users/pcwalton/Source/webrender/webrender"
 features = ["pathfinder", "debugger"]
+# features = ["debugger"]
 
 [dependencies.webrender_api]
 path = "/Users/pcwalton/Source/webrender/webrender_api"

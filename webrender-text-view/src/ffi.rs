@@ -14,10 +14,14 @@ use std::cmp;
 use std::ptr;
 use std::slice;
 use webrender_api::{DevicePoint, DeviceUintSize, LayoutPoint};
-use {EventResult, GetProcAddressFn, ImageId, MouseCursor, MouseEventKind, View};
+use {Api, EventResult, GetProcAddressFn, ImageId, MouseCursor, MouseEventKind, View, ViewFlags};
+
+pub type wrtv_view_flags_t = u32;
 
 pub const WRTV_EVENT_RESULT_NONE: u8 = 0;
 pub const WRTV_EVENT_RESULT_OPEN_URL: u8 = 1;
+
+pub const WRTV_VIEW_FLAGS_ENABLE_SUBPIXEL_AA: u32 = 1;
 
 #[no_mangle]
 pub unsafe extern "C" fn wrtv_view_new(document: *mut Document,
@@ -25,7 +29,9 @@ pub unsafe extern "C" fn wrtv_view_new(document: *mut Document,
                                        viewport_height: u32,
                                        device_pixel_ratio: f32,
                                        available_width: f32,
-                                       get_proc_address: GetProcAddressFn)
+                                       api: Api,
+                                       get_proc_address: GetProcAddressFn,
+                                       flags: wrtv_view_flags_t)
                                        -> *mut View {
     let document = Box::from_raw(document);
     let viewport = DeviceUintSize::new(viewport_width, viewport_height);
@@ -35,7 +41,9 @@ pub unsafe extern "C" fn wrtv_view_new(document: *mut Document,
                                      &viewport,
                                      device_pixel_ratio,
                                      available_width,
-                                     get_proc_address)))
+                                     api,
+                                     get_proc_address,
+                                     ViewFlags::from_bits_truncate(flags))))
 }
 
 #[no_mangle]

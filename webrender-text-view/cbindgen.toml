@@ -4,6 +4,7 @@ header = "/* wr-text-view.h */"
 autogen_warning = "/* Automatically generated. Do not edit! */"
 
 [export.rename]
+"Api" = "wrtv_api_t"
 "Document" = "pilcrow_document_t"
 "EventResult" = "wrtv_event_result_t"
 "GetProcAddressFn" = "wrtv_get_proc_address_fn_t"

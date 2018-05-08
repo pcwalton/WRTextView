@@ -7,7 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreText/CoreText.h>
+#include <pilcrow.h>
 
-@interface Document : UIDocument
-    
+@interface Document : UIDocument {
+    NSString *_textString;
+    NSMutableArray<UIFont *> *_fonts;
+    pilcrow_document_t *_document;
+}
+
+- (pilcrow_document_t *)takeDocument;
+
 @end

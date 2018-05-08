@@ -341,7 +341,7 @@
                             <menuItem isSeparatorItem="YES" id="aTz-b0-Qr7"/>
                             <menuItem title="Actual Size" keyEquivalent="0" id="5MX-8D-EWc">
                                 <connections>
-                                    <action selector="zoomToActualSize:" target="-1" id="lnN-de-GO0"/>
+                                    <action selector="zoomToActualSize:" target="-1" id="nDM-AC-RZk"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Zoom In" keyEquivalent="=" id="2A1-fY-roy">

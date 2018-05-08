@@ -9,15 +9,66 @@
 #import "Document.h"
 
 @implementation Document
+
+- (void)_populateDefaultStyles {
+    self->_fonts = [NSMutableArray arrayWithObjects:
+                    [UIFont fontWithName:@"Times" size:18.0],
+                    [UIFont fontWithName:@"Menlo" size:16.0],
+                    [UIFont systemFontOfSize:36.0 weight:UIFontWeightBold],
+                    [UIFont systemFontOfSize:24.0 weight:UIFontWeightBold],
+                    nil];
+}
+
+- (pilcrow_markdown_parser_t *)_createMarkdownParser {
+    pilcrow_markdown_parser_t *markdownParser = pilcrow_markdown_parser_new();
     
+    uint32_t fontCount = (uint32_t)[self->_fonts count];
+    for (uint32_t index = 0; index < fontCount; index++) {
+        UIFont *font = [self->_fonts objectAtIndex:index];
+        pilcrow_font_t *pFont = pilcrow_font_new_from_native((__bridge CTFontRef)font);
+        pilcrow_markdown_parser_set_font(markdownParser, (pilcrow_inline_selector_t)index, pFont);
+    }
+
+    return markdownParser;
+}
+
+- (BOOL)_recreateTextBufferWithMarkdownParser:(pilcrow_markdown_parser_t *)markdownParser {
+    const char *bytes = [self->_textString UTF8String];
+    if (bytes == NULL)
+        return NO;
+    
+    self->_document = pilcrow_document_new();
+    
+    pilcrow_document_style_t *documentStyle = pilcrow_document_get_style(self->_document);
+    
+    pilcrow_markdown_parse_results_t *parseResults =
+    pilcrow_markdown_parser_add_to_document(markdownParser,
+                                            (const uint8_t *)bytes,
+                                            strlen(bytes),
+                                            self->_document);
+    
+    uintptr_t imageCount = pilcrow_markdown_parse_results_get_image_count(parseResults);
+    NSURLSession *urlSession = [NSURLSession sharedSession];
+    return YES;
+}
+
 - (id)contentsForType:(NSString*)typeName error:(NSError **)errorPtr {
     // Encode your document with an instance of NSData or NSFileWrapper
     return [[NSData alloc] init];
 }
     
 - (BOOL)loadFromContents:(id)contents ofType:(NSString *)typeName error:(NSError **)errorPtr {
-    // Load your document from contents
-    return YES;
+    self->_textString = [[NSString alloc] initWithData:(NSData *)contents
+                                              encoding:NSUTF8StringEncoding];
+    [self _populateDefaultStyles];
+    pilcrow_markdown_parser_t *markdownParser = [self _createMarkdownParser];
+    return [self _recreateTextBufferWithMarkdownParser:markdownParser];
+}
+
+- (pilcrow_document_t *)takeDocument {
+    pilcrow_document_t *document = self->_document;
+    self->_document = nil;
+    return document;
 }
 
 @end

@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+@class Document;
+
 @interface DocumentViewController : UIViewController
 
-@property (strong) UIDocument *document;
+@property(strong) Document *document;
+@property(nonatomic, strong) IBOutlet UINavigationBar *navigationBar;
 
 @end
