@@ -1,5 +1,5 @@
 //
-//  WRTextScrollView.m
+//  WRVTextScrollView.m
 //  WRTextView
 //
 //  Created by Patrick Walton on 5/2/18.
@@ -9,16 +9,16 @@
 #import <TargetConditionals.h>
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
-#import "WRTextScrollView.h"
-#import "WRTextView.h"
+#import "WRVTextScrollView.h"
+#import "WRVTextView.h"
 
-@implementation WRTextScrollView
+@implementation WRVTextScrollView
 
-- (WRTextView *)_textView {
+- (WRVTextView *)_textView {
     NSArray<NSView *> *subviews = [self subviews];
     for (NSView *subview in subviews) {
-        if ([subview isKindOfClass:[WRTextView class]])
-            return (WRTextView *)subview;
+        if ([subview isKindOfClass:[WRVTextView class]])
+            return (WRVTextView *)subview;
     }
     return nil;
 }
@@ -28,7 +28,7 @@
     NSPoint center = NSMakePoint(NSMidX(frame), NSMidY(frame));
     CGFloat newMagnification = [self magnification] * factor;
 
-    WRTextView *textView = [self _textView];
+    WRVTextView *textView = [self _textView];
     [NSAnimationContext beginGrouping];
     [textView beginAnimation];
     [[self animator] setMagnification:newMagnification centeredAtPoint:center];

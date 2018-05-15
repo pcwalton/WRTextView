@@ -1,5 +1,5 @@
 //
-//  WRTextView.h
+//  WRVTextView.h
 //  WRTextView
 //
 //  Created by Patrick Walton on 4/24/18.
@@ -20,29 +20,29 @@ FOUNDATION_EXPORT double WRTextViewVersionNumber;
 //! Project version string for WRTextView.
 FOUNDATION_EXPORT const unsigned char WRTextViewVersionString[];
 
-@protocol WRTextStorage;
-@class WRImageInfo;
-@class WRTextLayer;
+@protocol WRVTextStorage;
+@class WRVImageInfo;
+@class WRVTextLayer;
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
-@interface WRTextView : NSClipView<CALayerDelegate> {
+@interface WRVTextView : NSClipView<CALayerDelegate> {
 #else
-@interface WRTextView : UIScrollView<UIScrollViewDelegate> {
+@interface WRVTextView : UIScrollView<UIScrollViewDelegate> {
 #endif
     NSMutableSet<WRImageInfo *> *_loadedImages;
     unsigned _animationCount;
     BOOL _initialized;
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
-    WRTextLayer *_textLayer;
+    WRVTextLayer *_textLayer;
     NSTrackingArea *_trackingArea;
 #else
     BOOL _debuggerEnabled;
 #endif
 }
 
-@property(nonatomic, strong) IBOutlet id<WRTextStorage> textStorage;
+@property(nonatomic, strong) IBOutlet id<WRVTextStorage> textStorage;
 
-- (WRTextLayer *)_textLayer;
+- (WRVTextLayer *)_textLayer;
 - (void)beginAnimation;
 - (void)endAnimation;
 - (void)reloadText;

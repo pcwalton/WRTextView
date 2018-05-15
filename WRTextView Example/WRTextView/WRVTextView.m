@@ -1,5 +1,5 @@
 //
-//  WRTextView.m
+//  WRVTextView.m
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/16/18.
@@ -8,16 +8,16 @@
 
 #import <TargetConditionals.h>
 #import <CoreText/CoreText.h>
-#import "WRTextView.h"
-#import "WRTextLayer.h"
-#import "WRImageInfo.h"
+#import "WRVTextView.h"
+#import "WRVTextLayer.h"
+#import "WRVImageInfo.h"
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 // Can't use the AppKit one because it's a private API...
 static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 #endif
 
-@implementation WRTextView
+@implementation WRVTextView
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 + (void)initialize {
@@ -69,16 +69,16 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 
 - (void)beginAnimation {
-    NSLog(@"-[WRTextLayer beginAnimation](animation count=%u)", self->_animationCount);
+    NSLog(@"-[WRVTextLayer beginAnimation](animation count=%u)", self->_animationCount);
     if (self->_animationCount == 0)
         [[self _textLayer] setAsynchronous:YES];
     self->_animationCount++;
 }
 
 - (void)endAnimation {
-    NSAssert(self->_animationCount > 0, @"WRTextView: No animation in progress?!");
+    NSAssert(self->_animationCount > 0, @"WRVTextView: No animation in progress?!");
     self->_animationCount--;
-    NSLog(@"-[WRTextLayer endAnimation](animation count=%u)", self->_animationCount);
+    NSLog(@"-[WRVTextLayer endAnimation](animation count=%u)", self->_animationCount);
     if (self->_animationCount == 0)
         [[self _textLayer] setAsynchronous:NO];
 }
@@ -118,7 +118,7 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 #else
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view {
 #endif
-    NSLog(@"-[WRTextLayer scrollViewWillBeginZooming:]");
+    NSLog(@"-[WRVTextLayer scrollViewWillBeginZooming:]");
     [self beginAnimation];
 }
     
@@ -145,14 +145,14 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 
 - (CALayer *)makeBackingLayer {
-    self->_textLayer = [WRTextLayer layer];
+    self->_textLayer = [WRVTextLayer layer];
     [self->_textLayer setContentsScale:[[self window] backingScaleFactor]];
     [self->_textLayer setDelegate:self];
     return self->_textLayer;
 }
 #else
 + (Class)layerClass {
-    return [WRTextLayer class];
+    return [WRVTextLayer class];
 }
 
 - (void)didMoveToWindow {
@@ -160,8 +160,8 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 #endif
     
-- (WRTextLayer *)_textLayer {
-    return (WRTextLayer *)[self layer];
+- (WRVTextLayer *)_textLayer {
+    return (WRVTextLayer *)[self layer];
 }
 
 - (void)awakeFromNib {
@@ -215,7 +215,7 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
     if (textLayer == nil || ![textLayer isReady])
         return;
 
-    for (WRImageInfo *imageInfo in self->_loadedImages)
+    for (WRVImageInfo *imageInfo in self->_loadedImages)
         [textLayer setImage:[imageInfo image] forID:[imageInfo imageID]];
     [self->_loadedImages removeAllObjects];
 
@@ -317,8 +317,8 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 
 - (void)setImage:(NSImage *)image forID:(uint32_t)imageID {
-    NSLog(@"-[WRTextView setImage:forID:]");
-    [self->_loadedImages addObject:[[WRImageInfo alloc] initWithImage:image id:imageID]];
+    NSLog(@"-[WRVTextView setImage:forID:]");
+    [self->_loadedImages addObject:[[WRVImageInfo alloc] initWithImage:image id:imageID]];
     [self processQueuedImages];
 }
 
@@ -327,8 +327,8 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 #else
 - (void)setImage:(UIImage *)image forID:(uint32_t)imageID {
-    NSLog(@"-[WRTextView setImage:forID:]");
-    [self->_loadedImages addObject:[[WRImageInfo alloc] initWithImage:image id:imageID]];
+    NSLog(@"-[WRVTextView setImage:forID:]");
+    [self->_loadedImages addObject:[[WRVImageInfo alloc] initWithImage:image id:imageID]];
     [self processQueuedImages];
 }
 

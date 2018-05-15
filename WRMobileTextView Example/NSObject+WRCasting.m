@@ -8,7 +8,7 @@
 
 #import "NSObject+WRCasting.h"
 
-@implementation NSObject (WRCasting)
+@implementation NSObject(WRCasting)
 
 + (instancetype)staticCast:(id)that {
     NSAssert([that isKindOfClass:self], @"Cast failed: %@ required, %@ found", self, [that class]);

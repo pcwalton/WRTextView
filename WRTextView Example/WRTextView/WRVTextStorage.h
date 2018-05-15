@@ -1,20 +1,20 @@
 //
-//  WRTextStorage.h
+//  WRVTextStorage.h
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 5/7/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#ifndef WRTextStorage_h
-#define WRTextStorage_h
+#ifndef WRV_TEXT_STORAGE_H
+#define WRV_TEXT_STORAGE_H
 
 #include <pilcrow.h>
 
-@protocol WRTextStorage
+@protocol WRVTextStorage
 
 - (pilcrow_document_t *)takeDocument;
 
 @end
 
-#endif /* WRTextStorage_h */
+#endif /* WRV_TEXT_STORAGE_H */

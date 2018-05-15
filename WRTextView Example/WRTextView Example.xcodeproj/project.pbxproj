@@ -10,17 +10,17 @@
 		6A02CE2E20A15E8800AEF841 /* libwebrender_text_view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE2BADF209BE7890059F224 /* libwebrender_text_view.a */; };
 		6A02CE4620A16A2900AEF841 /* WRTextView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A02CE3A20A169CC00AEF841 /* WRTextView.framework */; };
 		6A02CE4720A16A2900AEF841 /* WRTextView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6A02CE3A20A169CC00AEF841 /* WRTextView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		6A02CE4B20A16A7000AEF841 /* WRImageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD4209A67A30059F224 /* WRImageInfo.m */; };
-		6A02CE4C20A16A7600AEF841 /* WRTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextLayer.m */; };
-		6A02CE4D20A16A7900AEF841 /* WRTextScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD0209A39CE0059F224 /* WRTextScrollView.m */; };
-		6A02CE4E20A16A7B00AEF841 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
+		6A02CE4B20A16A7000AEF841 /* WRVImageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD4209A67A30059F224 /* WRVImageInfo.m */; };
+		6A02CE4C20A16A7600AEF841 /* WRVTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRVTextLayer.m */; };
+		6A02CE4D20A16A7900AEF841 /* WRVTextScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD0209A39CE0059F224 /* WRVTextScrollView.m */; };
+		6A02CE4E20A16A7B00AEF841 /* WRVTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRVTextView.m */; };
 		6A02CE4F20A214EB00AEF841 /* libwebrender_text_view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE2BAE1209BE88D0059F224 /* libwebrender_text_view.a */; };
 		6A02CE5520A3EA5000AEF841 /* FontFamilyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5420A3EA5000AEF841 /* FontFamilyTableViewController.m */; };
 		6A02CE5820A3ED2800AEF841 /* WRExampleNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5720A3ED2800AEF841 /* WRExampleNavigationController.m */; };
 		6A02CE6120A3F05E00AEF841 /* NSObject+WRCasting.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */; };
-		6A0A1563208FD98000E32BC6 /* WRTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0A1561208FD98000E32BC6 /* WRTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		6A0A1567208FD9AC00E32BC6 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
-		6A0A1568208FD9C400E32BC6 /* WRTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextLayer.m */; };
+		6A0A1563208FD98000E32BC6 /* WRVTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0A1561208FD98000E32BC6 /* WRVTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6A0A1567208FD9AC00E32BC6 /* WRVTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRVTextView.m */; };
+		6A0A1568208FD9C400E32BC6 /* WRVTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRVTextLayer.m */; };
 		6A0A1570208FE6AA00E32BC6 /* WindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A156F208FE6AA00E32BC6 /* WindowController.m */; };
 		6A0A157C2092B72400E32BC6 /* ContextMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A157B2092B72400E32BC6 /* ContextMenu.xib */; };
 		6A0A15852092BD8400E32BC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15842092BD8400E32BC6 /* AppDelegate.m */; };
@@ -39,9 +39,9 @@
 		6A0E3CC0207ED10600887721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBF207ED10600887721 /* main.m */; };
 		6A8F5D1220AA8A9B00F25F23 /* WRTextView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; };
 		6A8F5D1320AA8A9B00F25F23 /* WRTextView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		6AE2BAD1209A39CE0059F224 /* WRTextScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AE2BACF209A39CE0059F224 /* WRTextScrollView.h */; };
-		6AE2BAD2209A39CE0059F224 /* WRTextScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD0209A39CE0059F224 /* WRTextScrollView.m */; };
-		6AE2BAD8209A67AB0059F224 /* WRImageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD4209A67A30059F224 /* WRImageInfo.m */; };
+		6AE2BAD1209A39CE0059F224 /* WRVTextScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AE2BACF209A39CE0059F224 /* WRVTextScrollView.h */; };
+		6AE2BAD2209A39CE0059F224 /* WRVTextScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD0209A39CE0059F224 /* WRVTextScrollView.m */; };
+		6AE2BAD8209A67AB0059F224 /* WRVImageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD4209A67A30059F224 /* WRVImageInfo.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,8 +87,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6A02CE2D20A0D3DA00AEF841 /* WRMobileGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRMobileGL.h; sourceTree = "<group>"; };
-		6A02CE2F20A1618C00AEF841 /* WRTextStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextStorage.h; sourceTree = "<group>"; };
+		6A02CE2D20A0D3DA00AEF841 /* WRVMobileGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVMobileGL.h; sourceTree = "<group>"; };
+		6A02CE2F20A1618C00AEF841 /* WRVTextStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVTextStorage.h; sourceTree = "<group>"; };
 		6A02CE3A20A169CC00AEF841 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A02CE3D20A169CC00AEF841 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A02CE5320A3EA5000AEF841 /* FontFamilyTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontFamilyTableViewController.h; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 		6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+WRCasting.m"; sourceTree = "<group>"; };
 		6A02CE6220A409DB00AEF841 /* DocumentDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentDelegate.h; sourceTree = "<group>"; };
 		6A0A155F208FD97F00E32BC6 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6A0A1561208FD98000E32BC6 /* WRTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextView.h; sourceTree = "<group>"; };
+		6A0A1561208FD98000E32BC6 /* WRVTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVTextView.h; sourceTree = "<group>"; };
 		6A0A1562208FD98000E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0A156E208FE6AA00E32BC6 /* WindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowController.h; sourceTree = "<group>"; };
 		6A0A156F208FE6AA00E32BC6 /* WindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowController.m; sourceTree = "<group>"; };
@@ -129,16 +129,16 @@
 		6A0E3CBE207ED10600887721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0E3CBF207ED10600887721 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6A0E3CC1207ED10600887721 /* WRTextView_Example.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WRTextView_Example.entitlements; sourceTree = "<group>"; };
-		6A0E3CE3207ED14800887721 /* WRTextLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextLayer.h; sourceTree = "<group>"; };
-		6A0E3CE4207ED14800887721 /* WRTextLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextLayer.m; sourceTree = "<group>"; };
+		6A0E3CE3207ED14800887721 /* WRVTextLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVTextLayer.h; sourceTree = "<group>"; };
+		6A0E3CE4207ED14800887721 /* WRVTextLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVTextLayer.m; sourceTree = "<group>"; };
 		6A0E3CE7207EF98A00887721 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = ../../pilcrow/target/debug/libpilcrow.dylib; sourceTree = "<group>"; };
 		6A0E3CE9207FEE6800887721 /* libwebrender_text_view.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libwebrender_text_view.dylib; path = "../webrender-text-view/target/debug/libwebrender_text_view.dylib"; sourceTree = "<group>"; };
 		6A5B5FFF208156CB00C10F79 /* libpilcrow.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpilcrow.dylib; path = "../webrender-text-view/target/debug/deps/libpilcrow.dylib"; sourceTree = "<group>"; };
-		6A5B60022084FD8200C10F79 /* WRTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextView.m; sourceTree = "<group>"; };
-		6AE2BACF209A39CE0059F224 /* WRTextScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextScrollView.h; sourceTree = "<group>"; };
-		6AE2BAD0209A39CE0059F224 /* WRTextScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRTextScrollView.m; sourceTree = "<group>"; };
-		6AE2BAD3209A67A30059F224 /* WRImageInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRImageInfo.h; sourceTree = "<group>"; };
-		6AE2BAD4209A67A30059F224 /* WRImageInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRImageInfo.m; sourceTree = "<group>"; };
+		6A5B60022084FD8200C10F79 /* WRVTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVTextView.m; sourceTree = "<group>"; };
+		6AE2BACF209A39CE0059F224 /* WRVTextScrollView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVTextScrollView.h; sourceTree = "<group>"; };
+		6AE2BAD0209A39CE0059F224 /* WRVTextScrollView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVTextScrollView.m; sourceTree = "<group>"; };
+		6AE2BAD3209A67A30059F224 /* WRVImageInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVImageInfo.h; sourceTree = "<group>"; };
+		6AE2BAD4209A67A30059F224 /* WRVImageInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVImageInfo.m; sourceTree = "<group>"; };
 		6AE2BADF209BE7890059F224 /* libwebrender_text_view.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebrender_text_view.a; path = "../webrender-text-view/target/debug/libwebrender_text_view.a"; sourceTree = "<group>"; };
 		6AE2BAE1209BE88D0059F224 /* libwebrender_text_view.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebrender_text_view.a; path = "../webrender-text-view/target/universal/debug/libwebrender_text_view.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -191,16 +191,16 @@
 			isa = PBXGroup;
 			children = (
 				6A0E3CAE207ED10400887721 /* Products */,
-				6AE2BAD3209A67A30059F224 /* WRImageInfo.h */,
-				6AE2BAD4209A67A30059F224 /* WRImageInfo.m */,
-				6A02CE2D20A0D3DA00AEF841 /* WRMobileGL.h */,
-				6A0E3CE3207ED14800887721 /* WRTextLayer.h */,
-				6A0E3CE4207ED14800887721 /* WRTextLayer.m */,
-				6AE2BACF209A39CE0059F224 /* WRTextScrollView.h */,
-				6AE2BAD0209A39CE0059F224 /* WRTextScrollView.m */,
-				6A02CE2F20A1618C00AEF841 /* WRTextStorage.h */,
-				6A0A1561208FD98000E32BC6 /* WRTextView.h */,
-				6A5B60022084FD8200C10F79 /* WRTextView.m */,
+				6AE2BAD3209A67A30059F224 /* WRVImageInfo.h */,
+				6AE2BAD4209A67A30059F224 /* WRVImageInfo.m */,
+				6A02CE2D20A0D3DA00AEF841 /* WRVMobileGL.h */,
+				6A0E3CE3207ED14800887721 /* WRVTextLayer.h */,
+				6A0E3CE4207ED14800887721 /* WRVTextLayer.m */,
+				6AE2BACF209A39CE0059F224 /* WRVTextScrollView.h */,
+				6AE2BAD0209A39CE0059F224 /* WRVTextScrollView.m */,
+				6A02CE2F20A1618C00AEF841 /* WRVTextStorage.h */,
+				6A0A1561208FD98000E32BC6 /* WRVTextView.h */,
+				6A5B60022084FD8200C10F79 /* WRVTextView.m */,
 				6A0A157B2092B72400E32BC6 /* ContextMenu.xib */,
 				6A0A1562208FD98000E32BC6 /* Info.plist */,
 			);
@@ -303,8 +303,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6AE2BAD1209A39CE0059F224 /* WRTextScrollView.h in Headers */,
-				6A0A1563208FD98000E32BC6 /* WRTextView.h in Headers */,
+				6AE2BAD1209A39CE0059F224 /* WRVTextScrollView.h in Headers */,
+				6A0A1563208FD98000E32BC6 /* WRVTextView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -477,10 +477,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A02CE4E20A16A7B00AEF841 /* WRTextView.m in Sources */,
-				6A02CE4B20A16A7000AEF841 /* WRImageInfo.m in Sources */,
-				6A02CE4D20A16A7900AEF841 /* WRTextScrollView.m in Sources */,
-				6A02CE4C20A16A7600AEF841 /* WRTextLayer.m in Sources */,
+				6A02CE4E20A16A7B00AEF841 /* WRVTextView.m in Sources */,
+				6A02CE4B20A16A7000AEF841 /* WRVImageInfo.m in Sources */,
+				6A02CE4D20A16A7900AEF841 /* WRVTextScrollView.m in Sources */,
+				6A02CE4C20A16A7600AEF841 /* WRVTextLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -488,10 +488,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6AE2BAD8209A67AB0059F224 /* WRImageInfo.m in Sources */,
-				6A0A1567208FD9AC00E32BC6 /* WRTextView.m in Sources */,
-				6AE2BAD2209A39CE0059F224 /* WRTextScrollView.m in Sources */,
-				6A0A1568208FD9C400E32BC6 /* WRTextLayer.m in Sources */,
+				6AE2BAD8209A67AB0059F224 /* WRVImageInfo.m in Sources */,
+				6A0A1567208FD9AC00E32BC6 /* WRVTextView.m in Sources */,
+				6AE2BAD2209A39CE0059F224 /* WRVTextScrollView.m in Sources */,
+				6A0A1568208FD9C400E32BC6 /* WRVTextLayer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,5 @@
 //
-//  WRTextLayer.h
+//  WRVTextLayer.h
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/11/18.
@@ -19,12 +19,12 @@
 #include <pilcrow.h>
 #include <wr-text-view.h>
 
-@class WRTextView;
+@class WRVTextView;
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
-@interface WRTextLayer : CAOpenGLLayer {
+@interface WRVTextLayer : CAOpenGLLayer {
 #else
-@interface WRTextLayer : CAEAGLLayer {
+@interface WRVTextLayer : CAEAGLLayer {
     EAGLContext *_glContext;
     CADisplayLink *_displayLink;
     GLuint _mainFramebuffer;
@@ -36,7 +36,7 @@
     wrtv_view_t *_webRenderView;
 }
 
-- (WRTextView *)_textView;
+- (WRVTextView *)_textView;
 - (void)reloadText;
 - (void)setDebuggerEnabled:(BOOL)enabled;
 - (void)reshape;

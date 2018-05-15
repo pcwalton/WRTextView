@@ -1,5 +1,5 @@
 //
-//  WRTextLayer.m
+//  WRVTextLayer.m
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/11/18.
@@ -14,12 +14,12 @@
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 #import <OpenGL/gl.h>
 #else
-#import "WRMobileGL.h"
+#import "WRVMobileGL.h"
 #endif
 
-#import "WRTextLayer.h"
-#import "WRTextStorage.h"
-#import "WRTextView.h"
+#import "WRVTextLayer.h"
+#import "WRVTextStorage.h"
+#import "WRVTextView.h"
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 static const CFStringRef WRGLBundleIdentifier = CFSTR("com.apple.opengl");
@@ -57,7 +57,7 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 }
 #endif
 
-@implementation WRTextLayer
+@implementation WRVTextLayer
 
 - (WRTextView *)_textView {
     id delegate = [self delegate];
@@ -75,7 +75,7 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (CGFloat)_backingScaleFactor {
-    WRTextView *textView = [self _textView];
+    WRVTextView *textView = [self _textView];
     if (textView == nil)
         return 1.0;
     NSWindow *window = [textView window];
