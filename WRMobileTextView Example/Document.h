@@ -10,6 +10,7 @@
 #import <CoreText/CoreText.h>
 #include <pilcrow.h>
 #import "WRTextStorage.h"
+#import "DocumentDelegate.h"
 
 @interface Document : UIDocument<WRTextStorage> {
     NSString *_textString;

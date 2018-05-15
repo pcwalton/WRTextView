@@ -55,7 +55,7 @@
 - (void)_recreateTextBufferAndReloadText {
     pilcrow_markdown_parser_t *markdownParser = [self _createMarkdownParser];
     [self _recreateTextBufferWithMarkdownParser:markdownParser];
-    [[self delegate] reloadText];
+    [[self delegate] reloadDocumentText:self];
 }
 
 - (id)contentsForType:(NSString*)typeName error:(NSError **)errorPtr {

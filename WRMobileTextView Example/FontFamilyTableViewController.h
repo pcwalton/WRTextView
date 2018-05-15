@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreText/CoreText.h>
+#include <pilcrow.h>
 
 @interface FontFamilyTableViewController : UITableViewController<UITableViewDataSource,
                                                                  UITableViewDelegate> {
