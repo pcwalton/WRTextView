@@ -6,6 +6,8 @@
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
+#import <TargetConditionals.h>
+
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 #import <Cocoa/Cocoa.h>
 #else
@@ -23,32 +25,39 @@ FOUNDATION_EXPORT const unsigned char WRTextViewVersionString[];
 @class WRTextLayer;
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
-@interface WRTextView : NSClipView {
+@interface WRTextView : NSClipView<CALayerDelegate> {
 #else
-@interface WRTextView : UIView {
+@interface WRTextView : UIScrollView<UIScrollViewDelegate> {
 #endif
-    WRTextLayer *_textLayer;
-    NSTrackingArea *_trackingArea;
     NSMutableSet<WRImageInfo *> *_loadedImages;
     unsigned _animationCount;
     BOOL _initialized;
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+    WRTextLayer *_textLayer;
+    NSTrackingArea *_trackingArea;
+#else
+    BOOL _debuggerEnabled;
+#endif
 }
 
 @property(nonatomic, strong) IBOutlet id<WRTextStorage> textStorage;
 
+- (WRTextLayer *)_textLayer;
 - (void)beginAnimation;
 - (void)endAnimation;
 - (void)reloadText;
 - (void)setDebuggerEnabled:(BOOL)enabled;
-- (void)setDocumentSize:(CGSize)newSize;
+- (void)setContentSize:(CGSize)newSize;
 - (void)processQueuedImages;
 - (void)setNeedsDisplayInRect:(CGRect)invalidRect;
+- (IBAction)scrollToBeginningOfDocument:(id)sender;
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (void)setImage:(NSImage *)image forID:(uint32_t)imageID;
 - (NSView *)documentView;
 #else
 - (void)setImage:(UIImage *)image forID:(uint32_t)imageID;
 - (UIView *)documentView;
+- (void)setNeedsDisplay:(BOOL)needsDisplay;
 #endif
     
 @end

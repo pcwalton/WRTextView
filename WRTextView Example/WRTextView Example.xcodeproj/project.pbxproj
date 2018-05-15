@@ -8,11 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		6A02CE2E20A15E8800AEF841 /* libwebrender_text_view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE2BADF209BE7890059F224 /* libwebrender_text_view.a */; };
+		6A02CE4620A16A2900AEF841 /* WRTextView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A02CE3A20A169CC00AEF841 /* WRTextView.framework */; };
+		6A02CE4720A16A2900AEF841 /* WRTextView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6A02CE3A20A169CC00AEF841 /* WRTextView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6A02CE4B20A16A7000AEF841 /* WRImageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD4209A67A30059F224 /* WRImageInfo.m */; };
+		6A02CE4C20A16A7600AEF841 /* WRTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextLayer.m */; };
+		6A02CE4D20A16A7900AEF841 /* WRTextScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD0209A39CE0059F224 /* WRTextScrollView.m */; };
+		6A02CE4E20A16A7B00AEF841 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
+		6A02CE4F20A214EB00AEF841 /* libwebrender_text_view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE2BAE1209BE88D0059F224 /* libwebrender_text_view.a */; };
+		6A02CE5520A3EA5000AEF841 /* FontFamilyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5420A3EA5000AEF841 /* FontFamilyTableViewController.m */; };
+		6A02CE5820A3ED2800AEF841 /* WRExampleNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5720A3ED2800AEF841 /* WRExampleNavigationController.m */; };
+		6A02CE6120A3F05E00AEF841 /* NSObject+WRCasting.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */; };
 		6A0A1563208FD98000E32BC6 /* WRTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0A1561208FD98000E32BC6 /* WRTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6A0A1567208FD9AC00E32BC6 /* WRTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRTextView.m */; };
 		6A0A1568208FD9C400E32BC6 /* WRTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRTextLayer.m */; };
 		6A0A1570208FE6AA00E32BC6 /* WindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A156F208FE6AA00E32BC6 /* WindowController.m */; };
-		6A0A1577208FEE9400E32BC6 /* WRTextView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6A0A157C2092B72400E32BC6 /* ContextMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A157B2092B72400E32BC6 /* ContextMenu.xib */; };
 		6A0A15852092BD8400E32BC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15842092BD8400E32BC6 /* AppDelegate.m */; };
 		6A0A15882092BD8400E32BC6 /* DocumentBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */; };
@@ -28,16 +37,22 @@
 		6A0E3CBA207ED10600887721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB9207ED10600887721 /* Assets.xcassets */; };
 		6A0E3CBD207ED10600887721 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBB207ED10600887721 /* MainMenu.xib */; };
 		6A0E3CC0207ED10600887721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBF207ED10600887721 /* main.m */; };
+		6A8F5D1220AA8A9B00F25F23 /* WRTextView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; };
+		6A8F5D1320AA8A9B00F25F23 /* WRTextView.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6A0A155F208FD97F00E32BC6 /* WRTextView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6AE2BAD1209A39CE0059F224 /* WRTextScrollView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AE2BACF209A39CE0059F224 /* WRTextScrollView.h */; };
 		6AE2BAD2209A39CE0059F224 /* WRTextScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD0209A39CE0059F224 /* WRTextScrollView.m */; };
 		6AE2BAD8209A67AB0059F224 /* WRImageInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD4209A67A30059F224 /* WRImageInfo.m */; };
-		6AE2BAE2209BE88D0059F224 /* libwebrender_text_view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE2BAE1209BE88D0059F224 /* libwebrender_text_view.a */; };
-		6AE2BAEB209C1DB20059F224 /* WRMobileTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAE4209C1A280059F224 /* WRMobileTextView.m */; };
-		6AE2BAED209C1DBF0059F224 /* WRMobileTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAE8209C1A690059F224 /* WRMobileTextLayer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		6A0A1578208FEE9400E32BC6 /* PBXContainerItemProxy */ = {
+		6A02CE4820A16A2900AEF841 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6A0E3CA5207ED10400887721 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6A02CE3920A169CC00AEF841;
+			remoteInfo = WRMobileTextView;
+		};
+		6A8F5D1420AA8A9B00F25F23 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 6A0E3CA5207ED10400887721 /* Project object */;
 			proxyType = 1;
@@ -47,13 +62,24 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		6A0A157A208FEE9400E32BC6 /* Embed Frameworks */ = {
+		6A02CE4A20A16A2900AEF841 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				6A0A1577208FEE9400E32BC6 /* WRTextView.framework in Embed Frameworks */,
+				6A02CE4720A16A2900AEF841 /* WRTextView.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6A8F5D1620AA8A9B00F25F23 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6A8F5D1320AA8A9B00F25F23 /* WRTextView.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -63,6 +89,15 @@
 /* Begin PBXFileReference section */
 		6A02CE2D20A0D3DA00AEF841 /* WRMobileGL.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRMobileGL.h; sourceTree = "<group>"; };
 		6A02CE2F20A1618C00AEF841 /* WRTextStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextStorage.h; sourceTree = "<group>"; };
+		6A02CE3A20A169CC00AEF841 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6A02CE3D20A169CC00AEF841 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6A02CE5320A3EA5000AEF841 /* FontFamilyTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontFamilyTableViewController.h; sourceTree = "<group>"; };
+		6A02CE5420A3EA5000AEF841 /* FontFamilyTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FontFamilyTableViewController.m; sourceTree = "<group>"; };
+		6A02CE5620A3ED2800AEF841 /* WRExampleNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRExampleNavigationController.h; sourceTree = "<group>"; };
+		6A02CE5720A3ED2800AEF841 /* WRExampleNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRExampleNavigationController.m; sourceTree = "<group>"; };
+		6A02CE5F20A3F05E00AEF841 /* NSObject+WRCasting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+WRCasting.h"; sourceTree = "<group>"; };
+		6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+WRCasting.m"; sourceTree = "<group>"; };
+		6A02CE6220A409DB00AEF841 /* DocumentDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentDelegate.h; sourceTree = "<group>"; };
 		6A0A155F208FD97F00E32BC6 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0A1561208FD98000E32BC6 /* WRTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRTextView.h; sourceTree = "<group>"; };
 		6A0A1562208FD98000E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -106,13 +141,17 @@
 		6AE2BAD4209A67A30059F224 /* WRImageInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRImageInfo.m; sourceTree = "<group>"; };
 		6AE2BADF209BE7890059F224 /* libwebrender_text_view.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebrender_text_view.a; path = "../webrender-text-view/target/debug/libwebrender_text_view.a"; sourceTree = "<group>"; };
 		6AE2BAE1209BE88D0059F224 /* libwebrender_text_view.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebrender_text_view.a; path = "../webrender-text-view/target/universal/debug/libwebrender_text_view.a"; sourceTree = "<group>"; };
-		6AE2BAE3209C1A280059F224 /* WRMobileTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRMobileTextView.h; sourceTree = "<group>"; };
-		6AE2BAE4209C1A280059F224 /* WRMobileTextView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRMobileTextView.m; sourceTree = "<group>"; };
-		6AE2BAE7209C1A690059F224 /* WRMobileTextLayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRMobileTextLayer.h; sourceTree = "<group>"; };
-		6AE2BAE8209C1A690059F224 /* WRMobileTextLayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRMobileTextLayer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6A02CE3620A169CC00AEF841 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A02CE4F20A214EB00AEF841 /* libwebrender_text_view.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0A155B208FD97F00E32BC6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -125,7 +164,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6AE2BAE2209BE88D0059F224 /* libwebrender_text_view.a in Frameworks */,
+				6A02CE4620A16A2900AEF841 /* WRTextView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,18 +172,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6A8F5D1220AA8A9B00F25F23 /* WRTextView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6A02CE3B20A169CC00AEF841 /* WRMobileTextView */ = {
+			isa = PBXGroup;
+			children = (
+				6A02CE3D20A169CC00AEF841 /* Info.plist */,
+			);
+			path = WRMobileTextView;
+			sourceTree = "<group>";
+		};
 		6A0A1560208FD97F00E32BC6 /* WRTextView */ = {
 			isa = PBXGroup;
 			children = (
 				6A0E3CAE207ED10400887721 /* Products */,
 				6AE2BAD3209A67A30059F224 /* WRImageInfo.h */,
 				6AE2BAD4209A67A30059F224 /* WRImageInfo.m */,
+				6A02CE2D20A0D3DA00AEF841 /* WRMobileGL.h */,
 				6A0E3CE3207ED14800887721 /* WRTextLayer.h */,
 				6A0E3CE4207ED14800887721 /* WRTextLayer.m */,
 				6AE2BACF209A39CE0059F224 /* WRTextScrollView.h */,
@@ -165,15 +214,17 @@
 				6A0A15842092BD8400E32BC6 /* AppDelegate.m */,
 				6A0A15862092BD8400E32BC6 /* DocumentBrowserViewController.h */,
 				6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */,
+				6A02CE6220A409DB00AEF841 /* DocumentDelegate.h */,
 				6A0A15892092BD8400E32BC6 /* DocumentViewController.h */,
 				6A0A158A2092BD8400E32BC6 /* DocumentViewController.m */,
 				6A0A158C2092BD8400E32BC6 /* Document.h */,
 				6A0A158D2092BD8400E32BC6 /* Document.m */,
-				6A02CE2D20A0D3DA00AEF841 /* WRMobileGL.h */,
-				6AE2BAE7209C1A690059F224 /* WRMobileTextLayer.h */,
-				6AE2BAE8209C1A690059F224 /* WRMobileTextLayer.m */,
-				6AE2BAE3209C1A280059F224 /* WRMobileTextView.h */,
-				6AE2BAE4209C1A280059F224 /* WRMobileTextView.m */,
+				6A02CE5320A3EA5000AEF841 /* FontFamilyTableViewController.h */,
+				6A02CE5420A3EA5000AEF841 /* FontFamilyTableViewController.m */,
+				6A02CE5F20A3F05E00AEF841 /* NSObject+WRCasting.h */,
+				6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */,
+				6A02CE5620A3ED2800AEF841 /* WRExampleNavigationController.h */,
+				6A02CE5720A3ED2800AEF841 /* WRExampleNavigationController.m */,
 				6A0A158F2092BD8400E32BC6 /* Main.storyboard */,
 				6A0A15922092BD8500E32BC6 /* Assets.xcassets */,
 				6A0A15942092BD8500E32BC6 /* LaunchScreen.storyboard */,
@@ -190,6 +241,7 @@
 				6A0E3CAF207ED10400887721 /* WRTextView Example */,
 				6A0A15822092BD8400E32BC6 /* WRMobileTextView Example */,
 				6A0A1560208FD97F00E32BC6 /* WRTextView */,
+				6A02CE3B20A169CC00AEF841 /* WRMobileTextView */,
 				6A0E3CE6207EF98A00887721 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -200,6 +252,7 @@
 				6A0E3CAD207ED10400887721 /* WRTextView Example.app */,
 				6A0A155F208FD97F00E32BC6 /* WRTextView.framework */,
 				6A0A15812092BD8400E32BC6 /* WRMobileTextView Example.app */,
+				6A02CE3A20A169CC00AEF841 /* WRTextView.framework */,
 			);
 			name = Products;
 			path = ..;
@@ -239,6 +292,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		6A02CE3720A169CC00AEF841 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0A155C208FD97F00E32BC6 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -251,6 +311,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		6A02CE3920A169CC00AEF841 /* WRMobileTextView */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6A02CE4320A169CC00AEF841 /* Build configuration list for PBXNativeTarget "WRMobileTextView" */;
+			buildPhases = (
+				6A02CE3520A169CC00AEF841 /* Sources */,
+				6A02CE3620A169CC00AEF841 /* Frameworks */,
+				6A02CE3720A169CC00AEF841 /* Headers */,
+				6A02CE3820A169CC00AEF841 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WRMobileTextView;
+			productName = WRMobileTextView;
+			productReference = 6A02CE3A20A169CC00AEF841 /* WRTextView.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		6A0A155E208FD97F00E32BC6 /* WRTextView */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6A0A1566208FD98000E32BC6 /* Build configuration list for PBXNativeTarget "WRTextView" */;
@@ -276,10 +354,12 @@
 				6A0A157D2092BD8400E32BC6 /* Sources */,
 				6A0A157E2092BD8400E32BC6 /* Frameworks */,
 				6A0A157F2092BD8400E32BC6 /* Resources */,
+				6A02CE4A20A16A2900AEF841 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				6A02CE4920A16A2900AEF841 /* PBXTargetDependency */,
 			);
 			name = "WRMobileTextView Example";
 			productName = "WRMobileTextView Example";
@@ -293,12 +373,12 @@
 				6A0E3CA9207ED10400887721 /* Sources */,
 				6A0E3CAA207ED10400887721 /* Frameworks */,
 				6A0E3CAB207ED10400887721 /* Resources */,
-				6A0A157A208FEE9400E32BC6 /* Embed Frameworks */,
+				6A8F5D1620AA8A9B00F25F23 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				6A0A1579208FEE9400E32BC6 /* PBXTargetDependency */,
+				6A8F5D1520AA8A9B00F25F23 /* PBXTargetDependency */,
 			);
 			name = "WRTextView Example";
 			productName = "WRTextView Example";
@@ -314,6 +394,9 @@
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = "Mozilla Foundation";
 				TargetAttributes = {
+					6A02CE3920A169CC00AEF841 = {
+						CreatedOnToolsVersion = 9.3;
+					};
 					6A0A155E208FD97F00E32BC6 = {
 						CreatedOnToolsVersion = 9.3;
 					};
@@ -346,11 +429,19 @@
 				6A0E3CAC207ED10400887721 /* WRTextView Example */,
 				6A0A155E208FD97F00E32BC6 /* WRTextView */,
 				6A0A15802092BD8400E32BC6 /* WRMobileTextView Example */,
+				6A02CE3920A169CC00AEF841 /* WRMobileTextView */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		6A02CE3820A169CC00AEF841 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0A155D208FD97F00E32BC6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -382,6 +473,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		6A02CE3520A169CC00AEF841 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6A02CE4E20A16A7B00AEF841 /* WRTextView.m in Sources */,
+				6A02CE4B20A16A7000AEF841 /* WRImageInfo.m in Sources */,
+				6A02CE4D20A16A7900AEF841 /* WRTextScrollView.m in Sources */,
+				6A02CE4C20A16A7600AEF841 /* WRTextLayer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6A0A155A208FD97F00E32BC6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -398,9 +500,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				6A0A15992092BD8500E32BC6 /* main.m in Sources */,
+				6A02CE5520A3EA5000AEF841 /* FontFamilyTableViewController.m in Sources */,
+				6A02CE5820A3ED2800AEF841 /* WRExampleNavigationController.m in Sources */,
 				6A0A158E2092BD8400E32BC6 /* Document.m in Sources */,
-				6AE2BAEB209C1DB20059F224 /* WRMobileTextView.m in Sources */,
-				6AE2BAED209C1DBF0059F224 /* WRMobileTextLayer.m in Sources */,
+				6A02CE6120A3F05E00AEF841 /* NSObject+WRCasting.m in Sources */,
 				6A0A15882092BD8400E32BC6 /* DocumentBrowserViewController.m in Sources */,
 				6A0A158B2092BD8400E32BC6 /* DocumentViewController.m in Sources */,
 				6A0A15852092BD8400E32BC6 /* AppDelegate.m in Sources */,
@@ -421,10 +524,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		6A0A1579208FEE9400E32BC6 /* PBXTargetDependency */ = {
+		6A02CE4920A16A2900AEF841 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6A02CE3920A169CC00AEF841 /* WRMobileTextView */;
+			targetProxy = 6A02CE4820A16A2900AEF841 /* PBXContainerItemProxy */;
+		};
+		6A8F5D1520AA8A9B00F25F23 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 6A0A155E208FD97F00E32BC6 /* WRTextView */;
-			targetProxy = 6A0A1578208FEE9400E32BC6 /* PBXContainerItemProxy */;
+			targetProxy = 6A8F5D1420AA8A9B00F25F23 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -464,14 +572,82 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		6A0A1564208FD98000E32BC6 /* Debug */ = {
+		6A02CE4420A169CC00AEF841 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				HEADER_SEARCH_PATHS = (
+					../../pilcrow,
+					"../webrender-text-view",
+				);
+				INFOPLIST_FILE = WRMobileTextView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/universal/debug";
+				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.WRMobileTextView;
+				PRODUCT_NAME = WRTextView;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		6A02CE4520A169CC00AEF841 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				HEADER_SEARCH_PATHS = (
+					../../pilcrow,
+					"../webrender-text-view",
+				);
+				INFOPLIST_FILE = WRMobileTextView/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = "../webrender-text-view/target/universal/release";
+				PRODUCT_BUNDLE_IDENTIFIER = org.mozilla.WRMobileTextView;
+				PRODUCT_NAME = WRTextView;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		6A0A1564208FD98000E32BC6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = B6DKJ8Z6R9;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -500,11 +676,12 @@
 		6A0A1565208FD98000E32BC6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = B6DKJ8Z6R9;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -739,6 +916,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		6A02CE4320A169CC00AEF841 /* Build configuration list for PBXNativeTarget "WRMobileTextView" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6A02CE4420A169CC00AEF841 /* Debug */,
+				6A02CE4520A169CC00AEF841 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6A0A1566208FD98000E32BC6 /* Build configuration list for PBXNativeTarget "WRTextView" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

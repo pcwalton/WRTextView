@@ -9,13 +9,18 @@
 #import <UIKit/UIKit.h>
 #import <CoreText/CoreText.h>
 #include <pilcrow.h>
+#import "WRTextStorage.h"
 
-@interface Document : UIDocument {
+@interface Document : UIDocument<WRTextStorage> {
     NSString *_textString;
     NSMutableArray<UIFont *> *_fonts;
     pilcrow_document_t *_document;
 }
 
+@property(nonatomic, strong) id<DocumentDelegate> delegate;
+
+- (void)setFontFamily:(NSString *)fontFamily forInlineSelector:(pilcrow_inline_selector_t)selector;
+- (void)setFontSize:(CGFloat)size forInlineSelector:(pilcrow_inline_selector_t)selector;
 - (pilcrow_document_t *)takeDocument;
 
 @end

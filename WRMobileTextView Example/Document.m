@@ -52,6 +52,12 @@
     return YES;
 }
 
+- (void)_recreateTextBufferAndReloadText {
+    pilcrow_markdown_parser_t *markdownParser = [self _createMarkdownParser];
+    [self _recreateTextBufferWithMarkdownParser:markdownParser];
+    [[self delegate] reloadText];
+}
+
 - (id)contentsForType:(NSString*)typeName error:(NSError **)errorPtr {
     // Encode your document with an instance of NSData or NSFileWrapper
     return [[NSData alloc] init];
@@ -69,6 +75,21 @@
     pilcrow_document_t *document = self->_document;
     self->_document = nil;
     return document;
+}
+
+- (void)setFontFamily:(NSString *)fontFamily
+    forInlineSelector:(pilcrow_inline_selector_t)selector {
+    NSAssert(selector < [self->_fonts count], @"Inline selector out of range!");
+    UIFont *font = [self->_fonts objectAtIndex:(NSUInteger)selector];
+    font = [UIFont fontWithName:fontFamily size:[font pointSize]];
+    NSAssert(font != nil, @"No font with name \"%@\"!", fontFamily);
+    [self->_fonts setObject:font atIndexedSubscript:(NSUInteger)selector];
+}
+
+- (void)setFontSize:(CGFloat)size forInlineSelector:(pilcrow_inline_selector_t)selector {
+    NSAssert(selector < [self->_fonts count], @"Inline selector out of range!");
+    UIFont *font = [[self->_fonts objectAtIndex:(NSUInteger)selector] fontWithSize:size];
+    [self->_fonts setObject:font atIndexedSubscript:(NSUInteger)selector];
 }
 
 @end

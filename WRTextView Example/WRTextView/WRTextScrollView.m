@@ -6,6 +6,9 @@
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
+#import <TargetConditionals.h>
+
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 #import "WRTextScrollView.h"
 #import "WRTextView.h"
 
@@ -67,3 +70,4 @@
 }
 
 @end
+#endif

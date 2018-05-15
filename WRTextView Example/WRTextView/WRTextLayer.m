@@ -7,12 +7,14 @@
 //
 
 #include <pthread.h>
+#import <TargetConditionals.h>
 #import <QuartzCore/QuartzCore.h>
+#import <CoreText/CoreText.h>
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 #import <OpenGL/gl.h>
 #else
-#import <OpenGLES/ES3/gl.h>
+#import "WRMobileGL.h"
 #endif
 
 #import "WRTextLayer.h"
@@ -25,11 +27,13 @@ static const CFStringRef WRGLBundleIdentifier = CFSTR("com.apple.opengl");
 static const CFStringRef WRGLBundleIdentifier = CFSTR("com.apple.opengles");
 #endif
 
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 static const void *getGLProcAddress(const char *symbolName) {
     CFBundleRef bundle = CFBundleGetBundleWithIdentifier(WRGLBundleIdentifier);
     NSString *symbolString = [NSString stringWithUTF8String:symbolName];
     return CFBundleGetFunctionPointerForName(bundle, (__bridge CFStringRef)symbolString);
 }
+#endif
 
 static NSString *WRNSStringFromPilcrowString(pilcrow_string_t *pString) {
     if (pString == NULL)
@@ -55,6 +59,11 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 
 @implementation WRTextLayer
 
+- (WRTextView *)_textView {
+    id delegate = [self delegate];
+    return [delegate isKindOfClass:[WRTextView class]] ? (WRTextView *)delegate : nil;
+}
+
 - (void)_clearGLErrors {
     while (true) {
         GLuint err = glGetError();
@@ -65,12 +74,50 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 }
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (CGFloat)_backingScaleFactor {
+    WRTextView *textView = [self _textView];
+    if (textView == nil)
+        return 1.0;
+    NSWindow *window = [textView window];
+    return window == nil ? 1.0 : [window backingScaleFactor];
+}
+#else
+- (CGFloat)_backingScaleFactor {
+    UIView *textView = [self _textView];
+    if (textView == nil)
+        return 1.0;
+    UIWindow *window = [textView window];
+    if (window == nil)
+        return 1.0;
+    UIScreen *screen = [window screen];
+    if (screen == nil)
+        return 1.0;
+    return [screen scale];
+}
+#endif
+
 - (CGRect)_convertRectToBacking:(CGRect)rect {
-    CGFloat factor = [[self->_textView window] backingScaleFactor];
+    CGFloat factor = [self _backingScaleFactor];
     return CGRectMake(rect.origin.x * factor,
                       rect.origin.y * factor,
                       rect.size.width * factor,
                       rect.size.height * factor);
+}
+
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (void)setDirty {
+    [self setNeedsDisplay];
+}
+#else
+- (void)setDirty {
+    NSLog(@"-[WRTextLayer setDirty]");
+    if (![self _ensureDisplayLink])
+        return;
+
+    if (!self->_isAsynchronous && !self->_isDirty)
+        [self->_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
+    self->_isDirty = YES;
 }
 #endif
 
@@ -78,35 +125,43 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     float newWidth = 0, newHeight = 0;
     wrtv_view_get_layout_size(self->_webRenderView, &newWidth, &newHeight);
     CGSize newFrameSize = CGSizeMake(newWidth, newHeight);
-    [self->_textView setDocumentSize:newFrameSize];
+    [[self _textView] setContentSize:newFrameSize];
 }
 
-- (void)setTextView:(WRTextView *)textView {
-    self->_textView = textView;
-
+- (void)setDelegate:(id<CALayerDelegate>)newDelegate {
+    [super setDelegate:newDelegate];
+    
     if (self->_webRenderView != NULL) {
         wrtv_view_destroy(self->_webRenderView);
         self->_webRenderView = NULL;
     }
     
-    [self setNeedsDisplay];
+    [self setDirty];
 }
 
 - (BOOL)_recreateWebRenderView {
     if (self->_webRenderView != NULL)
         return YES;
 
-    NSRect frame = [self frame];
-    NSRect backingFrame = [self _convertRectToBacking:frame];
+    CGRect frame = [self frame];
+    CGRect backingFrame = [self _convertRectToBacking:frame];
     
     float devicePixelRatio = (float)[self contentsScale];
+    
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
     if (devicePixelRatio == 0.0) {
         // This is what AppKit does if there's no current window (which happens during awakening
         // from the nib).
         devicePixelRatio = [[NSScreen mainScreen] backingScaleFactor];
     }
-    
-    id<WRTextStorage> textStorage = [self->_textView textStorage];
+#endif
+
+    id<WRTextStorage> textStorage = [[self _textView] textStorage];
+    if (textStorage == nil) {
+        NSLog(@"no text storage!");
+        return NO;
+    }
+
     pilcrow_document_t *document = [textStorage takeDocument];
     if (document == NULL)
         return NO;
@@ -121,6 +176,9 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
                                          getGLProcAddress,
                                          WRTV_VIEW_FLAGS_ENABLE_SUBPIXEL_AA);
 #else
+    [EAGLContext setCurrentContext:self->_glContext];
+    GL(BindFramebuffer(GL_FRAMEBUFFER, self->_mainFramebuffer));
+    
     self->_webRenderView = wrtv_view_new(document,
                                          (uint32_t)ceil(backingFrame.size.width),
                                          (uint32_t)ceil(backingFrame.size.height),
@@ -148,8 +206,8 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 #endif
 
     [self _resizeDocument];
-    [self->_textView scrollToBeginningOfDocument:self];
-    [self->_textView processQueuedImages];
+    [[self _textView] scrollToBeginningOfDocument:self];
+    [[self _textView] processQueuedImages];
 
     return YES;
 }
@@ -159,7 +217,7 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     if (self->_webRenderView == NULL)
         return;
 
-    pilcrow_document_t *newDocument = [[self->_textView textStorage] takeDocument];
+    pilcrow_document_t *newDocument = [[[self _textView] textStorage] takeDocument];
     if (newDocument == NULL)
         return;
 
@@ -170,7 +228,7 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     pilcrow_document_append_document(currentDocument, newDocument);
     wrtv_view_document_changed(self->_webRenderView);
 
-    [self setNeedsDisplay];
+    [self setDirty];
 }
 
 - (void)reshape {
@@ -179,7 +237,7 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 
     CGRect newRect;
     newRect.origin = [self frame].origin;
-    newRect.size = [self->_textView frame].size;
+    newRect.size = [[self _textView] frame].size;
     [self setFrame:newRect];
 
     if (wrtv_view_get_available_width(self->_webRenderView) == newRect.size.width)
@@ -217,13 +275,28 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 #endif
 
 - (CGAffineTransform)_webrenderTransform {
-    NSRect viewportFrame = [self->_textView documentVisibleRect];
-    NSRect documentFrame = [[self->_textView documentView] frame];
+    WRTextView *textView = [self _textView];
+
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+    CGRect viewportFrame = [textView documentVisibleRect];
+    CGRect documentFrame = [[textView documentView] frame];
+#else
+    // TODO(pcwalton)
+#endif
+    
     CGAffineTransform transform = CATransform3DGetAffineTransform([self transform]);
 
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
     CGPoint origin = viewportFrame.origin;
     origin.y = documentFrame.size.height - viewportFrame.size.height - origin.y;
     transform = CGAffineTransformTranslate(transform, origin.x, origin.y);
+#else
+    CGPoint origin = [textView contentOffset];
+    transform = CGAffineTransformTranslate(transform, origin.x, origin.y);
+
+    CGFloat scale = [textView zoomScale];
+    transform = CGAffineTransformScale(transform, scale, scale);
+#endif
 
     NSLog(@"transform: scale %f, translation %f,%f", transform.a, transform.tx, transform.ty);
     return transform;
@@ -270,42 +343,53 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     CGLFlushDrawable(cglContext);
     CGLSetCurrentContext(NULL);
 }
+
+- (CGPoint)_convertEventLocationToTextViewCoordinateSystem:(NSEvent *)event {
+    NSView *scrollView = [[self _textView] superview];
+    return [scrollView convertPoint:[event locationInWindow] fromView:nil];
+}
 #else
 - (void)redraw {
     NSLog(@"redraw");
     
     if (self->_webRenderView == NULL)
         [self _recreateWebRenderView];
-    if (self->_webRenderView == NULL)
-        return;
+
+    if (self->_webRenderView != NULL) {
+        [EAGLContext setCurrentContext:self->_glContext];
+        GL(BindFramebuffer(GL_FRAMEBUFFER, self->_mainFramebuffer));
+        
+        GLint width, height;
+        GL(GetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width));
+        GL(GetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height));
+        
+        CGAffineTransform transform = [self _webrenderTransform];
+
+        wrtv_view_set_scale(self->_webRenderView, transform.a);
+        wrtv_view_set_translation(self->_webRenderView, transform.tx, transform.ty);
+        wrtv_view_set_viewport_size(self->_webRenderView, (uint32_t)width, (uint32_t)height);
+        
+        wrtv_view_repaint(self->_webRenderView);
+        [self _clearGLErrors];
+        
+        GL(BindRenderbuffer(GL_RENDERBUFFER, self->_colorRenderbuffer));
+        [self->_glContext presentRenderbuffer:GL_RENDERBUFFER];
+        [EAGLContext setCurrentContext:nil];
+    } else {
+        NSLog(@"no view yet!");
+    }
     
-    [EAGLContext setCurrentContext:self->_glContext];
-    GL(BindFramebuffer(GL_FRAMEBUFFER, self->_mainFramebuffer));
-    
-    GLint width, height;
-    GL(GetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width));
-    GL(GetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height));
-    
-    wrtv_view_set_scale(self->_webRenderView, 1.0);
-    wrtv_view_set_translation(self->_webRenderView, 0.0, 0.0);
-    wrtv_view_set_viewport_size(self->_webRenderView, (uint32_t)width, (uint32_t)height);
-    
-    wrtv_view_repaint(self->_webRenderView);
-    [self _clearGLErrors];
-    
-    GL(BindRenderbuffer(GL_RENDERBUFFER, self->_colorRenderbuffer));
-    [self->_glContext presentRenderbuffer:GL_RENDERBUFFER];
-    [EAGLContext setCurrentContext:nil];
+    if (!self->_isAsynchronous) {
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        [self->_displayLink removeFromRunLoop:runLoop forMode:NSDefaultRunLoopMode];
+    }
+
+    self->_isDirty = NO;
 }
 #endif
 
 - (CGFloat)contentsScale {
-    return [[self->_textView window] backingScaleFactor] * [self transform].m11;
-}
-
-- (NSPoint)_convertEventLocationToTextViewCoordinateSystem:(NSEvent *)event {
-    NSView *scrollView = [self->_textView superview];
-    return [scrollView convertPoint:[event locationInWindow] fromView:nil];
+    return [self _backingScaleFactor] * [self transform].m11;
 }
 
 - (NSString *)allText {
@@ -329,12 +413,15 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (void)setImage:(NSImage *)image forID:(uint32_t)imageID {
+#else
+- (void)setImage:(UIImage *)image forID:(uint32_t)imageID {
+#endif
     NSLog(@"-[WRTextLayer setImage:forID:]");
     NSAssert([self isReady], @"-[WRTextLayer setImage:forID:] called when not ready!");
 
     NSLog(@"... setting image OK");
 
-    NSSize imageSize = [image size];
+    CGSize imageSize = [image size];
     uint32_t imageWidth = (uint32_t)imageSize.width, imageHeight = (uint32_t)imageSize.height;
     wrtv_view_set_image_size(self->_webRenderView, imageID, imageWidth, imageHeight);
     
@@ -346,12 +433,17 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
                                                    imageWidth * 4,
                                                    colorSpace,
                                                    kCGImageAlphaPremultipliedLast);
+    
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
     NSGraphicsContext *nsContext = [NSGraphicsContext graphicsContextWithCGContext:cgContext
                                                                             flipped:NO];
     [NSGraphicsContext setCurrentContext:nsContext];
+#else
+    // TODO(pcwalton)
+#endif
 
-    NSRect imageRect;
-    imageRect.origin = NSZeroPoint;
+    CGRect imageRect;
+    imageRect.origin = CGPointZero;
     imageRect.size = imageSize;
     [image drawInRect:imageRect];
 
@@ -359,11 +451,17 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     size_t pixelDataSize = CGBitmapContextGetBytesPerRow(cgContext) * imageHeight;
     wrtv_view_set_image_data(self->_webRenderView, imageID, pixelData, pixelDataSize);
     
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
     [NSGraphicsContext setCurrentContext:nil];
+#else
+    // TODO(pcwalton)
+#endif
+
     CGContextRelease(cgContext);
     CGColorSpaceRelease(colorSpace);
 }
 
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (void)mouseDown:(NSEvent *)event {
     if (self->_webRenderView == NULL)
         return;
@@ -459,10 +557,42 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     NSAssert(framebufferStatus == GL_FRAMEBUFFER_COMPLETE,
              @"Framebuffer incomplete: %x!", framebufferStatus);
     [EAGLContext setCurrentContext:nil];
+
+    [self setDirty];
+}
     
-    UIScreen *screen = [[[self _textView] window] screen];
+- (BOOL)_ensureDisplayLink {
+    if (self->_displayLink != nil)
+        return YES;
+    UIView *view = [self _textView];
+    if (view == nil) {
+        NSLog(@"-[WRTextLayer _ensureDisplayLink]: no view yet");
+        return NO;
+    }
+    UIWindow *window = [view window];
+    if (window == nil) {
+        NSLog(@"-[WRTextLayer _ensureDisplayLink]: no window yet");
+        return NO;
+    }
+    UIScreen *screen = [window screen];
+    if (screen == nil) {
+        NSLog(@"-[WRTextLayer _ensureDisplayLink]: no screen yet");
+        return NO;
+    }
     self->_displayLink = [screen displayLinkWithTarget:self selector:@selector(redraw)];
-    [self->_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    return self->_displayLink != nil;
+}
+    
+- (void)setAsynchronous:(BOOL)isAsynchronous {
+    NSLog(@"-[WRTextLayer setAsynchronous:%s]", isAsynchronous ? "YES" : "NO");
+
+    if (![self _ensureDisplayLink])
+        return;
+
+    if (!self->_isAsynchronous && !self->_isDirty && isAsynchronous)
+        [self->_displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+
+    self->_isAsynchronous = isAsynchronous;
 }
 #endif
 

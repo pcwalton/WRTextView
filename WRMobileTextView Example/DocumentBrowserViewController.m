@@ -70,10 +70,14 @@
 // MARK: Document Presentation
 
 - (void)presentDocumentAtURL:(NSURL *)documentURL {
-    UIStoryboard *storyBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    DocumentViewController *documentViewController = [storyBoard instantiateViewControllerWithIdentifier:@"DocumentViewController"];
-    documentViewController.document = [[Document alloc] initWithFileURL:documentURL];
-    [self presentViewController:documentViewController animated:YES completion:nil];
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+        [storyboard instantiateViewControllerWithIdentifier:@"DocumentViewController"];
+    UINavigationController *navigationController =
+        [storyboard instantiateViewControllerWithIdentifier:@"NavigationController"];
+    DocumentViewController *documentViewController =
+        [[navigationController childViewControllers] objectAtIndex:0];
+    [documentViewController setDocument:[[Document alloc] initWithFileURL:documentURL]];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 @end

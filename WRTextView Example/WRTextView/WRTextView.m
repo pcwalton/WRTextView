@@ -6,15 +6,20 @@
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
+#import <TargetConditionals.h>
+#import <CoreText/CoreText.h>
 #import "WRTextView.h"
 #import "WRTextLayer.h"
 #import "WRImageInfo.h"
 
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 // Can't use the AppKit one because it's a private API...
 static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
+#endif
 
 @implementation WRTextView
 
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 + (void)initialize {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -22,26 +27,14 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
                                  returnTypes:[NSArray array]];
     });
 }
+#endif
 
 - (void)_setup {
     if (self->_initialized)
         return;
+
     self->_initialized = YES;
-    
     self->_loadedImages = [[NSMutableSet alloc] init];
-
-#if 0
-    NSTimer *debugTimer = [NSTimer scheduledTimerWithTimeInterval:1.0
-                                                          repeats:YES
-                                                            block:^(NSTimer * _Nonnull timer) {
-        NSResponder *responder = [[self window] firstResponder];
-        while (responder != nil) {
-           NSLog(@"%@", responder);
-           responder = [responder nextResponder];
-       }
-    }];
-#endif
-
     self->_animationCount = 0;
     
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
@@ -52,53 +45,100 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
     
     NSScrollView *scrollView = [self _scrollView];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                            selector:@selector(_panZoomStarted:)
+                                            selector:@selector(scrollViewWillBeginDragging:)
                                                 name:NSScrollViewWillStartLiveScrollNotification
                                               object:scrollView];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                            selector:@selector(_panZoomFinished:)
+                                            selector:@selector(scrollViewDidEndDecelerating:)
                                                 name:NSScrollViewDidEndLiveScrollNotification
                                               object:scrollView];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                            selector:@selector(_panZoomStarted:)
+                                            selector:@selector(scrollViewWillBeginZooming:)
                                                 name:NSScrollViewWillStartLiveMagnifyNotification
                                               object:scrollView];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                            selector:@selector(_panZoomFinished:)
+                                            selector:@selector(scrollViewDidEndZooming:)
                                                 name:NSScrollViewDidEndLiveMagnifyNotification
                                               object:scrollView];
-#endif
     
     NSBundle *bundle = [NSBundle bundleForClass:[self class]];
     [bundle loadNibNamed:@"ContextMenu" owner:self topLevelObjects:nil];
+#else
+    [self setDelegate:self];
+#endif
 }
 
 - (void)beginAnimation {
-    if (self->_animationCount == 0) {
-        [self->_textLayer setAsynchronous:YES];
-        [self->_textLayer setNeedsDisplay];
-    }
+    NSLog(@"-[WRTextLayer beginAnimation](animation count=%u)", self->_animationCount);
+    if (self->_animationCount == 0)
+        [[self _textLayer] setAsynchronous:YES];
     self->_animationCount++;
 }
 
 - (void)endAnimation {
     NSAssert(self->_animationCount > 0, @"WRTextView: No animation in progress?!");
     self->_animationCount--;
-    if (self->_animationCount == 0) {
-        [self->_textLayer setAsynchronous:NO];
-        [self->_textLayer setNeedsDisplay];
-    }
+    NSLog(@"-[WRTextLayer endAnimation](animation count=%u)", self->_animationCount);
+    if (self->_animationCount == 0)
+        [[self _textLayer] setAsynchronous:NO];
 }
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
-- (void)_panZoomStarted:(NSNotification *)notification {
+- (NSScrollView *)_scrollView {
+    NSView *superview = [self superview];
+    return [superview isKindOfClass:[NSScrollView class]] ? (NSScrollView *)superview : nil;
+}
+#endif
+
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (void)scrollViewWillBeginDragging:(NSNotification *)notification {
+#else
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+#endif
     [self beginAnimation];
 }
 
-- (void)_panZoomFinished:(NSNotification *)notification {
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (void)scrollViewDidEndDecelerating:(NSNotification *)notification {
+#else
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+#endif
     [self endAnimation];
 }
+    
+#if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR || TARGET_OS_EMBEDDED
+- (void) scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)willDecelerate {
+    if (!willDecelerate)
+        [self endAnimation];
+}
+#endif
+    
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (void)scrollViewWillBeginZooming:(NSNotification *)notification {
+#else
+- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view {
+#endif
+    NSLog(@"-[WRTextLayer scrollViewWillBeginZooming:]");
+    [self beginAnimation];
+}
+    
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (void)scrollViewDidEndZooming:(NSNotification *)notification {
+#else
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView
+                       withView:(UIView *)view
+                        atScale:(CGFloat)scale {
+#endif
+    [self endAnimation];
+}
+    
+#if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR || TARGET_OS_EMBEDDED
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return [self documentView];
+}
+#endif
 
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (void)_reshape:(NSNotification *)notification {
     [self->_textLayer reshape];
     [self setNeedsDisplay:YES];
@@ -107,7 +147,7 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 - (CALayer *)makeBackingLayer {
     self->_textLayer = [WRTextLayer layer];
     [self->_textLayer setContentsScale:[[self window] backingScaleFactor]];
-    [self->_textLayer setTextView:self];
+    [self->_textLayer setDelegate:self];
     return self->_textLayer;
 }
 #else
@@ -115,16 +155,17 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
     return [WRTextLayer class];
 }
 
-- (WRTextLayer *)_textLayer {
-    return (WRTextLayer *)[self layer];
-}
-
 - (void)didMoveToWindow {
     [[self _textLayer] attachedToWindow];
 }
 #endif
+    
+- (WRTextLayer *)_textLayer {
+    return (WRTextLayer *)[self layer];
+}
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     [self _setup];
 }
 
@@ -133,26 +174,33 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 
 - (void)reloadText {
-    [self->_textLayer reloadText];
+    [[self _textLayer] reloadText];
 }
 
-- (NSScrollView *)_scrollView {
-    NSView *superview = [self superview];
-    return [superview isKindOfClass:[NSScrollView class]] ? (NSScrollView *)superview : nil;
-}
-
-- (void)scrollToBeginningOfDocument:(id)sender {
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (IBAction)scrollToBeginningOfDocument:(id)sender {
     CGFloat originY = [[self documentView] frame].size.height - [self frame].size.height;
-    [self scrollPoint:NSMakePoint(0.0, originY)];
+    [self scrollPoint:CGPointMake(0.0, originY)];
     [self setNeedsDisplay:YES];
 }
 
 - (void)setNeedsDisplayInRect:(CGRect)invalidRect {
     [super setNeedsDisplayInRect:invalidRect];
-
+    
     if (![self->_textLayer isAsynchronous])
         [self->_textLayer setNeedsDisplayInRect:invalidRect];
 }
+#else
+- (IBAction)scrollToBeginningOfDocument:(id)sender {
+    // TODO(pcwalton)
+}
+
+- (void)setNeedsDisplayInRect:(CGRect)invalidRect {
+    [super setNeedsDisplayInRect:invalidRect];
+
+    [[self _textLayer] setDirty];
+}
+#endif
 
 - (BOOL)acceptsFirstResponder {
     return YES;
@@ -163,30 +211,23 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 
 - (void)processQueuedImages {
-    if (self->_textLayer == NULL || ![self->_textLayer isReady])
+    WRTextLayer *textLayer = [self _textLayer];
+    if (textLayer == nil || ![textLayer isReady])
         return;
 
     for (WRImageInfo *imageInfo in self->_loadedImages)
-        [self->_textLayer setImage:[imageInfo image] forID:[imageInfo imageID]];
+        [textLayer setImage:[imageInfo image] forID:[imageInfo imageID]];
     [self->_loadedImages removeAllObjects];
 
     [self setNeedsDisplay:YES];
 }
 
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (id)validRequestorForSendType:(NSPasteboardType)sendType
                      returnType:(NSPasteboardType)returnType {
     if ([sendType isEqual:NSStringPboardType])
         return self;
     return [super validRequestorForSendType:sendType returnType:returnType];
-}
-
-- (void)setDocumentSize:(CGSize)newSize {
-    [[self documentView] setFrameSize:newSize];
-}
-
-- (void)selectAll:(id)sender {
-    [self->_textLayer selectAll];
-    [self setNeedsDisplay:YES];
 }
 
 - (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pasteboard types:(NSArray *)types {
@@ -202,11 +243,6 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
     [pasteboard clearContents];
     [self writeSelectionToPasteboard:pasteboard
                                types:[NSArray arrayWithObject:NSStringPboardType]];
-}
-
-- (void)setDebuggerEnabled:(BOOL)enabled {
-    [self->_textLayer setDebuggerEnabled:enabled];
-    [self setNeedsDisplay:YES];
 }
 
 - (IBAction)startSpeaking:(id)sender {
@@ -236,6 +272,23 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
                                                          owner:self
                                                       userInfo:nil];
     [self addTrackingArea:self->_trackingArea];
+}
+#endif
+
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
+- (void)setContentSize:(CGSize)newSize {
+    [[self documentView] setFrameSize:newSize];
+}
+#endif
+
+- (void)selectAll:(id)sender {
+    [[self _textLayer] selectAll];
+    [self setNeedsDisplay:YES];
+}
+
+- (void)setDebuggerEnabled:(BOOL)enabled {
+    [[self _textLayer] setDebuggerEnabled:enabled];
+    [self setNeedsDisplay:YES];
 }
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
@@ -282,6 +335,11 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 - (UIView *)documentView {
     return [[self subviews] objectAtIndex:0];
 }
+
+- (void)setNeedsDisplay:(BOOL)needsDisplay {
+    if (needsDisplay)
+        [self setNeedsDisplayInRect:[self bounds]];
+}    
 #endif
 
 @end

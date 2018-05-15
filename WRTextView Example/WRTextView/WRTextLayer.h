@@ -6,11 +6,14 @@
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#if TARGET_OS_MAC
+#import <TargetConditionals.h>
+
+#if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 #import <Cocoa/Cocoa.h>
 #else
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/ES3/gl.h>
+#import <UIKit/UIKit.h>
 #endif
 
 #include <pilcrow.h>
@@ -27,12 +30,13 @@
     GLuint _mainFramebuffer;
     GLuint _colorRenderbuffer;
     GLuint _depthStencilRenderbuffer;
+    BOOL _isAsynchronous;
+    BOOL _isDirty;
 #endif
     wrtv_view_t *_webRenderView;
 }
 
-@property(nonatomic, strong) WRTextView *textView;
-
+- (WRTextView *)_textView;
 - (void)reloadText;
 - (void)setDebuggerEnabled:(BOOL)enabled;
 - (void)reshape;
@@ -40,6 +44,7 @@
 - (NSString *)selectedText;
 - (void)selectAll;
 - (BOOL)isReady;
+- (void)setDirty;
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (void)setImage:(NSImage *)image forID:(uint32_t)imageID;
 - (void)mouseDown:(NSEvent *)event;
@@ -47,7 +52,9 @@
 - (void)mouseUp:(NSEvent *)event;
 - (void)mouseMoved:(NSEvent *)event;
 #else
+- (void)setImage:(UIImage *)image forID:(uint32_t)imageID;
 - (void)attachedToWindow;
+- (void)setAsynchronous:(BOOL)isAsynchronous;
 #endif
 
 @end

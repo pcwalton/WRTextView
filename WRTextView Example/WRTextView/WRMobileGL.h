@@ -1,13 +1,15 @@
 //
-//  WRGLDebug.h
-//  WRTextView Example
+//  WRMobileGL.h
+//  WRTextView
 //
 //  Created by Patrick Walton on 5/7/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#ifndef WRGLDebug_h
-#define WRGLDebug_h
+#ifndef WR_MOBILE_GL_H
+#define WR_MOBILE_GL_H
+
+#import <OpenGLES/ES3/gl.h>
 
 #ifdef DEBUG
 #define GL(x)               ({ \
@@ -159,4 +161,4 @@ static const void *getGLProcAddress(const char *symbolName) {
     return shim;
 }
 
-#endif /* WRGLDebug_h */
+#endif /* WR_MOBILE_GL_H */
