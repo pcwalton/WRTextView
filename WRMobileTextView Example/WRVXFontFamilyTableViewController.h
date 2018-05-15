@@ -1,5 +1,5 @@
 //
-//  FontFamilyTableViewController.h
+//  WRVXFontFamilyTableViewController.h
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 5/9/18.
@@ -10,8 +10,8 @@
 #import <CoreText/CoreText.h>
 #include <pilcrow.h>
 
-@interface FontFamilyTableViewController : UITableViewController<UITableViewDataSource,
-                                                                 UITableViewDelegate> {
+@interface WRVXFontFamilyTableViewController : UITableViewController<UITableViewDataSource,
+                                                                     UITableViewDelegate> {
     NSArray<NSString *> *_familyNames;
     pilcrow_inline_selector_t _inlineSelector;
 }

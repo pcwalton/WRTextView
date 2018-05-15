@@ -211,7 +211,7 @@ static NSSpeechSynthesizer *gWRGlobalSpeechSynthesizer = nil;
 }
 
 - (void)processQueuedImages {
-    WRTextLayer *textLayer = [self _textLayer];
+    WRVTextLayer *textLayer = [self _textLayer];
     if (textLayer == nil || ![textLayer isReady])
         return;
 

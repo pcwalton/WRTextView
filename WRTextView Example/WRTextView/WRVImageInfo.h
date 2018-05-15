@@ -13,7 +13,7 @@
 @class UIImage;
 #endif
 
-@interface WRImageInfo : NSObject
+@interface WRVImageInfo : NSObject
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 @property(nonatomic, strong) NSImage *image;

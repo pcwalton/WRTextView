@@ -1,21 +1,21 @@
 //
-//  NSObject+WRCasting.m
-//  WRMobileTextView Example
+//  NSObject+WRVCasting.m
+//  WRTextView
 //
 //  Created by Patrick Walton on 5/9/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "NSObject+WRCasting.h"
+#import "NSObject+WRVCasting.h"
 
-@implementation NSObject(WRCasting)
+@implementation NSObject(WRVCasting)
 
-+ (instancetype)staticCast:(id)that {
++ (instancetype)wrv_staticCast:(id)that {
     NSAssert([that isKindOfClass:self], @"Cast failed: %@ required, %@ found", self, [that class]);
     return that;
 }
 
-+ (instancetype)dynamicCast:(id)that {
++ (instancetype)wrv_dynamicCast:(id)that {
     return [that isKindOfClass:self] ? that : nil;
 }
 

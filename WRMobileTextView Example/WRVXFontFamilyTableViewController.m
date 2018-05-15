@@ -1,23 +1,19 @@
 //
-//  FontFamilyTableViewController.m
+//  WRVXFontFamilyTableViewController.m
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 5/9/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "FontFamilyTableViewController.h"
-#import "WRExampleNavigationController.h"
-#import "NSObject+WRCasting.h"
-#import "DocumentViewController.h"
-#import "Document.h"
+#import "WRVXFontFamilyTableViewController.h"
+#import "WRVXNavigationController.h"
+#import "WRVXDocumentViewController.h"
+#import "WRVXDocument.h"
+#import "NSObject+WRVCasting.h"
 #import <pilcrow.h>
 
-@interface FontFamilyTableViewController ()
-
-@end
-
-@implementation FontFamilyTableViewController
+@implementation WRVXFontFamilyTableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -61,11 +57,11 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    WRExampleNavigationController *controller = [WRExampleNavigationController
-                                                 staticCast:[self parentViewController]];
-    DocumentViewController *documentViewController = [controller documentViewController];
+    WRVXNavigationController *controller = [WRVXNavigationController
+                                            wrv_staticCast:[self parentViewController]];
+    WRVXDocumentViewController *documentViewController = [controller documentViewController];
     NSString *familyName = [[self _familyNames] objectAtIndex:[indexPath row]];
-    Document *document = [documentViewController document];
+    WRVXDocument *document = [documentViewController document];
     [document setFontFamily:familyName forInlineSelector:self->_inlineSelector];
     
 }
@@ -76,7 +72,7 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     // Get the new view controller using [segue destinationViewController].
     // Pass the selected object to the new view controller.
-    UIView *senderView = [UIView staticCast:sender];
+    UIView *senderView = [UIView wrv_staticCast:sender];
     self->_inlineSelector = (pilcrow_inline_selector_t)[senderView tag];
 
 }

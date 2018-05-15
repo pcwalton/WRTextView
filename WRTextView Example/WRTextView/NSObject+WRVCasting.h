@@ -1,6 +1,6 @@
 //
-//  DocumentDelegate.h
-//  WRMobileTextView Example
+//  NSObject+WRVCasting.h
+//  WRTextView
 //
 //  Created by Patrick Walton on 5/9/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
@@ -8,10 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@class Document;
+@interface NSObject(WRVCasting)
 
-@protocol DocumentDelegate<NSObject>
-
-- (void)reloadDocumentText:(Document *)document;
++ (instancetype)wrv_staticCast:(id)that;
++ (instancetype)wrv_dynamicCast:(id)that;
 
 @end

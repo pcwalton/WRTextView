@@ -1,5 +1,5 @@
 //
-//  NSObject+WRCasting.h
+//  WRVXDocumentDelegate.h
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 5/9/18.
@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSObject (WRCasting)
+@class WRVXDocument;
 
-+ (instancetype)staticCast:(id)that;
-+ (instancetype)dynamicCast:(id)that;
+@protocol WRVXDocumentDelegate<NSObject>
+
+- (void)reloadDocumentText:(WRVXDocument *)document;
 
 @end

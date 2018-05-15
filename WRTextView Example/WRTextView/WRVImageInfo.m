@@ -1,14 +1,14 @@
 //
-//  WRImageInfo.m
+//  WRVImageInfo.m
 //  WRTextView
 //
 //  Created by Patrick Walton on 5/2/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "WRImageInfo.h"
+#import "WRVImageInfo.h"
 
-@implementation WRImageInfo
+@implementation WRVImageInfo
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
 - (instancetype)initWithImage:(NSImage *)image id:(uint32_t)imageID {

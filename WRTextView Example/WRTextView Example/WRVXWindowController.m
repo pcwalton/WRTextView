@@ -1,26 +1,26 @@
 //
-//  WindowController.m
+//  WRVXWindowController.m
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/24/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "Document.h"
-#import "WindowController.h"
+#import "WRVXDocument.h"
+#import "WRVXWindowController.h"
 
 #define MIN_FORMAT_PANE_SIZE    180.0
 
-@interface WindowController ()
+@interface WRVXWindowController ()
 
 @end
 
-@implementation WindowController
+@implementation WRVXWindowController
 
 - (void)windowDidLoad {
     [super windowDidLoad];
 
-    Document *document = [self owner];
+    WRVXDocument *document = [self owner];
 
     NSCellStyleMask highlightMask = NSPushInCellMask | NSContentsCellMask;
     NSCellStyleMask showsStateMask = highlightMask | NSChangeBackgroundCellMask;

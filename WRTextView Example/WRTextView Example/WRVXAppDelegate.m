@@ -1,18 +1,14 @@
 //
-//  AppDelegate.m
+//  WRVXAppDelegate.m
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/11/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "AppDelegate.h"
+#import "WRVXAppDelegate.h"
 
-@interface AppDelegate ()
-
-@end
-
-@implementation AppDelegate
+@implementation WRVXAppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application

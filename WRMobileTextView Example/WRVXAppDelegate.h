@@ -1,5 +1,5 @@
 //
-//  AppDelegate.h
+//  WRVXAppDelegate.h
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 4/26/18.
@@ -8,10 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface WRVXAppDelegate : UIResponder<UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
 
 @end
 

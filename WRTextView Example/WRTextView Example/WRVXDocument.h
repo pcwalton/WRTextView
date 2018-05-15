@@ -1,5 +1,5 @@
 //
-//  Document.h
+//  WRVXDocument.h
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/11/18.
@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include <pilcrow.h>
-#import "WRTextStorage.h"
+#import "WRVTextStorage.h"
 
 struct WRTextViewSideOffsets {
     float top, right, bottom, left;
@@ -16,9 +16,9 @@ struct WRTextViewSideOffsets {
 
 typedef struct WRTextViewSideOffsets WRTextViewSideOffsets;
 
-@class WRTextView;
+@class WRVTextView;
 
-@interface Document : NSDocument<WRTextStorage> {
+@interface WRVXDocument : NSDocument<WRVTextStorage> {
     pilcrow_document_t *_document;
     NSString *_textString;
     BOOL _debuggerEnabled;
@@ -28,7 +28,7 @@ typedef struct WRTextViewSideOffsets WRTextViewSideOffsets;
     IBOutlet NSView *formatPane;
 }
 
-@property(nonatomic, strong) IBOutlet WRTextView *textView;
+@property(nonatomic, strong) IBOutlet WRVTextView *textView;
 @property(nonatomic, strong) IBOutlet NSButton *debuggerToolbarButton;
 @property(nonatomic, strong) IBOutlet NSButton *formatToolbarButton;
 @property(nonatomic, strong) IBOutlet NSSplitView *splitView;

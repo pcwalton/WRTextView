@@ -29,7 +29,7 @@ FOUNDATION_EXPORT const unsigned char WRTextViewVersionString[];
 #else
 @interface WRVTextView : UIScrollView<UIScrollViewDelegate> {
 #endif
-    NSMutableSet<WRImageInfo *> *_loadedImages;
+    NSMutableSet<WRVImageInfo *> *_loadedImages;
     unsigned _animationCount;
     BOOL _initialized;
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED

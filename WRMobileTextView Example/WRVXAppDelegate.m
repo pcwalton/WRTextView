@@ -1,21 +1,17 @@
 //
-//  AppDelegate.m
+//  WRVXAppDelegate.m
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 4/26/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "AppDelegate.h"
-#import "DocumentBrowserViewController.h"
-#import "DocumentViewController.h"
-#import "Document.h"
+#import "WRVXAppDelegate.h"
+#import "WRVXDocumentBrowserViewController.h"
+#import "WRVXDocumentViewController.h"
+#import "WRVXDocument.h"
 
-@interface AppDelegate ()
-
-@end
-
-@implementation AppDelegate
+@implementation WRVXAppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -53,13 +49,16 @@
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)inputURL options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
     // Ensure the URL is a file URL
-    if (!inputURL.isFileURL) {
+    if (![inputURL isFileURL])
         return NO;
-    }
 
     // Reveal / import the document at the URL
-    DocumentBrowserViewController *documentBrowserViewController = (DocumentBrowserViewController *)self.window.rootViewController;
-    [documentBrowserViewController revealDocumentAtURL:inputURL importIfNeeded:YES completion:^(NSURL * _Nullable revealedDocumentURL, NSError * _Nullable error) {
+    WRVXDocumentBrowserViewController *documentBrowserViewController =
+        (WRVXDocumentBrowserViewController *)[[self window] rootViewController];
+    [documentBrowserViewController revealDocumentAtURL:inputURL
+                                        importIfNeeded:YES
+                                            completion:^(NSURL * _Nullable revealedDocumentURL,
+                                                         NSError * _Nullable error) {
         if (error) {
             // Handle the error appropriately
             NSLog(@"Failed to reveal the document at URL %@ with error: '%@'", inputURL, error);

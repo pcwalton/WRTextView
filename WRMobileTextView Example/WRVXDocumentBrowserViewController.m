@@ -1,20 +1,16 @@
 //
-//  DocumentBrowserViewController.m
+//  WRVXDocumentBrowserViewController.m
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 4/26/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "DocumentBrowserViewController.h"
-#import "Document.h"
-#import "DocumentViewController.h"
+#import "WRVXDocumentBrowserViewController.h"
+#import "WRVXDocument.h"
+#import "WRVXDocumentViewController.h"
 
-@interface DocumentBrowserViewController () <UIDocumentBrowserViewControllerDelegate>
-
-@end
-
-@implementation DocumentBrowserViewController
+@implementation WRVXDocumentBrowserViewController
     
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -74,9 +70,9 @@
         [storyboard instantiateViewControllerWithIdentifier:@"DocumentViewController"];
     UINavigationController *navigationController =
         [storyboard instantiateViewControllerWithIdentifier:@"NavigationController"];
-    DocumentViewController *documentViewController =
+    WRVXDocumentViewController *documentViewController =
         [[navigationController childViewControllers] objectAtIndex:0];
-    [documentViewController setDocument:[[Document alloc] initWithFileURL:documentURL]];
+    [documentViewController setDocument:[[WRVXDocument alloc] initWithFileURL:documentURL]];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 

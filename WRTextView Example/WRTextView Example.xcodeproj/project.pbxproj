@@ -15,24 +15,24 @@
 		6A02CE4D20A16A7900AEF841 /* WRVTextScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6AE2BAD0209A39CE0059F224 /* WRVTextScrollView.m */; };
 		6A02CE4E20A16A7B00AEF841 /* WRVTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRVTextView.m */; };
 		6A02CE4F20A214EB00AEF841 /* libwebrender_text_view.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6AE2BAE1209BE88D0059F224 /* libwebrender_text_view.a */; };
-		6A02CE5520A3EA5000AEF841 /* FontFamilyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5420A3EA5000AEF841 /* FontFamilyTableViewController.m */; };
-		6A02CE5820A3ED2800AEF841 /* WRExampleNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5720A3ED2800AEF841 /* WRExampleNavigationController.m */; };
-		6A02CE6120A3F05E00AEF841 /* NSObject+WRCasting.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */; };
+		6A02CE5520A3EA5000AEF841 /* WRVXFontFamilyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5420A3EA5000AEF841 /* WRVXFontFamilyTableViewController.m */; };
+		6A02CE5820A3ED2800AEF841 /* WRVXNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE5720A3ED2800AEF841 /* WRVXNavigationController.m */; };
+		6A02CE6120A3F05E00AEF841 /* NSObject+WRVCasting.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A02CE6020A3F05E00AEF841 /* NSObject+WRVCasting.m */; };
 		6A0A1563208FD98000E32BC6 /* WRVTextView.h in Headers */ = {isa = PBXBuildFile; fileRef = 6A0A1561208FD98000E32BC6 /* WRVTextView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6A0A1567208FD9AC00E32BC6 /* WRVTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A5B60022084FD8200C10F79 /* WRVTextView.m */; };
 		6A0A1568208FD9C400E32BC6 /* WRVTextLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CE4207ED14800887721 /* WRVTextLayer.m */; };
-		6A0A1570208FE6AA00E32BC6 /* WindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A156F208FE6AA00E32BC6 /* WindowController.m */; };
+		6A0A1570208FE6AA00E32BC6 /* WRVXWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A156F208FE6AA00E32BC6 /* WRVXWindowController.m */; };
 		6A0A157C2092B72400E32BC6 /* ContextMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A157B2092B72400E32BC6 /* ContextMenu.xib */; };
-		6A0A15852092BD8400E32BC6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15842092BD8400E32BC6 /* AppDelegate.m */; };
-		6A0A15882092BD8400E32BC6 /* DocumentBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */; };
-		6A0A158B2092BD8400E32BC6 /* DocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A158A2092BD8400E32BC6 /* DocumentViewController.m */; };
-		6A0A158E2092BD8400E32BC6 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A158D2092BD8400E32BC6 /* Document.m */; };
+		6A0A15852092BD8400E32BC6 /* WRVXAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15842092BD8400E32BC6 /* WRVXAppDelegate.m */; };
+		6A0A15882092BD8400E32BC6 /* WRVXDocumentBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15872092BD8400E32BC6 /* WRVXDocumentBrowserViewController.m */; };
+		6A0A158B2092BD8400E32BC6 /* WRVXDocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A158A2092BD8400E32BC6 /* WRVXDocumentViewController.m */; };
+		6A0A158E2092BD8400E32BC6 /* WRVXDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A158D2092BD8400E32BC6 /* WRVXDocument.m */; };
 		6A0A15912092BD8400E32BC6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A158F2092BD8400E32BC6 /* Main.storyboard */; };
 		6A0A15932092BD8500E32BC6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A15922092BD8500E32BC6 /* Assets.xcassets */; };
 		6A0A15962092BD8500E32BC6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6A0A15942092BD8500E32BC6 /* LaunchScreen.storyboard */; };
 		6A0A15992092BD8500E32BC6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0A15982092BD8500E32BC6 /* main.m */; };
-		6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB1207ED10400887721 /* AppDelegate.m */; };
-		6A0E3CB5207ED10400887721 /* Document.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB4207ED10400887721 /* Document.m */; };
+		6A0E3CB2207ED10400887721 /* WRVXAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB1207ED10400887721 /* WRVXAppDelegate.m */; };
+		6A0E3CB5207ED10400887721 /* WRVXDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB4207ED10400887721 /* WRVXDocument.m */; };
 		6A0E3CB8207ED10400887721 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB6207ED10400887721 /* Document.xib */; };
 		6A0E3CBA207ED10600887721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CB9207ED10600887721 /* Assets.xcassets */; };
 		6A0E3CBD207ED10600887721 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6A0E3CBB207ED10600887721 /* MainMenu.xib */; };
@@ -91,38 +91,38 @@
 		6A02CE2F20A1618C00AEF841 /* WRVTextStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVTextStorage.h; sourceTree = "<group>"; };
 		6A02CE3A20A169CC00AEF841 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A02CE3D20A169CC00AEF841 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6A02CE5320A3EA5000AEF841 /* FontFamilyTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FontFamilyTableViewController.h; sourceTree = "<group>"; };
-		6A02CE5420A3EA5000AEF841 /* FontFamilyTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FontFamilyTableViewController.m; sourceTree = "<group>"; };
-		6A02CE5620A3ED2800AEF841 /* WRExampleNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRExampleNavigationController.h; sourceTree = "<group>"; };
-		6A02CE5720A3ED2800AEF841 /* WRExampleNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRExampleNavigationController.m; sourceTree = "<group>"; };
-		6A02CE5F20A3F05E00AEF841 /* NSObject+WRCasting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+WRCasting.h"; sourceTree = "<group>"; };
-		6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+WRCasting.m"; sourceTree = "<group>"; };
-		6A02CE6220A409DB00AEF841 /* DocumentDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentDelegate.h; sourceTree = "<group>"; };
+		6A02CE5320A3EA5000AEF841 /* WRVXFontFamilyTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXFontFamilyTableViewController.h; sourceTree = "<group>"; };
+		6A02CE5420A3EA5000AEF841 /* WRVXFontFamilyTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXFontFamilyTableViewController.m; sourceTree = "<group>"; };
+		6A02CE5620A3ED2800AEF841 /* WRVXNavigationController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXNavigationController.h; sourceTree = "<group>"; };
+		6A02CE5720A3ED2800AEF841 /* WRVXNavigationController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXNavigationController.m; sourceTree = "<group>"; };
+		6A02CE5F20A3F05E00AEF841 /* NSObject+WRVCasting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSObject+WRVCasting.h"; sourceTree = "<group>"; };
+		6A02CE6020A3F05E00AEF841 /* NSObject+WRVCasting.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSObject+WRVCasting.m"; sourceTree = "<group>"; };
+		6A02CE6220A409DB00AEF841 /* WRVXDocumentDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXDocumentDelegate.h; sourceTree = "<group>"; };
 		6A0A155F208FD97F00E32BC6 /* WRTextView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WRTextView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A0A1561208FD98000E32BC6 /* WRVTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVTextView.h; sourceTree = "<group>"; };
 		6A0A1562208FD98000E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6A0A156E208FE6AA00E32BC6 /* WindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowController.h; sourceTree = "<group>"; };
-		6A0A156F208FE6AA00E32BC6 /* WindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WindowController.m; sourceTree = "<group>"; };
+		6A0A156E208FE6AA00E32BC6 /* WRVXWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXWindowController.h; sourceTree = "<group>"; };
+		6A0A156F208FE6AA00E32BC6 /* WRVXWindowController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXWindowController.m; sourceTree = "<group>"; };
 		6A0A157B2092B72400E32BC6 /* ContextMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ContextMenu.xib; sourceTree = "<group>"; };
 		6A0A15812092BD8400E32BC6 /* WRMobileTextView Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WRMobileTextView Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6A0A15832092BD8400E32BC6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		6A0A15842092BD8400E32BC6 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		6A0A15862092BD8400E32BC6 /* DocumentBrowserViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentBrowserViewController.h; sourceTree = "<group>"; };
-		6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DocumentBrowserViewController.m; sourceTree = "<group>"; };
-		6A0A15892092BD8400E32BC6 /* DocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentViewController.h; sourceTree = "<group>"; };
-		6A0A158A2092BD8400E32BC6 /* DocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DocumentViewController.m; sourceTree = "<group>"; };
-		6A0A158C2092BD8400E32BC6 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
-		6A0A158D2092BD8400E32BC6 /* Document.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
+		6A0A15832092BD8400E32BC6 /* WRVXAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXAppDelegate.h; sourceTree = "<group>"; };
+		6A0A15842092BD8400E32BC6 /* WRVXAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXAppDelegate.m; sourceTree = "<group>"; };
+		6A0A15862092BD8400E32BC6 /* WRVXDocumentBrowserViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXDocumentBrowserViewController.h; sourceTree = "<group>"; };
+		6A0A15872092BD8400E32BC6 /* WRVXDocumentBrowserViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXDocumentBrowserViewController.m; sourceTree = "<group>"; };
+		6A0A15892092BD8400E32BC6 /* WRVXDocumentViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXDocumentViewController.h; sourceTree = "<group>"; };
+		6A0A158A2092BD8400E32BC6 /* WRVXDocumentViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXDocumentViewController.m; sourceTree = "<group>"; };
+		6A0A158C2092BD8400E32BC6 /* WRVXDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXDocument.h; sourceTree = "<group>"; };
+		6A0A158D2092BD8400E32BC6 /* WRVXDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXDocument.m; sourceTree = "<group>"; };
 		6A0A15902092BD8400E32BC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6A0A15922092BD8500E32BC6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6A0A15952092BD8500E32BC6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6A0A15972092BD8500E32BC6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6A0A15982092BD8500E32BC6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6A0E3CAD207ED10400887721 /* WRTextView Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WRTextView Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6A0E3CB0207ED10400887721 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		6A0E3CB1207ED10400887721 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		6A0E3CB3207ED10400887721 /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
-		6A0E3CB4207ED10400887721 /* Document.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Document.m; sourceTree = "<group>"; };
+		6A0E3CB0207ED10400887721 /* WRVXAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXAppDelegate.h; sourceTree = "<group>"; };
+		6A0E3CB1207ED10400887721 /* WRVXAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXAppDelegate.m; sourceTree = "<group>"; };
+		6A0E3CB3207ED10400887721 /* WRVXDocument.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WRVXDocument.h; sourceTree = "<group>"; };
+		6A0E3CB4207ED10400887721 /* WRVXDocument.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WRVXDocument.m; sourceTree = "<group>"; };
 		6A0E3CB7207ED10400887721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Document.xib; sourceTree = "<group>"; };
 		6A0E3CB9207ED10600887721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6A0E3CBC207ED10600887721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -191,6 +191,8 @@
 			isa = PBXGroup;
 			children = (
 				6A0E3CAE207ED10400887721 /* Products */,
+				6A02CE5F20A3F05E00AEF841 /* NSObject+WRVCasting.h */,
+				6A02CE6020A3F05E00AEF841 /* NSObject+WRVCasting.m */,
 				6AE2BAD3209A67A30059F224 /* WRVImageInfo.h */,
 				6AE2BAD4209A67A30059F224 /* WRVImageInfo.m */,
 				6A02CE2D20A0D3DA00AEF841 /* WRVMobileGL.h */,
@@ -210,21 +212,19 @@
 		6A0A15822092BD8400E32BC6 /* WRMobileTextView Example */ = {
 			isa = PBXGroup;
 			children = (
-				6A0A15832092BD8400E32BC6 /* AppDelegate.h */,
-				6A0A15842092BD8400E32BC6 /* AppDelegate.m */,
-				6A0A15862092BD8400E32BC6 /* DocumentBrowserViewController.h */,
-				6A0A15872092BD8400E32BC6 /* DocumentBrowserViewController.m */,
-				6A02CE6220A409DB00AEF841 /* DocumentDelegate.h */,
-				6A0A15892092BD8400E32BC6 /* DocumentViewController.h */,
-				6A0A158A2092BD8400E32BC6 /* DocumentViewController.m */,
-				6A0A158C2092BD8400E32BC6 /* Document.h */,
-				6A0A158D2092BD8400E32BC6 /* Document.m */,
-				6A02CE5320A3EA5000AEF841 /* FontFamilyTableViewController.h */,
-				6A02CE5420A3EA5000AEF841 /* FontFamilyTableViewController.m */,
-				6A02CE5F20A3F05E00AEF841 /* NSObject+WRCasting.h */,
-				6A02CE6020A3F05E00AEF841 /* NSObject+WRCasting.m */,
-				6A02CE5620A3ED2800AEF841 /* WRExampleNavigationController.h */,
-				6A02CE5720A3ED2800AEF841 /* WRExampleNavigationController.m */,
+				6A0A15832092BD8400E32BC6 /* WRVXAppDelegate.h */,
+				6A0A15842092BD8400E32BC6 /* WRVXAppDelegate.m */,
+				6A0A15862092BD8400E32BC6 /* WRVXDocumentBrowserViewController.h */,
+				6A0A15872092BD8400E32BC6 /* WRVXDocumentBrowserViewController.m */,
+				6A02CE6220A409DB00AEF841 /* WRVXDocumentDelegate.h */,
+				6A0A15892092BD8400E32BC6 /* WRVXDocumentViewController.h */,
+				6A0A158A2092BD8400E32BC6 /* WRVXDocumentViewController.m */,
+				6A0A158C2092BD8400E32BC6 /* WRVXDocument.h */,
+				6A0A158D2092BD8400E32BC6 /* WRVXDocument.m */,
+				6A02CE5320A3EA5000AEF841 /* WRVXFontFamilyTableViewController.h */,
+				6A02CE5420A3EA5000AEF841 /* WRVXFontFamilyTableViewController.m */,
+				6A02CE5620A3ED2800AEF841 /* WRVXNavigationController.h */,
+				6A02CE5720A3ED2800AEF841 /* WRVXNavigationController.m */,
 				6A0A158F2092BD8400E32BC6 /* Main.storyboard */,
 				6A0A15922092BD8500E32BC6 /* Assets.xcassets */,
 				6A0A15942092BD8500E32BC6 /* LaunchScreen.storyboard */,
@@ -261,12 +261,12 @@
 		6A0E3CAF207ED10400887721 /* WRTextView Example */ = {
 			isa = PBXGroup;
 			children = (
-				6A0E3CB0207ED10400887721 /* AppDelegate.h */,
-				6A0E3CB1207ED10400887721 /* AppDelegate.m */,
-				6A0E3CB3207ED10400887721 /* Document.h */,
-				6A0E3CB4207ED10400887721 /* Document.m */,
-				6A0A156E208FE6AA00E32BC6 /* WindowController.h */,
-				6A0A156F208FE6AA00E32BC6 /* WindowController.m */,
+				6A0E3CB0207ED10400887721 /* WRVXAppDelegate.h */,
+				6A0E3CB1207ED10400887721 /* WRVXAppDelegate.m */,
+				6A0E3CB3207ED10400887721 /* WRVXDocument.h */,
+				6A0E3CB4207ED10400887721 /* WRVXDocument.m */,
+				6A0A156E208FE6AA00E32BC6 /* WRVXWindowController.h */,
+				6A0A156F208FE6AA00E32BC6 /* WRVXWindowController.m */,
 				6A0E3CB6207ED10400887721 /* Document.xib */,
 				6A0E3CB9207ED10600887721 /* Assets.xcassets */,
 				6A0E3CBB207ED10600887721 /* MainMenu.xib */,
@@ -500,13 +500,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				6A0A15992092BD8500E32BC6 /* main.m in Sources */,
-				6A02CE5520A3EA5000AEF841 /* FontFamilyTableViewController.m in Sources */,
-				6A02CE5820A3ED2800AEF841 /* WRExampleNavigationController.m in Sources */,
-				6A0A158E2092BD8400E32BC6 /* Document.m in Sources */,
-				6A02CE6120A3F05E00AEF841 /* NSObject+WRCasting.m in Sources */,
-				6A0A15882092BD8400E32BC6 /* DocumentBrowserViewController.m in Sources */,
-				6A0A158B2092BD8400E32BC6 /* DocumentViewController.m in Sources */,
-				6A0A15852092BD8400E32BC6 /* AppDelegate.m in Sources */,
+				6A02CE5520A3EA5000AEF841 /* WRVXFontFamilyTableViewController.m in Sources */,
+				6A02CE5820A3ED2800AEF841 /* WRVXNavigationController.m in Sources */,
+				6A0A158E2092BD8400E32BC6 /* WRVXDocument.m in Sources */,
+				6A02CE6120A3F05E00AEF841 /* NSObject+WRVCasting.m in Sources */,
+				6A0A15882092BD8400E32BC6 /* WRVXDocumentBrowserViewController.m in Sources */,
+				6A0A158B2092BD8400E32BC6 /* WRVXDocumentViewController.m in Sources */,
+				6A0A15852092BD8400E32BC6 /* WRVXAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,10 +514,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6A0E3CB5207ED10400887721 /* Document.m in Sources */,
-				6A0A1570208FE6AA00E32BC6 /* WindowController.m in Sources */,
+				6A0E3CB5207ED10400887721 /* WRVXDocument.m in Sources */,
+				6A0A1570208FE6AA00E32BC6 /* WRVXWindowController.m in Sources */,
 				6A0E3CC0207ED10600887721 /* main.m in Sources */,
-				6A0E3CB2207ED10400887721 /* AppDelegate.m in Sources */,
+				6A0E3CB2207ED10400887721 /* WRVXAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

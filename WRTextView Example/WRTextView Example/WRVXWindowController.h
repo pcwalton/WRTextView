@@ -1,5 +1,5 @@
 //
-//  WindowController.h
+//  WRVXWindowController.h
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/24/18.
@@ -8,6 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface WindowController : NSWindowController<NSSplitViewDelegate>
+@interface WRVXWindowController : NSWindowController<NSSplitViewDelegate>
 
 @end

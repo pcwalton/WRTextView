@@ -1,33 +1,30 @@
 //
-//  Document.m
+//  WRVXDocument.m
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/11/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "Document.h"
-#import "WRTextView.h"
-#import "WindowController.h"
+#import "WRVXDocument.h"
+#import "WRVXWindowController.h"
+#import "WRVTextView.h"
+#import "NSObject+WRVCasting.h"
 
-#define DEFAULT_FORMAT_PANE_SIZE    250.0
+#define WRVX_DEFAULT_FORMAT_PANE_SIZE   250.0
 
-#define WRTextViewSelectorKindDocument  0
-#define WRTextViewSelectorKindParagraph 1
-#define WRTextViewSelectorKindInline    2
+#define WRVX_SELECTOR_KIND_DOCUMENT     0
+#define WRVX_SELECTOR_KIND_PARAGRAPH    1
+#define WRVX_SELECTOR_KIND_INLINE       2
 
-struct WRTextViewSelector {
+struct WRVXSelector {
     uint8_t selector;
     uint8_t kind;
 };
 
-typedef struct WRTextViewSelector WRTextViewSelector;
+typedef struct WRVXSelector WRVXSelector;
 
-@interface Document ()
-
-@end
-
-@implementation Document
+@implementation WRVXDocument
 
 - (instancetype)init {
     self = [super init];
@@ -195,26 +192,25 @@ typedef struct WRTextViewSelector WRTextViewSelector;
 }
 
 - (IBAction)toggleFormatPaneVisibility:(id)sender {
-    NSView *formatSuperview = [self->formatPane superview];
-    if (![formatSuperview isKindOfClass:[NSSplitView class]])
-        return;
-    NSSplitView *splitView = (NSSplitView *)formatSuperview;
+    NSSplitView *splitView = [NSSplitView wrv_dynamicCast:[self->formatPane superview]];
 
     BOOL collapse = ![splitView isSubviewCollapsed:self->formatPane];
     [self->_formatToolbarButton setState:collapse ? NSOffState : NSOnState];
 
-    CGFloat position = [splitView frame].size.width - (collapse ? 0.0 : DEFAULT_FORMAT_PANE_SIZE);
+    CGFloat position = [splitView frame].size.width;
+    if (collapse)
+        position -= WRVX_DEFAULT_FORMAT_PANE_SIZE;
     [splitView setPosition:position ofDividerAtIndex:0];
 }
 
 - (void)makeWindowControllers {
-    [self addWindowController:[[WindowController alloc] initWithWindowNibName:[self windowNibName]
-                                                                        owner:self]];
+    [self addWindowController:[[WRVXWindowController alloc]
+                               initWithWindowNibName:[self windowNibName] owner:self]];
 }
 
-- (WRTextViewSelector)_currentSelector {
+- (WRVXSelector)_currentSelector {
     NSInteger tag = [self->_selectorPopUpButton selectedTag];
-    WRTextViewSelector selector;
+    WRVXSelector selector;
     selector.kind = (tag >> 8);
     selector.selector = (tag & 0xff);
     return selector;
@@ -271,23 +267,23 @@ typedef struct WRTextViewSelector WRTextViewSelector;
 
 - (IBAction)changeMargins:(id)sender {
     switch ([self _currentSelector].kind) {
-    case WRTextViewSelectorKindDocument:
+    case WRVX_SELECTOR_KIND_DOCUMENT:
         [self _updateDocumentStyle];
         break;
-    case WRTextViewSelectorKindParagraph:
+    case WRVX_SELECTOR_KIND_PARAGRAPH:
         [self _updateParagraphStyle];
         break;
     }
 }
 
 - (IBAction)selectNewStyle:(id)sender {
-    WRTextViewSelector selector = [self _currentSelector];
+    WRVXSelector selector = [self _currentSelector];
     
-    NSInteger tabIndex = selector.kind == WRTextViewSelectorKindInline ? 1 : 0;
+    NSInteger tabIndex = selector.kind == WRVX_SELECTOR_KIND_INLINE ? 1 : 0;
     [self->_formatTabView selectTabViewItemAtIndex:tabIndex];
 
     switch (selector.kind) {
-    case WRTextViewSelectorKindInline: {
+    case WRVX_SELECTOR_KIND_INLINE: {
         NSFont *font = [self->_fonts objectAtIndex:selector.selector];
         CGFloat size = [font pointSize];
         [self->_fontSizeField setDoubleValue:size];
@@ -301,10 +297,10 @@ typedef struct WRTextViewSelector WRTextViewSelector;
         break;
     }
 
-    case WRTextViewSelectorKindDocument:
-    case WRTextViewSelectorKindParagraph: {
+    case WRVX_SELECTOR_KIND_DOCUMENT:
+    case WRVX_SELECTOR_KIND_PARAGRAPH: {
         const WRTextViewSideOffsets *margins;
-        if (selector.kind == WRTextViewSelectorKindDocument) {
+        if (selector.kind == WRVX_SELECTOR_KIND_DOCUMENT) {
             margins = &self->_documentMargins;
         } else {
             NSAssert(selector.selector < [self _paragraphStyleCount], @"Bad selector!");

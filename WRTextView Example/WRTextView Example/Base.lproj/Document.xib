@@ -46,10 +46,10 @@
                                 <rect key="frame" x="0.0" y="0.0" width="254" height="413"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <subviews>
-                                    <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" usesPredominantAxisScrolling="NO" id="yeI-5o-3r9" customClass="WRTextScrollView">
+                                    <scrollView misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" allowsMagnification="YES" usesPredominantAxisScrolling="NO" id="yeI-5o-3r9" customClass="WRVTextScrollView">
                                         <rect key="frame" x="0.0" y="0.0" width="254" height="413"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                        <clipView key="contentView" copiesOnScroll="NO" id="6Qk-JA-bB2" customClass="WRTextView">
+                                        <clipView key="contentView" copiesOnScroll="NO" id="6Qk-JA-bB2" customClass="WRVTextView">
                                             <rect key="frame" x="0.0" y="0.0" width="254" height="413"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>

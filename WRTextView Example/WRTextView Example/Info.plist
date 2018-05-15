@@ -24,7 +24,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>NSDocumentClass</key>
-			<string>Document</string>
+			<string>WRVXDocument</string>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>

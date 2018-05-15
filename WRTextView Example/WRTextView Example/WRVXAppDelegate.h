@@ -1,5 +1,5 @@
 //
-//  AppDelegate.h
+//  WRVXAppDelegate.h
 //  WRTextView Example
 //
 //  Created by Patrick Walton on 4/11/18.
@@ -8,8 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface AppDelegate : NSObject <NSApplicationDelegate>
-
+@interface WRVXAppDelegate : NSObject<NSApplicationDelegate>
 
 @end
 

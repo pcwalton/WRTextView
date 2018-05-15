@@ -59,9 +59,9 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 
 @implementation WRVTextLayer
 
-- (WRTextView *)_textView {
+- (WRVTextView *)_textView {
     id delegate = [self delegate];
-    return [delegate isKindOfClass:[WRTextView class]] ? (WRTextView *)delegate : nil;
+    return [delegate isKindOfClass:[WRVTextView class]] ? (WRVTextView *)delegate : nil;
 }
 
 - (void)_clearGLErrors {
@@ -156,7 +156,7 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
     }
 #endif
 
-    id<WRTextStorage> textStorage = [[self _textView] textStorage];
+    id<WRVTextStorage> textStorage = [[self _textView] textStorage];
     if (textStorage == nil) {
         NSLog(@"no text storage!");
         return NO;
@@ -275,7 +275,7 @@ static const wrtv_mouse_event_kind_t WRMouseEventKindFromNSEvent(NSEvent *event)
 #endif
 
 - (CGAffineTransform)_webrenderTransform {
-    WRTextView *textView = [self _textView];
+    WRVTextView *textView = [self _textView];
 
 #if !TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR && !TARGET_OS_EMBEDDED
     CGRect viewportFrame = [textView documentVisibleRect];

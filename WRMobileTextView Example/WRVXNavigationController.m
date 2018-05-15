@@ -1,20 +1,16 @@
 //
-//  WRExampleNavigationController.m
+//  WRVXNavigationController.m
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 5/9/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "WRExampleNavigationController.h"
-#import "DocumentViewController.h"
-#import "NSObject+WRCasting.h"
+#import "WRVXNavigationController.h"
+#import "WRVXDocumentViewController.h"
+#import "NSObject+WRVCasting.h"
 
-@interface WRExampleNavigationController ()
-
-@end
-
-@implementation WRExampleNavigationController
+@implementation WRVXNavigationController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -26,15 +22,16 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (DocumentViewController *)documentViewController {
+- (WRVXDocumentViewController *)documentViewController {
     NSArray<UIViewController *> *viewControllers = [self viewControllers];
     NSInteger index = [viewControllers indexOfObjectPassingTest:
                        ^BOOL(UIViewController *obj, NSUInteger idx, BOOL *stop) {
-                           return [obj isKindOfClass:[DocumentViewController class]];
+                           return [obj isKindOfClass:[WRVXDocumentViewController class]];
                        }];
     if (index == NSNotFound)
         return nil;
-    return [DocumentViewController staticCast:[viewControllers objectAtIndex:(NSUInteger)index]];
+    return [WRVXDocumentViewController wrv_staticCast:
+            [viewControllers objectAtIndex:(NSUInteger)index]];
 }
 
 /*

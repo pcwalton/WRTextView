@@ -1,5 +1,5 @@
 //
-//  DocumentViewController.h
+//  WRVXDocumentViewController.h
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 4/26/18.
@@ -8,16 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
-@class Document;
-@class WRTextView;
+@class WRVXDocument;
+@class WRVTextView;
 
-@interface DocumentViewController : UIViewController {
+@interface WRVXDocumentViewController : UIViewController {
     BOOL _debuggerEnabled;
 }
 
-@property(strong) Document *document;
+@property(strong) WRVXDocument *document;
 @property(nonatomic, strong) IBOutlet UINavigationBar *navigationBar;
-@property(nonatomic, strong) IBOutlet WRTextView *textView;
+@property(nonatomic, strong) IBOutlet WRVTextView *textView;
 
 - (IBAction)toggleDebugger:(id)sender;
 

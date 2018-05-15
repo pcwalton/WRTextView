@@ -1,22 +1,22 @@
 //
-//  DocumentViewController.m
+//  WRVXDocumentViewController.m
 //  WRMobileTextView Example
 //
 //  Created by Patrick Walton on 4/26/18.
 //  Copyright © 2018 Mozilla Foundation. All rights reserved.
 //
 
-#import "DocumentViewController.h"
-#import "Document.h"
-#import "WRTextView.h"
+#import "WRVXDocumentViewController.h"
+#import "WRVXDocument.h"
+#import "WRVTextView.h"
 
-@implementation DocumentViewController
+@implementation WRVXDocumentViewController
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
     // Access the document
-    Document *document = [self document];
+    WRVXDocument *document = [self document];
     [document openWithCompletionHandler:^(BOOL success) {
         if (success) {
             // Display the content of the document:
@@ -32,7 +32,7 @@
 
 - (IBAction)dismissDocumentViewController {
     [self dismissViewControllerAnimated:YES completion:^{
-        [self.document closeWithCompletionHandler:nil];
+        [[self document] closeWithCompletionHandler:nil];
     }];
 }
 
